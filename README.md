@@ -1,0 +1,2 @@
+# scopa-server
+Scopa server

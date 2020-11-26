@@ -1,6 +1,8 @@
 {
   "private": true,
-  "name": "Scoopa",
+  "name": "Scopa",
+  "repository": "git@github.com:strahius/scopa.git",
+  "license": "MIT",
   "workspaces": [
     "packages/*"
   ],

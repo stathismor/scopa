@@ -8,9 +8,6 @@
     "start": "nodemon",
     "build": "tsc"
   },
-  "repository": "git@github.com:strahius/scopa-server.git",
-  "author": "Stathis <emoraitidis@gmail.com>",
-  "license": "MIT",
   "dependencies": {
     "express": "^4.17.1",
     "socket.io": "^3.0.3"

@@ -1,6 +1,6 @@
-# scopa-server
+# Server
 
-Scopa server
+Server
 
 # Run
 

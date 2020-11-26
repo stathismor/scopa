@@ -6,7 +6,7 @@ export const createServer = (port: number) => {
   const server: HTTPServer = CreateHTTPServer(app);
 
   // Application routing
-  app.use('/', (req: Request, res: Response, next: NextFunction) => {
+  app.get('/', (req: Request, res: Response, next: NextFunction) => {
     console.log('Hello Daniele');
     res.status(200).send({ data: 'Hello Daniele' });
   });

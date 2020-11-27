@@ -2,11 +2,7 @@
   "compilerOptions": {
     "baseUrl": "src",
     "downlevelIteration": true,
-    "lib": [
-      "esnext",
-      "dom",
-      "dom.iterable"
-    ],
+    "lib": ["esnext", "dom", "dom.iterable"],
     "module": "esnext",
     "target": "esnext",
     "sourceMap": true,
@@ -30,17 +26,6 @@
     "strict": true,
     "noFallthroughCasesInSwitch": true
   },
-  "exclude": [
-    "e2e",
-    "node_modules",
-    "build",
-    "scripts",
-    "webpack",
-    "jest",
-    "src/setupTests.ts",
-    "coverage"
-  ],
-  "include": [
-    "src"
-  ]
+  "exclude": ["node_modules"],
+  "include": ["src"]
 }

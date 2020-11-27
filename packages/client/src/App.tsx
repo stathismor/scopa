@@ -5,7 +5,9 @@ function App() {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:3001/users')
+    const usersUrl = `${process.env.REACT_APP_HTTP_URL}/users`;
+
+    fetch(usersUrl)
       .then((response) => response.json())
       .then((data) => setUsers(data.data));
   }, []);

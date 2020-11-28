@@ -1,5 +1,5 @@
 import { Card } from './Card';
-import { Box, Flex, Heading } from 'theme-ui';
+import { Box, Button, Flex, Heading } from 'theme-ui';
 import { SUIT } from 'cards';
 import { range } from 'lodash';
 import { useEffect, useState } from 'react';
@@ -10,6 +10,7 @@ const socketUrl = process.env.REACT_APP_SOCKET_URL as string;
 const socket = io(socketUrl);
 function App() {
   const [users, setUsers] = useState([]);
+  const [count, setCount] = useState(0);
 
   useEffect(() => {
     // Socket stuff
@@ -19,9 +20,8 @@ function App() {
 
     socket.on('message2', (arg: string) => {
       console.log('message2 -', arg);
+      setCount((state) => state + 1);
     });
-
-    socket.emit('message1', 'Hello server');
 
     // HTTP stuff
     const usersUrl = `${process.env.REACT_APP_HTTP_URL}/users`;
@@ -43,6 +43,9 @@ function App() {
       {users.map((user) => (
         <p key={user}>{user}</p>
       ))}
+
+      <Heading as="h2">Socket id: {socket.id}</Heading>
+      <Button onClick={() => socket.emit('message1', 'Hello server')}>Send message to socket {count} times</Button>
       <Flex sx={{ m: 3, gap: 3, flexWrap: 'wrap' }}>
         {range(1, 11).map((r) => (
           <Card key={r} card={[r, SUIT.Denari]} />

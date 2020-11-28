@@ -1,8 +1,9 @@
 import { Server as HTTPServer } from 'http';
 import { createSocket } from './Socket';
 import { createServer } from './Server';
+import * as dotenv from 'dotenv';
 
-const PORT = 3001;
+dotenv.config();
 
-const server: HTTPServer = createServer(PORT);
+const server: HTTPServer = createServer();
 createSocket(server);

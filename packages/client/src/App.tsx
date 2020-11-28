@@ -1,19 +1,39 @@
-import logo from './logo.svg';
-import './App.css';
+import { Card } from './Card';
+import { Box, Flex, Heading } from 'theme-ui';
+import { SUIT } from 'cards';
+import { range } from 'lodash';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a className="App-link" href="https://reactjs.org" target="_blank" rel="noopener noreferrer">
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Box
+      sx={{
+        width: '100%',
+        maxWidth: 1200,
+        m: '0 auto',
+      }}
+    >
+      <Heading as="h1">Scopa</Heading>
+      <Flex sx={{ m: 3, gap: 3, flexWrap: 'wrap' }}>
+        {range(1, 11).map((r) => (
+          <Card key={r} card={[r, SUIT.Denari]} />
+        ))}
+      </Flex>
+      <Flex sx={{ m: 3, gap: 3, flexWrap: 'wrap' }}>
+        {range(1, 11).map((r) => (
+          <Card key={r} card={[r, SUIT.Bastoni]} />
+        ))}
+      </Flex>
+      <Flex sx={{ m: 3, gap: 3, flexWrap: 'wrap' }}>
+        {range(1, 11).map((r) => (
+          <Card key={r} card={[r, SUIT.Coppe]} />
+        ))}
+      </Flex>
+      <Flex sx={{ m: 3, gap: 3, flexWrap: 'wrap' }}>
+        {range(1, 11).map((r) => (
+          <Card key={r} card={[r, SUIT.Spade]} />
+        ))}
+      </Flex>
+    </Box>
   );
 }
 

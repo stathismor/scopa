@@ -1,12 +1,15 @@
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
+import { theme } from 'theme';
+import { ThemeProvider } from 'theme-ui';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
   <StrictMode>
-    <App />
+    <ThemeProvider theme={theme}>
+      <App />
+    </ThemeProvider>
   </StrictMode>,
   document.getElementById('root'),
 );

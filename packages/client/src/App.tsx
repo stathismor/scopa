@@ -48,22 +48,22 @@ function App() {
       <Button onClick={() => socket.emit('message1', 'Hello server')}>Send message to socket {count} times</Button>
       <Flex sx={{ m: 3, gap: 3, flexWrap: 'wrap' }}>
         {range(1, 11).map((r) => (
-          <Card key={r} card={[r, SUIT.Denari]} />
+          <Card key={r} card={[r, SUIT.Golds]} />
         ))}
       </Flex>
       <Flex sx={{ m: 3, gap: 3, flexWrap: 'wrap' }}>
         {range(1, 11).map((r) => (
-          <Card key={r} card={[r, SUIT.Bastoni]} />
+          <Card key={r} card={[r, SUIT.Clubs]} />
         ))}
       </Flex>
       <Flex sx={{ m: 3, gap: 3, flexWrap: 'wrap' }}>
         {range(1, 11).map((r) => (
-          <Card key={r} card={[r, SUIT.Coppe]} />
+          <Card key={r} card={[r, SUIT.Cups]} />
         ))}
       </Flex>
       <Flex sx={{ m: 3, gap: 3, flexWrap: 'wrap' }}>
         {range(1, 11).map((r) => (
-          <Card key={r} card={[r, SUIT.Spade]} />
+          <Card key={r} card={[r, SUIT.Swords]} />
         ))}
       </Flex>
     </Box>

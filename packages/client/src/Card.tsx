@@ -6,20 +6,20 @@ import bg from './images/cards.jpg';
 import { SUIT, Card as CardType } from './cards';
 
 const VALUES: { [key: number]: string } = {
-  1: 'Asso',
-  2: 'Due',
-  3: 'Tre',
-  4: 'Quattro',
-  5: 'Cinque',
-  6: 'Sei',
-  7: 'Sette',
-  8: 'Fante',
-  9: 'Cavallo',
-  10: 'Re',
+  1: 'Ace',
+  2: 'Two',
+  3: 'Three',
+  4: 'Four',
+  5: 'Five',
+  6: 'Six',
+  7: 'Seven',
+  8: 'Knave',
+  9: 'Knight',
+  10: 'King',
 };
 
 function name([value, suit]: CardType) {
-  return `${VALUES[value]} di ${SUIT[startCase(suit)]}`;
+  return `${VALUES[value]} of ${SUIT[startCase(suit)]}`;
 }
 
 const suitList = Object.values(SUIT);

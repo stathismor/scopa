@@ -1,11 +1,13 @@
+import { Card } from './Card';
+import { Box, Flex, Heading } from 'theme-ui';
+import { SUIT } from 'cards';
+import { range } from 'lodash';
 import { useEffect, useState } from 'react';
-import './App.css';
 // Front is served on the same domain as server
 import { io } from 'socket.io-client';
 
 const socketUrl = process.env.REACT_APP_SOCKET_URL as string;
 const socket = io(socketUrl);
-
 function App() {
   const [users, setUsers] = useState([]);
 
@@ -28,22 +30,40 @@ function App() {
       .then((data) => setUsers(data.data));
   }, []);
 
-  const renderUsers = () => {
-    return (
-      <div>
-        <p>Users:</p>
-        {users.map((user) => (
-          <p key={user}>{user}</p>
-        ))}
-      </div>
-    );
-  };
-
   return (
-    <div className="App">
-      <header className="App-header"></header>
-      {renderUsers()}
-    </div>
+    <Box
+      sx={{
+        width: '100%',
+        maxWidth: 1200,
+        m: '0 auto',
+      }}
+    >
+      <Heading as="h1">Scopa</Heading>
+      <p>Users:</p>
+      {users.map((user) => (
+        <p key={user}>{user}</p>
+      ))}
+      <Flex sx={{ m: 3, gap: 3, flexWrap: 'wrap' }}>
+        {range(1, 11).map((r) => (
+          <Card key={r} card={[r, SUIT.Denari]} />
+        ))}
+      </Flex>
+      <Flex sx={{ m: 3, gap: 3, flexWrap: 'wrap' }}>
+        {range(1, 11).map((r) => (
+          <Card key={r} card={[r, SUIT.Bastoni]} />
+        ))}
+      </Flex>
+      <Flex sx={{ m: 3, gap: 3, flexWrap: 'wrap' }}>
+        {range(1, 11).map((r) => (
+          <Card key={r} card={[r, SUIT.Coppe]} />
+        ))}
+      </Flex>
+      <Flex sx={{ m: 3, gap: 3, flexWrap: 'wrap' }}>
+        {range(1, 11).map((r) => (
+          <Card key={r} card={[r, SUIT.Spade]} />
+        ))}
+      </Flex>
+    </Box>
   );
 }
 

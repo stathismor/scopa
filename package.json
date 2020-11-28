@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "client": "yarn workspace client start",
-    "server": "NODE_ENV=development yarn workspace server start",
+    "server": "yarn workspace server start",
     "start": "concurrently --kill-others-on-fail \"yarn server\"  \"yarn client\""
   },
   "dependencies": {

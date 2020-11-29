@@ -1,10 +1,10 @@
 import { Button, Heading } from 'theme-ui';
 import { useEffect, useState } from 'react';
 
-import { gameIO } from 'api/socket';
+import { gameIO } from 'lib/socket';
 import { Layout } from 'components/Layout';
 import { Link } from 'react-router-dom';
-import { getUsers } from 'api/resources';
+import { getUsers } from 'lib/resources';
 
 export const Lobby = () => {
   const [users, setUsers] = useState([]);

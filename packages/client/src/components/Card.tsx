@@ -2,8 +2,8 @@ import React from 'react';
 import styled from '@emotion/styled';
 import { Box } from 'theme-ui';
 import { startCase } from 'lodash';
-import bg from './images/cards.jpg';
-import { SUIT, Card as CardType } from './cards';
+import bg from 'images/cards.jpg';
+import { SUIT, Card as CardType } from 'utils/cardEngine';
 
 const VALUES: { [key: number]: string } = {
   1: 'Ace',

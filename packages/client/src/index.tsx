@@ -2,13 +2,16 @@ import { StrictMode } from 'react';
 import ReactDOM from 'react-dom';
 import { theme } from 'theme';
 import { ThemeProvider } from 'theme-ui';
+import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
   <StrictMode>
     <ThemeProvider theme={theme}>
-      <App />
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
     </ThemeProvider>
   </StrictMode>,
   document.getElementById('root'),

@@ -1,16 +1,14 @@
 import { Button, Heading } from 'theme-ui';
 import { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 
 import { gameIO } from 'lib/socket';
 import { Layout } from 'components/Layout';
-import { Link } from 'react-router-dom';
 import { getUsers } from 'lib/resources';
-import { generateRoomName } from 'utils/rooms';
 
 export const Lobby = () => {
   const [users, setUsers] = useState([]);
-  const [count, setCount] = useState(0);
-  const roomName = generateRoomName();
+  const history = useHistory();
 
   useEffect(() => {
     // Socket stuff
@@ -18,21 +16,15 @@ export const Lobby = () => {
       console.log(`connect ${gameIO.id}`);
     });
 
-    const handleMessage = (arg: string) => {
-      console.log('message2 -', arg);
-      setCount((state) => state + 1);
+    const handleCreateRoomSuccess = (roomName: string) => {
+      console.log('create-room-success', roomName);
+      history.push(`/game/${roomName}`);
     };
-
-    gameIO.on('message2', handleMessage);
+    gameIO.on('create-room-success', handleCreateRoomSuccess);
 
     // HTTP stuff
     getUsers.then((data) => setUsers(data.data));
-
-    // Cleanup
-    return () => {
-      gameIO.off('message2', handleMessage);
-    };
-  }, []);
+  }, [history]);
 
   return (
     <Layout>
@@ -43,8 +35,7 @@ export const Lobby = () => {
       ))}
 
       <Heading as="h2">Socket id: {gameIO.id}</Heading>
-      <Button onClick={() => gameIO.emit('message1', 'Hello server')}>Send message to socket {count} times</Button>
-      <Link to={`/game/${roomName}`}>Create a game</Link>
+      <Button onClick={() => gameIO.emit('create-room')}>Create a new room</Button>
     </Layout>
   );
 };

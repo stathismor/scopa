@@ -16,10 +16,10 @@ export const Game = () => {
     const url = window.location.href;
     const roomName = url.substring(url.lastIndexOf('/') + 1);
 
-    gameIO.emit('join', roomName);
+    gameIO.emit('join-room', roomName);
 
-    gameIO.on('join-success', handleSuccess);
-    gameIO.on('join-error', handleError);
+    gameIO.on('join-room-success', handleSuccess);
+    gameIO.on('join-room-error', handleError);
   }, []);
 
   const handleSuccess = () => {

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { Flex, Heading } from 'theme-ui';
 import { SUIT } from 'utils/cardEngine';
 import { range } from 'lodash';
@@ -10,17 +11,14 @@ import { gameIO } from 'lib/socket';
 export const Game = () => {
   const [status, setStatus] = useState('pending');
   const [errorMessage, setErrorMessage] = useState('');
+  const { roomName } = useParams<{ roomName: string }>();
 
   useEffect(() => {
-    // Get the room name from the last part of the URL. Try to join that room
-    const url = window.location.href;
-    const roomName = url.substring(url.lastIndexOf('/') + 1);
-
     gameIO.emit('join-room', roomName);
 
     gameIO.on('join-room-success', handleSuccess);
     gameIO.on('join-room-error', handleError);
-  }, []);
+  }, [roomName]);
 
   const handleSuccess = () => {
     setStatus('joined');

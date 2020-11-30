@@ -18,6 +18,11 @@ export const Game = () => {
 
     gameIO.on('join-room-success', handleSuccess);
     gameIO.on('join-room-error', handleError);
+
+    return () => {
+      gameIO.off('join-room-success', handleSuccess);
+      gameIO.off('join-room-error', handleError);
+    };
   }, [roomName]);
 
   const handleSuccess = () => {

@@ -24,6 +24,10 @@ export const Lobby = () => {
 
     // HTTP stuff
     getUsers.then((data) => setUsers(data.data));
+
+    return () => {
+      gameIO.off('create-room-success', handleCreateRoomSuccess);
+    };
   }, [history]);
 
   return (

@@ -1,5 +1,7 @@
 import { Server as HTTPServer } from 'http';
-import { Server as IOServer } from 'socket.io';
+import { Server as IOServer, Socket } from 'socket.io';
+import { createRoom, joinRoom } from './rooms';
+import { Store } from './Store';
 
 export const createSocket = (server: HTTPServer) => {
   const io = new IOServer(server, {
@@ -9,16 +11,19 @@ export const createSocket = (server: HTTPServer) => {
     },
   });
 
-  io.on('connection', (socket) => {
-    console.log('a user connected');
+  const store = new Store();
+
+  io.on('connection', (socket: Socket) => {
     socket.on('disconnect', () => {
       console.log('user disconnected');
     });
 
-    socket.on('message1', (arg: string) => {
-      console.log('message1 -', arg);
+    socket.on('create-room', async () => {
+      await createRoom(io, socket, store);
+    });
 
-      socket.emit('message2', 'Hello client');
+    socket.on('join-room', async (roomName) => {
+      await joinRoom(io, socket, store, roomName);
     });
   });
 };

@@ -8,7 +8,7 @@ function App() {
       <Route path="/" exact>
         <Lobby />
       </Route>
-      <Route path="/game/:gameId">
+      <Route path="/game/:roomName">
         <Game />
       </Route>
     </Switch>

@@ -5,10 +5,12 @@ import { gameIO } from 'lib/socket';
 import { Layout } from 'components/Layout';
 import { Link } from 'react-router-dom';
 import { getUsers } from 'lib/resources';
+import { generateRoomName } from 'utils/rooms';
 
 export const Lobby = () => {
   const [users, setUsers] = useState([]);
   const [count, setCount] = useState(0);
+  const roomName = generateRoomName();
 
   useEffect(() => {
     // Socket stuff
@@ -19,7 +21,7 @@ export const Lobby = () => {
     const handleMessage = (arg: string) => {
       console.log('message2 -', arg);
       setCount((state) => state + 1);
-    }
+    };
 
     gameIO.on('message2', handleMessage);
 
@@ -28,8 +30,8 @@ export const Lobby = () => {
 
     // Cleanup
     return () => {
-      gameIO.off('message2', handleMessage)
-    }
+      gameIO.off('message2', handleMessage);
+    };
   }, []);
 
   return (
@@ -42,7 +44,7 @@ export const Lobby = () => {
 
       <Heading as="h2">Socket id: {gameIO.id}</Heading>
       <Button onClick={() => gameIO.emit('message1', 'Hello server')}>Send message to socket {count} times</Button>
-      <Link to={`/game/${gameIO.id}`}>Create a game</Link>
+      <Link to={`/game/${roomName}`}>Create a game</Link>
     </Layout>
   );
 };

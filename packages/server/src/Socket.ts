@@ -1,5 +1,6 @@
 import { Server as HTTPServer } from 'http';
-import { Server as IOServer } from 'socket.io';
+import { Server as IOServer, Socket } from 'socket.io';
+import { RoomManager } from './RoomManager';
 
 export const createSocket = (server: HTTPServer) => {
   const io = new IOServer(server, {
@@ -9,10 +10,14 @@ export const createSocket = (server: HTTPServer) => {
     },
   });
 
-  io.on('connection', (socket) => {
-    console.log('a user connected');
+  io.on('connection', (socket: Socket) => {
     socket.on('disconnect', () => {
       console.log('user disconnected');
+    });
+
+    socket.on('join', async (roomName: string) => {
+      const roomManager = new RoomManager(io, socket);
+      await roomManager.init(roomName);
     });
 
     socket.on('message1', (arg: string) => {

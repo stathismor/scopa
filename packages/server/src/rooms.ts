@@ -1,9 +1,11 @@
 import { Server as IOServer, Socket } from 'socket.io';
+
+import { Store } from './Store';
 import { generateRoomName } from './utils';
 
 const MAX_ROOM_SIZE = 2;
 
-export async function createRoom(io: IOServer, socket: Socket) {
+export async function createRoom(io: IOServer, socket: Socket, store: Store) {
   const roomName = generateRoomName();
 
   // @ts-expect-error
@@ -11,6 +13,7 @@ export async function createRoom(io: IOServer, socket: Socket) {
   const room = await io.sockets.adapter.rooms.get(roomName);
   if (room === undefined || room.size < MAX_ROOM_SIZE) {
     await socket.join(roomName);
+    store.rooms.push(roomName);
 
     // TODO: Use a common logging format
     console.info(`[CREATE] Client created and joined room ${roomName}`);
@@ -21,13 +24,18 @@ export async function createRoom(io: IOServer, socket: Socket) {
   }
 }
 
-export async function joinRoom(io: IOServer, socket: Socket, roomName: string) {
+export async function joinRoom(io: IOServer, socket: Socket, store: Store, roomName: string) {
   // @ts-expect-error
-  // TS2445: Property 'rooms' is protected and only accessible within class 'Adapter' and its subclasses.
   const room = await io.sockets.adapter.rooms.get(roomName);
   if (room === undefined) {
-    console.warn(`[JOIN FAILED] Room ${roomName} does not exist`);
-    socket.emit('join-room-error', 'Room does not exist');
+    if (store.rooms.includes(roomName)) {
+      await socket.join(roomName);
+      console.info(`[JOIN] Client joined room ${roomName}`);
+      socket.emit('join-room-success');
+    } else {
+      console.warn(`[JOIN FAILED] Room ${roomName} does not exist`);
+      socket.emit('join-room-error', 'Room does not exist');
+    }
   } else if (room.size >= MAX_ROOM_SIZE) {
     console.warn(`[JOIN FAILED] Room ${roomName} is full`);
     socket.emit('join-room-error', 'Room is full');

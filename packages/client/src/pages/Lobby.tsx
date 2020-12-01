@@ -5,6 +5,7 @@ import { useHistory } from 'react-router-dom';
 import { gameIO } from 'lib/socket';
 import { Layout } from 'components/Layout';
 import { getUsers } from 'lib/resources';
+import { useUserData } from 'components/UserContext';
 
 export const Lobby = () => {
   const [users, setUsers] = useState([]);
@@ -12,10 +13,6 @@ export const Lobby = () => {
 
   useEffect(() => {
     // Socket stuff
-    gameIO.on('connect', () => {
-      console.log(`connect ${gameIO.id}`);
-    });
-
     const handleCreateRoomSuccess = (roomName: string) => {
       console.log('create-room-success', roomName);
       history.push(`/game/${roomName}`);
@@ -30,10 +27,12 @@ export const Lobby = () => {
     };
   }, [history]);
 
+  const { userName } = useUserData();
+
   return (
     <Layout>
       <Heading as="h1">Scopa</Heading>
-      <p>Users:</p>
+      <p>Welcome {userName}</p>
       {users.map((user) => (
         <p key={user}>{user}</p>
       ))}

@@ -1,9 +1,9 @@
 const USER_NAME = 'userName';
 
-export function persistUserName(userName: string) {
+export function persistUsername(userName: string) {
   return localStorage.setItem(USER_NAME, userName);
 }
 
-export function getPersistedUserName() {
+export function getStoredUsername() {
   return localStorage.getItem(USER_NAME);
 }

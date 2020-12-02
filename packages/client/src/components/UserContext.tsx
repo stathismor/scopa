@@ -14,7 +14,7 @@ const persistedUserName = getPersistedUserName();
 export const UserProvider: FC = ({ children }) => {
   const [userName, setUserName] = useState<string | null>(persistedUserName);
   if (!userName) {
-    gameIO.emit('request-username');
+    gameIO.emit('username-missing');
   }
 
   useEffect(() => {
@@ -25,9 +25,9 @@ export const UserProvider: FC = ({ children }) => {
       setUserName(usrName);
       persistUserName(usrName);
     };
-    gameIO.on('username-requested', handleUsernameRequested);
+    gameIO.on('username-created', handleUsernameRequested);
     return () => {
-      gameIO.off('username-requested', handleUsernameRequested);
+      gameIO.off('username-created', handleUsernameRequested);
     };
   }, []);
 

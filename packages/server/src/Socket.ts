@@ -19,7 +19,7 @@ export const createSocket = (server: HTTPServer) => {
       console.log('user disconnected');
     });
 
-    socket.on(USER_EVENTS.Request, () => {
+    socket.on(USER_EVENTS.UserNameMissing, () => {
       createUserName(socket, store);
     });
 

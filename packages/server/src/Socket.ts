@@ -1,6 +1,7 @@
 import { Server as HTTPServer } from 'http';
 import { Server as IOServer, Socket } from 'socket.io';
-import { createUsername, USER_EVENTS } from './users';
+import { USER_EVENTS } from 'shared';
+import { createUsername } from './users';
 import { createRoom, joinRoom } from './rooms';
 import { Store } from './Store';
 

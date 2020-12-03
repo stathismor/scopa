@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { theme } from 'theme';
 import { ThemeProvider } from 'theme-ui';
 import { BrowserRouter } from 'react-router-dom';
+import { UserProvider } from 'components/UserContext';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
@@ -10,7 +11,9 @@ ReactDOM.render(
   <StrictMode>
     <ThemeProvider theme={theme}>
       <BrowserRouter>
-        <App />
+        <UserProvider>
+          <App />
+        </UserProvider>
       </BrowserRouter>
     </ThemeProvider>
   </StrictMode>,

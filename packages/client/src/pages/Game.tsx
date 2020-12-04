@@ -43,6 +43,11 @@ export const Game = () => {
         </Flex>
         <Flex sx={{ m: 3, gap: 3, flexWrap: 'wrap' }}>
           {range(1, 11).map((r) => (
+            <Card key={r} card={[r, SUIT.Golds]} faceDown />
+          ))}
+        </Flex>
+        <Flex sx={{ m: 3, gap: 3, flexWrap: 'wrap' }}>
+          {range(1, 11).map((r) => (
             <Card key={r} card={[r, SUIT.Golds]} />
           ))}
         </Flex>

@@ -12,6 +12,9 @@ export const GameState = {
 export type GameState = typeof GameState[keyof typeof GameState];
 
 export const RoomEvents = {
+  Create: 'create-room',
+  CreateSuccess: 'create-room-success',
+  CreateError: 'create-room-error',
   Joining: 'join-room',
   JoinSuccess: 'join-room-success',
   JoinError: 'join-room-error',

@@ -24,7 +24,7 @@ export const createSocket = (server: HTTPServer) => {
       createUsername(socket, store);
     });
 
-    socket.on('create-room', async () => {
+    socket.on(RoomEvents.Create, async () => {
       await createRoom(io, socket, store);
     });
 

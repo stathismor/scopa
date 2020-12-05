@@ -18,10 +18,10 @@ export async function createRoom(io: IOServer, socket: Socket, store: Store) {
 
     // TODO: Use a common logging format
     console.info(`[CREATE] Client created and joined room ${roomName}`);
-    socket.emit('create-room-success', roomName);
+    socket.emit(RoomEvents.CreateSuccess, roomName);
   } else {
     console.warn(`[CREATE FAILED] Client denied join, as room ${roomName} is full`);
-    socket.emit('create-room-error', 'Room is full');
+    socket.emit(RoomEvents.CreateError, 'Room is full');
   }
 }
 

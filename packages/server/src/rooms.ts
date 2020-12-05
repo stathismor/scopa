@@ -1,4 +1,5 @@
 import { Server as IOServer, Socket } from 'socket.io';
+import { RoomEvents } from 'shared';
 
 import { Store } from './Store';
 import { generateRoomName } from './utils';
@@ -31,17 +32,17 @@ export async function joinRoom(io: IOServer, socket: Socket, store: Store, roomN
     if (store.rooms.includes(roomName)) {
       await socket.join(roomName);
       console.info(`[JOIN] Client joined room ${roomName}`);
-      socket.emit('join-room-success');
+      socket.emit(RoomEvents.JoinSuccess);
     } else {
       console.warn(`[JOIN FAILED] Room ${roomName} does not exist`);
-      socket.emit('join-room-error', 'Room does not exist');
+      socket.emit(RoomEvents.JoinError, 'Room does not exist');
     }
   } else if (room.size >= MAX_ROOM_SIZE) {
     console.warn(`[JOIN FAILED] Room ${roomName} is full`);
-    socket.emit('join-room-error', 'Room is full');
+    socket.emit(RoomEvents.JoinError, 'Room is full');
   } else {
     await socket.join(roomName);
     console.info(`[JOIN] Client joined room ${roomName}`);
-    socket.emit('join-room-success');
+    socket.emit(RoomEvents.JoinSuccess);
   }
 }

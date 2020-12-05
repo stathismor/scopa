@@ -1,6 +1,6 @@
 import { Server as HTTPServer } from 'http';
 import { Server as IOServer, Socket } from 'socket.io';
-import { USER_EVENTS } from 'shared';
+import { UserEvents, RoomEvents } from 'shared';
 import { createUsername } from './users';
 import { createRoom, joinRoom } from './rooms';
 import { Store } from './Store';
@@ -20,7 +20,7 @@ export const createSocket = (server: HTTPServer) => {
       console.log('user disconnected');
     });
 
-    socket.on(USER_EVENTS.UsernameMissing, () => {
+    socket.on(UserEvents.UsernameMissing, () => {
       createUsername(socket, store);
     });
 
@@ -28,7 +28,7 @@ export const createSocket = (server: HTTPServer) => {
       await createRoom(io, socket, store);
     });
 
-    socket.on('join-room', async (roomName) => {
+    socket.on(RoomEvents.Joining, async (roomName) => {
       await joinRoom(io, socket, store, roomName);
     });
   });

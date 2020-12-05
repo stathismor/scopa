@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import { FC, createContext, useContext } from 'react';
 import { getStoredUsername, persistUsername } from 'utils/storage';
-import { USER_EVENTS } from 'shared';
+import { UserEvents } from 'shared';
 
 export const UserContext = createContext<{
   userName: string | null;
@@ -15,7 +15,7 @@ const persistedUsername = getStoredUsername();
 export const UserProvider: FC = ({ children }) => {
   const [userName, setUsername] = useState<string | null>(persistedUsername);
   if (!userName) {
-    gameIO.emit(USER_EVENTS.UsernameMissing);
+    gameIO.emit(UserEvents.UsernameMissing);
   }
 
   useEffect(() => {
@@ -26,9 +26,9 @@ export const UserProvider: FC = ({ children }) => {
       setUsername(randomUsername);
       persistUsername(randomUsername);
     };
-    gameIO.on(USER_EVENTS.UsernameCreated, handleUsernameCreated);
+    gameIO.on(UserEvents.UsernameCreated, handleUsernameCreated);
     return () => {
-      gameIO.off(USER_EVENTS.UsernameCreated, handleUsernameCreated);
+      gameIO.off(UserEvents.UsernameCreated, handleUsernameCreated);
     };
   }, []);
 

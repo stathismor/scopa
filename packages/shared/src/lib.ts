@@ -1,6 +1,19 @@
-export const USER_EVENTS = {
+export const UserEvents = {
   UsernameCreated: 'username-created',
   UsernameMissing: 'username-missing',
 } as const;
+export type UserEvents = typeof UserEvents[keyof typeof UserEvents];
 
-export type UserEvents = typeof USER_EVENTS[keyof typeof USER_EVENTS];
+export const GameState = {
+  Joined: 'joined',
+  Failed: 'failed',
+  Pending: 'pending',
+} as const;
+export type GameState = typeof GameState[keyof typeof GameState];
+
+export const RoomEvents = {
+  Joining: 'join-room',
+  JoinSuccess: 'join-room-success',
+  JoinError: 'join-room-error',
+} as const;
+export type RoomEvents = typeof RoomEvents[keyof typeof RoomEvents];

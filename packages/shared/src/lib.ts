@@ -20,3 +20,12 @@ export const RoomEvents = {
   JoinError: 'join-room-error',
 } as const;
 export type RoomEvents = typeof RoomEvents[keyof typeof RoomEvents];
+
+export const Suit = {
+  Golds: 'Golds',
+  Cups: 'Cups',
+  Clubs: 'Clubs',
+  Swords: 'Swords',
+} as const;
+
+export type Suit = typeof Suit[keyof typeof Suit];

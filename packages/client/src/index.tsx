@@ -6,12 +6,14 @@ import { BrowserRouter } from 'react-router-dom';
 import { UserProvider } from 'components/UserContext';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { GlobalStyle } from 'GlobalStyle';
 
 ReactDOM.render(
   <StrictMode>
     <ThemeProvider theme={theme}>
       <BrowserRouter>
         <UserProvider>
+          <GlobalStyle />
           <App />
         </UserProvider>
       </BrowserRouter>

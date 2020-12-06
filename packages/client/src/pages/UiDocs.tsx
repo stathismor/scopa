@@ -12,11 +12,11 @@ export const UiDocs = () => {
         Decks with evelevations, 40 cards, 30, 20, 10, 0
       </Heading>
       <Flex sx={{ m: 3, gap: 3, flexWrap: 'wrap' }}>
-        <Deck cardLeft={40} title="40 cards" />
-        <Deck cardLeft={30} title="30 cards" />
-        <Deck cardLeft={20} title="20 cards" />
-        <Deck cardLeft={10} title="10 cards" />
-        <Deck cardLeft={0} title="Empty" />
+        <Deck cardNumber={40} title="40 cards" />
+        <Deck cardNumber={30} title="30 cards" />
+        <Deck cardNumber={20} title="20 cards" />
+        <Deck cardNumber={10} title="10 cards" />
+        <Deck cardNumber={0} title="Empty" />
       </Flex>
       <Heading as="h2" my={3}>
         {Suit.Golds}

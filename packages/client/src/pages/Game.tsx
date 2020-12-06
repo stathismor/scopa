@@ -60,7 +60,7 @@ export const Game = () => {
             </Flex>
             <Text>Opponents</Text>
             <Flex sx={{ m: 3, gap: 3, flexWrap: 'wrap', flex: 1, alignItems: 'center' }}>
-              <Deck cardLeft={30} title="30 cards" />
+              <Deck cardNumber={30} title="30 cards" />
               <Box pr={5} />
               {[
                 [1, Suit.Golds],

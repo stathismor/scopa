@@ -8,37 +8,37 @@ import { Link } from 'react-router-dom';
 import { Layout } from 'components/Layout';
 import { gameIO } from 'lib/socket';
 
-import { GameState, RoomEvents } from 'shared';
+import { RoomState, RoomEvent } from 'shared';
 
 export const Game = () => {
-  const [status, setStatus] = useState<GameState>(GameState.Pending);
+  const [status, setStatus] = useState<RoomState>(RoomState.Pending);
   const [errorMessage, setErrorMessage] = useState('');
   const { roomName } = useParams<{ roomName: string }>();
 
   useEffect(() => {
     const handleSuccess = () => {
-      setStatus(GameState.Joined);
+      setStatus(RoomState.Joined);
     };
 
     const handleError = (errorMessage: string) => {
-      setStatus(GameState.Failed);
+      setStatus(RoomState.Failed);
       setErrorMessage(errorMessage);
     };
-    gameIO.emit(RoomEvents.Joining, roomName);
+    gameIO.emit(RoomEvent.Joining, roomName);
 
-    gameIO.on(RoomEvents.JoinSuccess, handleSuccess);
-    gameIO.on(RoomEvents.JoinError, handleError);
+    gameIO.on(RoomEvent.JoinSuccess, handleSuccess);
+    gameIO.on(RoomEvent.JoinError, handleError);
 
     return () => {
-      gameIO.off(RoomEvents.JoinSuccess, handleSuccess);
-      gameIO.off(RoomEvents.JoinError, handleError);
+      gameIO.off(RoomEvent.JoinSuccess, handleSuccess);
+      gameIO.off(RoomEvent.JoinError, handleError);
     };
   }, [roomName]);
 
   switch (status) {
-    case GameState.Pending:
+    case RoomState.Pending:
       return <div>Pending</div>;
-    case GameState.Joined:
+    case RoomState.Joined:
       return (
         <Layout>
           <Flex sx={{ alignItems: 'center', gap: 2 }}>
@@ -73,7 +73,7 @@ export const Game = () => {
         </Layout>
       );
     default:
-    case GameState.Failed:
+    case RoomState.Failed:
       return <div>Error: {errorMessage}</div>;
   }
 };

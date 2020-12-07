@@ -6,10 +6,12 @@ export class Player {
   }
 }
 export class Room {
+  name: string;
   players: Player[];
 
-  constructor(players: Player[]) {
-    this.players = players;
+  constructor(name: string) {
+    this.name = name;
+    this.players = [];
   }
 }
 
@@ -22,7 +24,7 @@ export class Store {
 
   getRooms() {
     return Object.keys(this.rooms).map((name) => {
-      return { name, ...this.rooms[name] };
+      return { ...this.rooms[name] };
     });
   }
 
@@ -37,8 +39,8 @@ export class Store {
     return name in this.rooms;
   }
 
-  addRoom(name: string, room: Room) {
-    this.rooms[name] = room;
+  addRoom(room: Room) {
+    this.rooms[room.name] = room;
   }
 
   getPlayers(roomName: string) {

@@ -6,7 +6,7 @@ import { gameIO } from 'lib/socket';
 import { Layout } from 'components/Layout';
 import { getUsers } from 'lib/resources';
 import { useUserData } from 'components/UserContext';
-import { RoomEvents } from 'shared';
+import { RoomEvent } from 'shared';
 
 export const Lobby = () => {
   const [users, setUsers] = useState([]);
@@ -15,16 +15,16 @@ export const Lobby = () => {
   useEffect(() => {
     // Socket stuff
     const handleCreateRoomSuccess = (roomName: string) => {
-      console.log(RoomEvents.CreateSuccess, roomName);
+      console.log(RoomEvent.CreateSuccess, roomName);
       history.push(`/game/${roomName}`);
     };
-    gameIO.on(RoomEvents.CreateSuccess, handleCreateRoomSuccess);
+    gameIO.on(RoomEvent.CreateSuccess, handleCreateRoomSuccess);
 
     // HTTP stuff
     getUsers.then((data) => setUsers(data.data));
 
     return () => {
-      gameIO.off(RoomEvents.CreateSuccess, handleCreateRoomSuccess);
+      gameIO.off(RoomEvent.CreateSuccess, handleCreateRoomSuccess);
     };
   }, [history]);
 
@@ -39,7 +39,7 @@ export const Lobby = () => {
       ))}
 
       <Heading as="h2">Socket id: {gameIO.id}</Heading>
-      <Button onClick={() => gameIO.emit(RoomEvents.Create, username)}>Create a new room</Button>
+      <Button onClick={() => gameIO.emit(RoomEvent.Create, username)}>Create a new room</Button>
     </Layout>
   );
 };

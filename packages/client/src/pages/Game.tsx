@@ -7,44 +7,42 @@ import { Deck } from 'components/Cards/Deck';
 import { Link } from 'react-router-dom';
 import { Layout } from 'components/Layout';
 import { gameIO } from 'lib/socket';
-import { GameState, RoomEvents } from 'shared';
+import { RoomState, RoomEvent } from 'shared';
 import { Card as CardType } from 'utils/cardEngine';
 import { useUserData } from 'components/UserContext';
 import { GameTable } from 'components/GameTable';
 
 export const Game = () => {
-  const [status, setStatus] = useState<GameState>(GameState.Pending);
+  const [status, setStatus] = useState<RoomState>(RoomState.Pending);
   const [errorMessage, setErrorMessage] = useState('');
   const { roomName } = useParams<{ roomName: string }>();
   const { username } = useUserData();
 
   useEffect(() => {
     const handleSuccess = () => {
-      setStatus(GameState.Joined);
+      setStatus(RoomState.Joined);
     };
 
-
     const handleError = (errorMessage: string) => {
-      setStatus(GameState.Failed);
+      setStatus(RoomState.Failed);
       setErrorMessage(errorMessage);
     };
 
-    gameIO.emit(RoomEvents.Join, roomName, username);
+    gameIO.emit(RoomEvent.Join, roomName, username);
 
-    gameIO.on(RoomEvents.JoinSuccess, handleSuccess);
-    gameIO.on(RoomEvents.JoinError, handleError);
+    gameIO.on(RoomEvent.JoinSuccess, handleSuccess);
+    gameIO.on(RoomEvent.JoinError, handleError);
 
     return () => {
-      gameIO.off(RoomEvents.JoinSuccess, handleSuccess);
-      gameIO.off(RoomEvents.JoinError, handleError);
+      gameIO.off(RoomEvent.JoinSuccess, handleSuccess);
+      gameIO.off(RoomEvent.JoinError, handleError);
     };
-  }, [roomName]);
-
+  }, [roomName, username]);
 
   switch (status) {
-    case GameState.Pending:
+    case RoomState.Pending:
       return <div>Pending</div>;
-    case GameState.Joined:
+    case RoomState.Joined:
       return (
         <Layout>
           <Box sx={{ position: 'absolute', left: 0, top: 0 }}>
@@ -63,7 +61,7 @@ export const Game = () => {
             </Flex>
             <Text>Opponents</Text>
             <Flex sx={{ m: 3, gap: 3, flexWrap: 'wrap', flex: 1, alignItems: 'center' }}>
-              <Deck cardLeft={30} title="30 cards" />
+              <Deck cardNumber={30} title="30 cards" />
               <Box pr={5} />
               {[
                 [1, Suit.Golds],
@@ -88,7 +86,7 @@ export const Game = () => {
         </Layout>
       );
     default:
-    case GameState.Failed:
+    case RoomState.Failed:
       return <div>Error: {errorMessage}</div>;
   }
 };

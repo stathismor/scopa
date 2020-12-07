@@ -1,70 +1,53 @@
 import { Server as IOServer, Socket } from 'socket.io';
 
 import { Store, Room, Player } from './Store';
-import { RoomEvents } from 'shared';
+import { RoomEvent } from 'shared';
 import { generateRoomName, generateUsername } from './utils';
 
 const MAX_ROOM_SIZE = 2;
 
-export async function createRoom(io: IOServer, socket: Socket, store: Store, username: string) {
+export function createRoom(io: IOServer, socket: Socket, store: Store, username: string) {
   const roomName = generateRoomName();
 
-  // @ts-expect-error
-  // TS2445: Property 'rooms' is protected and only accessible within class 'Adapter' and its subclasses.
-  const room = await io.sockets.adapter.rooms.get(roomName);
-  if (room === undefined || room.size < MAX_ROOM_SIZE) {
-    await socket.join(roomName);
-
-    const player = new Player(username);
-    const newRoom = new Room([player]);
-    store.addRoom(roomName, newRoom);
-    io.sockets.emit('rooms', store.getRooms());
-    console.log('store.getRooms', store.getRooms())
-
-    // TODO: Use a common logging format
-    console.info(`[CREATE] Client created and joined room ${roomName}`);
-    socket.emit(RoomEvents.CreateSuccess, roomName);
-  } else {
-    console.warn(`[CREATE FAILED] Client denied join, as room ${roomName} is full`);
-    socket.emit(RoomEvents.CreateError, 'Room is full');
-  }
-}
-
-export async function joinRoom(
-  io: IOServer,
-  socket: Socket,
-  store: Store,
-  roomName: string,
-  username: string,
-) {
   const room = store.getRoom(roomName);
-  console.log('roomName', roomName)
-  console.log('username', username)
-  console.log('room', room)
-  console.log('store.getRooms', store.getRooms())
-  console.log('store.getPlayers(roomName).length', store.getPlayers(roomName).length)
+  if (room !== undefined) {
+    console.warn(`[CREATE FAILED] Room ${roomName} already exists`);
+    socket.emit(RoomEvent.CreateError, 'Room already exists');
+    return;
+  }
+
+  const newRoom = new Room(roomName);
+  store.addRoom(newRoom);
+  console.info(`[CREATE] Created room ${roomName}`);
+  socket.emit(RoomEvent.CreateSuccess, roomName);
+}
+
+export async function joinRoom(io: IOServer, socket: Socket, store: Store, roomName: string, username: string) {
+  const room = store.getRoom(roomName);
+
   if (room === undefined) {
-    if (store.roomExists(roomName)) {
-      await doJoinRoom(socket, store, roomName, username);
-    } else {
-      console.warn(`[JOIN FAILED] Room ${roomName} does not exist`);
-      socket.emit(RoomEvents.JoinError, 'Room does not exist');
-    }
-  } else if (store.getPlayers(roomName).length >= MAX_ROOM_SIZE) {
+    console.warn(`[JOIN FAILED] Room ${roomName} does not exist`);
+    socket.emit(RoomEvent.JoinError, 'Room does not exist');
+    return;
+  }
+
+  const player = room.players.find((player) => player.name === username);
+  if (player) {
+    await doJoinRoom(socket, store, roomName, player);
+  } else if (room.players.length >= MAX_ROOM_SIZE) {
     console.warn(`[JOIN FAILED] Room ${roomName} is full`);
-    socket.emit(RoomEvents.JoinError, 'Room is full');
+    socket.emit(RoomEvent.JoinError, 'Room is full');
   } else {
-    await doJoinRoom(socket, store, roomName, username);
+    const newPlayer = new Player(username);
+    store.addPlayer(roomName, newPlayer);
+
+    await doJoinRoom(socket, store, roomName, newPlayer);
   }
 }
 
-async function doJoinRoom(socket: Socket, store: Store, roomName: string, username: string) {
+async function doJoinRoom(socket: Socket, store: Store, roomName: string, player: Player) {
   await socket.join(roomName);
-  const newUsername = username;
-
-  const player = new Player(newUsername);
-  store.addPlayer(roomName, player);
 
   console.info(`[JOIN] Client joined room ${roomName}`);
-  socket.emit(RoomEvents.JoinSuccess);
+  socket.emit(RoomEvent.JoinSuccess);
 }

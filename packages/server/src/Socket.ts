@@ -24,12 +24,12 @@ export const createSocket = (server: HTTPServer) => {
       createUsername(socket, store);
     });
 
-    socket.on(RoomEvents.Create, async () => {
-      await createRoom(io, socket, store);
+    socket.on(RoomEvents.Create, async (username: string) => {
+      await createRoom(io, socket, store, username);
     });
 
-    socket.on(RoomEvents.Joining, async (roomName) => {
-      await joinRoom(io, socket, store, roomName);
+    socket.on(RoomEvents.Join, async (roomName: string, username: string) => {
+      await joinRoom(io, socket, store, roomName, username);
     });
   });
 };

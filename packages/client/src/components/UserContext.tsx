@@ -6,15 +6,15 @@ import { getStoredUsername, persistUsername } from 'utils/storage';
 import { UserEvents } from 'shared';
 
 export const UserContext = createContext<{
-  userName: string | null;
+  username: string | null;
 }>({
-  userName: null,
+  username: null,
 });
 
 const persistedUsername = getStoredUsername();
 export const UserProvider: FC = ({ children }) => {
-  const [userName, setUsername] = useState<string | null>(persistedUsername);
-  if (!userName) {
+  const [username, setUsername] = useState<string | null>(persistedUsername);
+  if (!username) {
     gameIO.emit(UserEvents.UsernameMissing);
   }
 
@@ -32,7 +32,7 @@ export const UserProvider: FC = ({ children }) => {
     };
   }, []);
 
-  return <UserContext.Provider value={{ userName }}>{children}</UserContext.Provider>;
+  return <UserContext.Provider value={{ username }}>{username ? children : 'Pending ...'}</UserContext.Provider>;
 };
 
 export const useUserData = () => {

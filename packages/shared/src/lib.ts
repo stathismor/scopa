@@ -15,7 +15,7 @@ export const RoomEvents = {
   Create: 'create-room',
   CreateSuccess: 'create-room-success',
   CreateError: 'create-room-error',
-  Joining: 'join-room',
+  Join: 'join-room',
   JoinSuccess: 'join-room-success',
   JoinError: 'join-room-error',
 } as const;

@@ -22,12 +22,6 @@ export class Store {
     this.rooms = {};
   }
 
-  getRooms() {
-    return Object.keys(this.rooms).map((name) => {
-      return { ...this.rooms[name] };
-    });
-  }
-
   getRoom(name: string) {
     if (name in this.rooms) {
       return this.rooms[name];
@@ -35,16 +29,8 @@ export class Store {
     return undefined;
   }
 
-  roomExists(name: string) {
-    return name in this.rooms;
-  }
-
   addRoom(room: Room) {
     this.rooms[room.name] = room;
-  }
-
-  getPlayers(roomName: string) {
-    return this.rooms[roomName].players;
   }
 
   addPlayer(roomName: string, player: Player) {

@@ -2,7 +2,7 @@ import { Server as IOServer, Socket } from 'socket.io';
 
 import { Store, Room, Player } from './Store';
 import { RoomEvent } from 'shared';
-import { generateRoomName, generateUsername } from './utils';
+import { generateRoomName } from './utils';
 
 const MAX_ROOM_SIZE = 2;
 

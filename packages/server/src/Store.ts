@@ -22,11 +22,8 @@ export class Store {
     this.rooms = {};
   }
 
-  getRoom(name: string) {
-    if (name in this.rooms) {
-      return this.rooms[name];
-    }
-    return undefined;
+  getRoom(roomName: string) {
+    return this.rooms[roomName];
   }
 
   addRoom(room: Room) {

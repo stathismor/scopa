@@ -16,6 +16,7 @@ export const Game = () => {
   const [status, setStatus] = useState<RoomState>(RoomState.Pending);
   const [errorMessage, setErrorMessage] = useState('');
   const { roomName } = useParams<{ roomName: string }>();
+  const { username } = useUserData();
 
   useEffect(() => {
     const handleSuccess = () => {
@@ -26,7 +27,8 @@ export const Game = () => {
       setStatus(RoomState.Failed);
       setErrorMessage(errorMessage);
     };
-    gameIO.emit(RoomEvent.Joining, roomName);
+
+    gameIO.emit(RoomEvent.Join, roomName, username);
 
     gameIO.on(RoomEvent.JoinSuccess, handleSuccess);
     gameIO.on(RoomEvent.JoinError, handleError);
@@ -35,8 +37,7 @@ export const Game = () => {
       gameIO.off(RoomEvent.JoinSuccess, handleSuccess);
       gameIO.off(RoomEvent.JoinError, handleError);
     };
-  }, [roomName]);
-  const { userName } = useUserData();
+  }, [roomName, username]);
 
   switch (status) {
     case RoomState.Pending:
@@ -71,7 +72,7 @@ export const Game = () => {
                 <Card key={`${c[0]}__${c[1]}`} card={c as CardType} />
               ))}
             </Flex>
-            <Text> You ({userName})</Text>
+            <Text> You ({username})</Text>
             <Flex sx={{ m: 3, gap: 3, flexWrap: 'wrap', marginBottom: '-3vw' }}>
               {[
                 [5, Suit.Golds],

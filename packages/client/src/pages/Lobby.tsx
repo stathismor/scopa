@@ -28,18 +28,18 @@ export const Lobby = () => {
     };
   }, [history]);
 
-  const { userName } = useUserData();
+  const { username } = useUserData();
 
   return (
     <Layout>
       <Heading as="h1">Scopa</Heading>
-      <p>Welcome {userName}</p>
+      <p>Welcome {username}</p>
       {users.map((user) => (
         <p key={user}>{user}</p>
       ))}
 
       <Heading as="h2">Socket id: {gameIO.id}</Heading>
-      <Button onClick={() => gameIO.emit(RoomEvent.Create)}>Create a new room</Button>
+      <Button onClick={() => gameIO.emit(RoomEvent.Create, username)}>Create a new room</Button>
     </Layout>
   );
 };

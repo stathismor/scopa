@@ -104,7 +104,7 @@ export const Game = () => {
           return (
             <CardWrapper
               key={key}
-              moving={needsToMove}
+              isMoving={needsToMove}
               sx={cardWrapper(isActive)}
               onClick={(e: MouseEvent<HTMLElement>) => {
                 e.stopPropagation();
@@ -127,7 +127,7 @@ export const Game = () => {
           return (
             <CardWrapper
               key={key}
-              moving={movingCards.includes(key)}
+              isMoving={movingCards.includes(key)}
               sx={playerCardWrapper(activePlayerCard === key)}
               onClick={() => togglePlayerActiveCard((state) => (state === key ? null : key))}
             >

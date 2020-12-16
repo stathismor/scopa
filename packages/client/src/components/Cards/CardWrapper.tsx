@@ -2,19 +2,18 @@ import { PropsWithChildren, MouseEvent, useRef } from 'react';
 import { Box } from 'theme-ui';
 import { useSpring, animated, config } from 'react-spring';
 
-type CardWrapperProps = PropsWithChildren<{ onClick: (e: MouseEvent<HTMLElement>) => void; moving: boolean }>;
+type CardWrapperProps = PropsWithChildren<{ onClick: (e: MouseEvent<HTMLElement>) => void; isMoving: boolean }>;
 
 const INITIAL_POSITION = { y: 0, x: 0 };
 
-export const CardWrapper = ({ moving, ...rest }: CardWrapperProps) => {
+export const CardWrapper = ({ isMoving, ...rest }: CardWrapperProps) => {
   const ref = useRef<HTMLDivElement | null>(null);
 
   const { x, y } = ref.current?.getBoundingClientRect() ?? INITIAL_POSITION;
   const { xys } = useSpring({
     config: config.slow,
-    xys: moving ? [window.innerWidth / 2 - x, window.innerHeight - y, 0.9] : [0, 0, 1],
+    xys: isMoving ? [window.innerWidth / 2 - x, window.innerHeight - y, 0.9] : [0, 0, 1],
   });
-  console.log(moving, xys);
   return (
     <animated.div
       style={{

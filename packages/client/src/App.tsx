@@ -1,5 +1,5 @@
 import { Lobby } from 'pages/Lobby';
-import { Game } from 'pages/Game';
+import { Room } from 'pages/Room';
 import { UiDocs } from 'pages/UiDocs';
 import { Route, Switch } from 'react-router-dom';
 
@@ -10,7 +10,7 @@ function App() {
         <Lobby />
       </Route>
       <Route path="/game/:roomName">
-        <Game />
+        <Room />
       </Route>
       <Route path="/docs">
         <UiDocs />

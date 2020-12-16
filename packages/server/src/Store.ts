@@ -38,7 +38,7 @@ export class Store {
     this.rooms[roomName].players.push(player);
   }
 
-  getCurrentState(roomName: string) {
+  getCurrentState(roomName: string): GameState | undefined {
     const room = this.getRoom(roomName);
 
     if (room.states.length > 0) {

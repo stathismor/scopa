@@ -1,5 +1,3 @@
-import { range } from 'lodash';
-
 export const UserEvent = {
   UsernameCreated: 'username-created',
   UsernameMissing: 'username-missing',
@@ -40,27 +38,19 @@ export type Suit = typeof Suit[keyof typeof Suit];
 
 export type Card = { value: number; suit: Suit };
 
+export type Deck = readonly Card[];
+
 export type PlayerState = {
   username: string;
-  hand: Card[];
-  captured: Card[];
-  scopa: Card[];
+  hand: Deck;
+  captured: Deck;
+  scopa: Deck;
 };
 
 export type GameState = {
   status: string | undefined;
   activePlayer: string | undefined;
-  deck: Card[];
-  table: Card[];
+  deck: Deck;
+  table: Deck;
   players: PlayerState[];
 };
-
-export type Deck = readonly Card[];
-
-export function generateDeck(): Deck {
-  const suits = [Suit.Golds, Suit.Cups, Suit.Clubs, Suit.Swords];
-
-  return suits
-    .map((suit) => range(1, 11).map<Card>((value) => ({ value, suit })))
-    .flat();
-}

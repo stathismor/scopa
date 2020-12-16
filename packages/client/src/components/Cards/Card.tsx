@@ -1,8 +1,8 @@
 import React from 'react';
 import { Box } from 'theme-ui';
 import { padStart, startCase } from 'lodash';
-import { Card as CardType } from 'utils/cardEngine';
-import { Suit } from 'shared';
+
+import { Suit, Card as CardType } from 'shared';
 import back from 'images/back.jpg';
 import { baseCard } from './style';
 
@@ -19,11 +19,11 @@ const VALUES: { [key: number]: string } = {
   10: 'King',
 };
 
-function name([value, suit]: CardType) {
+function name({ value, suit }: CardType) {
   return `${VALUES[value]} of ${Suit[startCase(suit)]}`;
 }
 
-function imgUrl([value, suit]: CardType) {
+function imgUrl({ value, suit }: CardType) {
   return require(`images/${suit.toLowerCase()}/${padStart(`${value}`, 2, '0')}.jpg`).default;
 }
 

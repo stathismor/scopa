@@ -22,32 +22,32 @@ export const UiDocs = () => {
         {Suit.Golds}
       </Heading>
       <Flex sx={{ m: 3, gap: 3, flexWrap: 'wrap' }}>
-        {range(1, 11).map((r) => (
-          <Card key={r} card={[r, Suit.Golds]} />
+        {range(1, 11).map((value) => (
+          <Card key={value} card={{ value, suit: Suit.Golds }} />
         ))}
       </Flex>
       <Heading as="h2" my={3}>
         {Suit.Clubs}
       </Heading>
       <Flex sx={{ m: 3, gap: 3, flexWrap: 'wrap' }}>
-        {range(1, 11).map((r) => (
-          <Card key={r} card={[r, Suit.Clubs]} />
+        {range(1, 11).map((value) => (
+          <Card key={value} card={{ value, suit: Suit.Clubs }} />
         ))}
       </Flex>
       <Heading as="h2" my={3}>
         {Suit.Cups}
       </Heading>
       <Flex sx={{ m: 3, gap: 3, flexWrap: 'wrap' }}>
-        {range(1, 11).map((r) => (
-          <Card key={r} card={[r, Suit.Cups]} />
+        {range(1, 11).map((value) => (
+          <Card key={value} card={{ value, suit: Suit.Cups }} />
         ))}
       </Flex>
       <Heading as="h2" my={3}>
         {Suit.Swords}
       </Heading>
       <Flex sx={{ m: 3, gap: 3, flexWrap: 'wrap' }}>
-        {range(1, 11).map((r) => (
-          <Card key={r} card={[r, Suit.Swords]} />
+        {range(1, 11).map((value) => (
+          <Card key={value} card={{ value, suit: Suit.Swords }} />
         ))}
       </Flex>
     </Layout>

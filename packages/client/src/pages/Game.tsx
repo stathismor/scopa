@@ -10,11 +10,9 @@ import { Link } from 'react-router-dom';
 import { Layout } from 'components/Layout';
 import { gameIO } from 'lib/socket';
 import { RoomState, RoomEvent } from 'shared';
-import { Card as CardType, deck } from 'utils/cardEngine';
 import { useUserData } from 'components/UserContext';
 import { GameTable } from 'components/GameTable';
-import { shuffle, sum } from 'lodash';
-import { Suit } from 'shared';
+import { GameEvent, GameState, Card as CardType } from 'shared';
 
 type CardWrapperProps = PropsWithChildren<{ onClick: (e: MouseEvent<HTMLElement>) => void; isActive: boolean }>;
 const CardTableWrapper = ({ isActive, ...props }: CardWrapperProps) => (
@@ -53,38 +51,20 @@ const CardWrapper = (props: CardWrapperProps) => (
   />
 );
 
-const useCardState = () => {
-  const shuffledDeck = shuffle(deck());
-  const opponent = shuffledDeck.splice(0, 3);
-  const player = shuffledDeck.splice(0, 3);
-  const table = shuffledDeck.splice(0, 4);
-  const [cardState, setCardState] = useState({
-    shuffledDeck,
-    opponent,
-    player,
-    table,
-    opponentStack: [] as CardType[],
-    playerStack: [] as CardType[],
-  });
-  return {
-    ...cardState,
-    setCardState,
-  };
-};
-
 const cardKey = (card: CardType) => `${card[0]}__${card[1]}`;
-const fromCardKey = (cardKey: string): CardType => {
-  const [num, suit] = cardKey.split('__');
-  return [Number(num), suit as Suit];
-};
-
-const fromCardKeys = (cardKeys: string[]): CardType[] => cardKeys.map(fromCardKey);
 
 export const Game = () => {
   const [status, setStatus] = useState<RoomState>(RoomState.Pending);
   const [errorMessage, setErrorMessage] = useState('');
   const [activePlayerCard, togglePlayerActive] = useState<string | null>(null);
   const [activeTableCards, toggleTableActive] = useState<string[]>([]);
+  const [gameState, setGameState] = useState<GameState>({
+    status: undefined,
+    activePlayer: undefined,
+    deck: [],
+    table: [],
+    players: [],
+  });
   const { roomName } = useParams<{ roomName: string }>();
   const { username } = useUserData();
 
@@ -98,10 +78,15 @@ export const Game = () => {
       setErrorMessage(errorMessage);
     };
 
+    const handleCurrentGameState = (gameState: GameState) => {
+      setGameState(gameState);
+    };
+
     gameIO.emit(RoomEvent.Join, roomName, username);
 
     gameIO.on(RoomEvent.JoinSuccess, handleSuccess);
     gameIO.on(RoomEvent.JoinError, handleError);
+    gameIO.on(GameEvent.CurrentState, handleCurrentGameState);
 
     return () => {
       gameIO.off(RoomEvent.JoinSuccess, handleSuccess);
@@ -109,35 +94,19 @@ export const Game = () => {
     };
   }, [roomName, username]);
 
-  const { setCardState, shuffledDeck, opponent, player, table, playerStack, opponentStack } = useCardState();
+  const { activePlayer, deck, table, players } = gameState;
 
   const playCardOnTable = () => {
-    if (activePlayerCard) {
-      setCardState((state) => ({
-        ...state,
-        player: state.player.filter((c) => cardKey(c) !== activePlayerCard),
-        table: [...state.table, fromCardKey(activePlayerCard)],
-      }));
-      togglePlayerActive(null);
-    }
+    console.log('Need to emit update to server here');
   };
 
-  useEffect(() => {
-    if (activePlayerCard && activeTableCards) {
-      const playerCardNumber = fromCardKey(activePlayerCard)[0];
-      const tableCardsSum = sum(activeTableCards.map((c) => fromCardKey(c)[0]));
-      if (playerCardNumber === tableCardsSum) {
-        setCardState((state) => ({
-          ...state,
-          player: state.player.filter((c) => cardKey(c) !== activePlayerCard),
-          table: state.table.filter((c) => !activeTableCards.includes(cardKey(c))),
-          playerStack: [...state.playerStack, ...fromCardKeys(activeTableCards), fromCardKey(activePlayerCard)],
-        }));
-        togglePlayerActive(null);
-        toggleTableActive([]);
-      }
-    }
-  }, [activePlayerCard, activeTableCards, setCardState]);
+  const opponent = players.filter((player) => player.username !== activePlayer)[0];
+  const opponentCaptured = opponent?.captured || [];
+  const opponentHand = opponent?.hand || [];
+
+  const player = players.filter((player) => player.username === activePlayer)[0];
+  const playerCaptured = player?.captured || [];
+  const playerHand = player?.hand || [];
 
   switch (status) {
     case RoomState.Pending:
@@ -151,8 +120,8 @@ export const Game = () => {
 
           <GameTable>
             <Flex sx={{ m: 3, gap: 3, flexWrap: 'wrap', marginTop: '-7vw' }}>
-              <Deck cardNumber={opponentStack.length} />
-              {opponent.map((c) => (
+              <Deck cardNumber={opponentCaptured.length} />
+              {opponentHand.map((c) => (
                 <Card key={cardKey(c)} card={c} faceDown />
               ))}
             </Flex>
@@ -162,7 +131,7 @@ export const Game = () => {
               role="button"
               onClick={playCardOnTable}
             >
-              <Deck cardNumber={shuffledDeck.length} title={`${shuffledDeck.length} cards left`} />
+              <Deck cardNumber={deck.length} title={`${deck.length} cards left`} />
               <Box pr={5} />
               {table.map((c) => {
                 const key = cardKey(c);
@@ -183,11 +152,11 @@ export const Game = () => {
                 );
               })}
             </Flex>
-            <Text> You ({username})</Text>
+            <Text> You ({activePlayer})</Text>
             <Flex sx={{ m: 3, gap: 3, flexWrap: 'wrap', marginBottom: '-3vw' }}>
-              <Deck cardNumber={playerStack.length} />
+              <Deck cardNumber={playerCaptured.length} />
 
-              {player.map((c) => {
+              {playerHand.map((c) => {
                 const key = cardKey(c);
                 return (
                   <CardWrapper

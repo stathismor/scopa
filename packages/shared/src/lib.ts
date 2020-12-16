@@ -55,18 +55,12 @@ export type GameState = {
   players: PlayerState[];
 };
 
-export type Deck = Card[];
+export type Deck = readonly Card[];
 
 export function generateDeck(): Deck {
   const suits = [Suit.Golds, Suit.Cups, Suit.Clubs, Suit.Swords];
-  const values = range(1, 11);
-  const deck: Deck = [];
 
-  suits.forEach((suit) => {
-    values.forEach((value) => {
-      deck.push({ value, suit });
-    });
-  });
-
-  return deck;
+  return suits
+    .map((suit) => range(1, 11).map<Card>((value) => ({ value, suit })))
+    .flat();
 }

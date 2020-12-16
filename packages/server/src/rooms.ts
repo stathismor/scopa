@@ -1,8 +1,8 @@
 import { Server as IOServer, Socket } from 'socket.io';
 
 import { Store, Room, Player } from './Store';
-import { RoomEvent } from 'shared';
-import { generateRoomName } from './utils';
+import { RoomEvent, GameEvent } from 'shared';
+import { generateRoomName, generateGameState } from './utils';
 
 const MAX_ROOM_SIZE = 2;
 
@@ -33,7 +33,7 @@ export async function joinRoom(io: IOServer, socket: Socket, store: Store, roomN
 
   const player = room.players.find((player) => player.name === username);
   if (player) {
-    await doJoinRoom(socket, store, roomName, player);
+    await doJoinRoom(socket, store, room, player);
   } else if (room.players.length >= MAX_ROOM_SIZE) {
     console.warn(`[JOIN FAILED] Room ${roomName} is full`);
     socket.emit(RoomEvent.JoinError, 'Room is full');
@@ -41,13 +41,26 @@ export async function joinRoom(io: IOServer, socket: Socket, store: Store, roomN
     const newPlayer = new Player(username);
     store.addPlayer(roomName, newPlayer);
 
-    await doJoinRoom(socket, store, roomName, newPlayer);
+    await doJoinRoom(socket, store, room, newPlayer);
   }
 }
 
-async function doJoinRoom(socket: Socket, store: Store, roomName: string, player: Player) {
-  await socket.join(roomName);
+async function doJoinRoom(socket: Socket, store: Store, room: Room, player: Player) {
+  await socket.join(room.name);
 
-  console.info(`[JOIN] Client joined room ${roomName}`);
+  console.info(`[JOIN] Client joined room ${room.name}`);
   socket.emit(RoomEvent.JoinSuccess);
+
+  // If room is full, emit current state
+  if (room.players.length === MAX_ROOM_SIZE) {
+    let state = store.getCurrentState(room.name);
+    if (!state) {
+      const playerNames = room.players.map((player) => player.name);
+      // HACK: Temporary initial state
+      state = generateGameState(playerNames);
+      store.addGameState(room.name, state);
+    }
+
+    socket.emit(GameEvent.CurrentState, state);
+  }
 }

@@ -1,3 +1,5 @@
+import { GameState } from 'shared';
+
 export class Player {
   name: string;
 
@@ -8,10 +10,12 @@ export class Player {
 export class Room {
   name: string;
   players: Player[];
+  states: GameState[];
 
   constructor(name: string) {
     this.name = name;
     this.players = [];
+    this.states = [];
   }
 }
 
@@ -32,5 +36,20 @@ export class Store {
 
   addPlayer(roomName: string, player: Player) {
     this.rooms[roomName].players.push(player);
+  }
+
+  getCurrentState(roomName: string): GameState | undefined {
+    const room = this.getRoom(roomName);
+
+    if (room.states.length > 0) {
+      return undefined;
+    }
+
+    return room.states[room.states.length - 1];
+  }
+
+  addGameState(roomName: string, state: GameState) {
+    const room = this.getRoom(roomName);
+    room.states.push(state);
   }
 }

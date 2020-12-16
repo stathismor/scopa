@@ -1,21 +1,26 @@
 /** @jsx jsx */
 /** @jsxRuntime classic */
 import { MouseEvent, useEffect, useState } from 'react';
-import { Box, Flex, Text, jsx } from 'theme-ui';
+import { Box, Flex, jsx } from 'theme-ui';
 import { Card } from 'components/Cards/Card';
 import { Deck } from 'components/Cards/Deck';
 import { gameIO } from 'lib/socket';
 import { useUserData } from 'components/UserContext';
 import { GameTable } from 'components/GameTable';
-import { GameEvent, GameState, Card as CardType } from 'shared';
-import { cardWrapper, playerCardWrapper } from 'components/Cards/style';
+import { GameEvent, GameState, GameStatus } from 'shared';
+import { cardWrapper } from 'components/Cards/style';
 import { CardWrapper } from 'components/Cards/CardWrapper';
 import { sum } from 'lodash';
+import { cardKey, fromCardKey } from 'utils/cards';
+import { Opponent } from '../components/Players/Opponent';
+import { Player } from '../components/Players/Player';
 
-const cardKey = (card: CardType) => `${card.value}__${card.suit}`;
-const fromCardKey = (cardKey: string) => {
-  const [num, suit] = cardKey.split('__');
-  return { value: Number(num), suit } as CardType;
+const INITIAL_STATE = {
+  status: GameStatus.Waiting,
+  activePlayer: null,
+  deck: [],
+  table: [],
+  players: [],
 };
 
 export const Game = () => {
@@ -23,16 +28,11 @@ export const Game = () => {
   const [activeCardsOnTable, toggleActiveCardsOnTable] = useState<string[]>([]);
   const [movingCards, toggleMovingCards] = useState<string[]>([]);
   const { username } = useUserData();
-  const [gameState, setGameState] = useState<GameState>({
-    status: undefined,
-    activePlayer: undefined,
-    deck: [],
-    table: [],
-    players: [],
-  });
+  const [gameState, setGameState] = useState<GameState>(INITIAL_STATE);
 
   useEffect(() => {
     const handleCurrentGameState = (gameState: GameState) => {
+      console.log(gameState);
       setGameState(gameState);
     };
 
@@ -66,23 +66,13 @@ export const Game = () => {
     }
   };
 
-  const opponent = players.filter((player) => player.username !== activePlayer)[0];
-  const opponentCaptured = opponent?.captured || [];
-  const opponentHand = opponent?.hand || [];
-
-  const player = players.filter((player) => player.username === activePlayer)[0];
-  const playerCaptured = player?.captured || [];
-  const playerHand = player?.hand || [];
-
+  // TODO figure out what to do when more than 2 players
+  const [opponent] = players.filter((player) => player.username !== username);
+  const [player] = players.filter((player) => player.username === username);
+  console.log(opponent, player, players)
   return (
     <GameTable>
-      <Flex sx={{ m: 3, gap: 3, flexWrap: 'wrap', marginTop: '-7vw' }}>
-        <Deck cardNumber={opponentCaptured.length} />
-        {opponentHand.map((c) => (
-          <Card key={cardKey(c)} card={c} faceDown />
-        ))}
-      </Flex>
-      <Text>Opponents</Text>
+      <Opponent player={opponent} sx={{ transform: 'rotate(180deg)' }} />
       <Flex
         sx={{ m: 3, gap: 3, flexWrap: 'wrap', flex: 1, alignItems: 'center' }}
         role="button"
@@ -111,24 +101,13 @@ export const Game = () => {
           );
         })}
       </Flex>
-      <Text> You ({username})</Text>
-      <Flex sx={{ m: 3, gap: 3, flexWrap: 'wrap', marginBottom: '-3vw' }}>
-        <Deck cardNumber={playerCaptured.length} />
-
-        {playerHand.map((c) => {
-          const key = cardKey(c);
-          return (
-            <CardWrapper
-              key={key}
-              isMoving={movingCards.includes(key)}
-              sx={playerCardWrapper(activePlayerCard === key)}
-              onClick={() => togglePlayerActiveCard((state) => (state === key ? null : key))}
-            >
-              <Card card={c} />
-            </CardWrapper>
-          );
-        })}
-      </Flex>
+      <Player
+        player={player}
+        activePlayer={activePlayer}
+        movingCards={movingCards}
+        togglePlayerActiveCard={togglePlayerActiveCard}
+        activePlayerCard={activePlayerCard}
+      />
     </GameTable>
   );
 };

@@ -4,74 +4,50 @@ import { MouseEvent, useEffect, useState } from 'react';
 import { Box, Flex, Text, jsx } from 'theme-ui';
 import { Card } from 'components/Cards/Card';
 import { Deck } from 'components/Cards/Deck';
-import { Card as CardType, deck } from 'utils/cardEngine';
+import { gameIO } from 'lib/socket';
 import { useUserData } from 'components/UserContext';
 import { GameTable } from 'components/GameTable';
-import { shuffle, sum } from 'lodash';
-import { Suit } from 'shared';
+import { GameEvent, GameState, Card as CardType } from 'shared';
 import { cardWrapper, playerCardWrapper } from 'components/Cards/style';
 import { CardWrapper } from 'components/Cards/CardWrapper';
+import { sum } from 'lodash';
 
-const useCardState = () => {
-  const shuffledDeck = shuffle(deck());
-  const opponent = shuffledDeck.splice(0, 3);
-  const player = shuffledDeck.splice(0, 3);
-  const table = shuffledDeck.splice(0, 4);
-  const [cardState, setCardState] = useState({
-    shuffledDeck,
-    opponent,
-    player,
-    table,
-    opponentStack: [] as CardType[],
-    playerStack: [] as CardType[],
-  });
-  return {
-    ...cardState,
-    setCardState,
-  };
-};
-
-const cardKey = (card: CardType) => `${card[0]}__${card[1]}`;
-const fromCardKey = (cardKey: string): CardType => {
+const cardKey = (card: CardType) => `${card.value}__${card.suit}`;
+const fromCardKey = (cardKey: string) => {
   const [num, suit] = cardKey.split('__');
-  return [Number(num), suit as Suit];
+  return { value: Number(num), suit } as CardType;
 };
-
-const fromCardKeys = (cardKeys: string[]): CardType[] => cardKeys.map(fromCardKey);
 
 export const Game = () => {
   const [activePlayerCard, togglePlayerActiveCard] = useState<string | null>(null);
   const [activeCardsOnTable, toggleActiveCardsOnTable] = useState<string[]>([]);
   const [movingCards, toggleMovingCards] = useState<string[]>([]);
   const { username } = useUserData();
+  const [gameState, setGameState] = useState<GameState>({
+    status: undefined,
+    activePlayer: undefined,
+    deck: [],
+    table: [],
+    players: [],
+  });
 
-  const { setCardState, shuffledDeck, opponent, player, table, playerStack, opponentStack } = useCardState();
+  useEffect(() => {
+    const handleCurrentGameState = (gameState: GameState) => {
+      setGameState(gameState);
+    };
 
-  const playCardOnTable = () => {
-    if (activePlayerCard) {
-      setCardState((state) => ({
-        ...state,
-        player: state.player.filter((c) => cardKey(c) !== activePlayerCard),
-        table: [...state.table, fromCardKey(activePlayerCard)],
-      }));
-      togglePlayerActiveCard(null);
-    }
-  };
+    gameIO.on(GameEvent.CurrentState, handleCurrentGameState);
+  }, []);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (activePlayerCard && activeCardsOnTable) {
-      const playerCardNumber = fromCardKey(activePlayerCard)[0];
-      const tableCardsSum = sum(activeCardsOnTable.map((c) => fromCardKey(c)[0]));
+      const { value: playerCardNumber } = fromCardKey(activePlayerCard);
+      const tableCardsSum = sum(activeCardsOnTable.map((c) => fromCardKey(c).value));
       if (playerCardNumber === tableCardsSum) {
         toggleMovingCards([activePlayerCard, ...activeCardsOnTable]);
         timer = setTimeout(() => {
-          setCardState((state) => ({
-            ...state,
-            player: state.player.filter((c) => cardKey(c) !== activePlayerCard),
-            table: state.table.filter((c) => !activeCardsOnTable.includes(cardKey(c))),
-            playerStack: [...state.playerStack, ...fromCardKeys(activeCardsOnTable), fromCardKey(activePlayerCard)],
-          }));
+          console.log('Need to emit an event: Cards are going to playerCaptured');
           togglePlayerActiveCard(null);
           toggleActiveCardsOnTable([]);
           toggleMovingCards([]);
@@ -79,13 +55,30 @@ export const Game = () => {
       }
     }
     return () => clearTimeout(timer);
-  }, [activePlayerCard, activeCardsOnTable, setCardState]);
+  }, [activeCardsOnTable, activePlayerCard]);
+
+  const { activePlayer, deck, table, players } = gameState;
+
+  const playCardOnTable = () => {
+    if (activePlayerCard) {
+      console.log('Need to emit: Card is going to the table');
+      togglePlayerActiveCard(null);
+    }
+  };
+
+  const opponent = players.filter((player) => player.username !== activePlayer)[0];
+  const opponentCaptured = opponent?.captured || [];
+  const opponentHand = opponent?.hand || [];
+
+  const player = players.filter((player) => player.username === activePlayer)[0];
+  const playerCaptured = player?.captured || [];
+  const playerHand = player?.hand || [];
 
   return (
     <GameTable>
       <Flex sx={{ m: 3, gap: 3, flexWrap: 'wrap', marginTop: '-7vw' }}>
-        <Deck cardNumber={opponentStack.length} />
-        {opponent.map((c) => (
+        <Deck cardNumber={opponentCaptured.length} />
+        {opponentHand.map((c) => (
           <Card key={cardKey(c)} card={c} faceDown />
         ))}
       </Flex>
@@ -95,7 +88,7 @@ export const Game = () => {
         role="button"
         onClick={playCardOnTable}
       >
-        <Deck cardNumber={shuffledDeck.length} title={`${shuffledDeck.length} cards left`} />
+        <Deck cardNumber={deck.length} title={`${deck.length} cards left`} />
         <Box pr={5} />
         {table.map((c) => {
           const key = cardKey(c);
@@ -120,9 +113,9 @@ export const Game = () => {
       </Flex>
       <Text> You ({username})</Text>
       <Flex sx={{ m: 3, gap: 3, flexWrap: 'wrap', marginBottom: '-3vw' }}>
-        <Deck cardNumber={playerStack.length} />
+        <Deck cardNumber={playerCaptured.length} />
 
-        {player.map((c) => {
+        {playerHand.map((c) => {
           const key = cardKey(c);
           return (
             <CardWrapper

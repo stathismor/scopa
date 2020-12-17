@@ -1,6 +1,6 @@
 import { Server as HTTPServer } from 'http';
 import { Server as IOServer, Socket } from 'socket.io';
-import { UserEvent, RoomEvent } from 'shared';
+import { UserEvent, RoomEvent, GameEvent, GameState } from 'shared';
 import { createUsername } from './users';
 import { createRoom, joinRoom } from './rooms';
 import { Store } from './Store';
@@ -30,6 +30,10 @@ export const createSocket = (server: HTTPServer) => {
 
     socket.on(RoomEvent.Join, async (roomName: string, username: string) => {
       await joinRoom(io, socket, store, roomName, username);
+    });
+
+    socket.on(GameEvent.UpdateState, (gameState: GameState) => {
+      socket.emit(GameEvent.CurrentState, gameState);
     });
   });
 };

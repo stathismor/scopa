@@ -52,7 +52,7 @@ async function doJoinRoom(io: IOServer, socket: Socket, store: Store, room: Room
   socket.emit(RoomEvent.JoinSuccess);
 
   // If room is full, emit current state
-  if (room.players.length === MAX_ROOM_SIZE) {
+  if (room.players.length >= MAX_ROOM_SIZE) {
     let state = store.getCurrentState(room.name);
     if (!state) {
       const playerNames = room.players.map((player) => player.name);

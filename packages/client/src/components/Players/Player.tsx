@@ -22,13 +22,8 @@ export const Player = ({
   activePlayerCard,
   ...rest
 }: Props & BoxProps) => {
-  console.log(player)
   if (!player) {
-    return (
-      <Text>
-        Loading ...
-      </Text>
-    );
+    return <Text>Loading ...</Text>;
   }
   const { username, captured, hand } = player;
   return (

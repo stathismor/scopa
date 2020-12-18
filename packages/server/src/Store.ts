@@ -41,7 +41,7 @@ export class Store {
   getCurrentState(roomName: string): GameState | undefined {
     const room = this.getRoom(roomName);
 
-    if (room.states.length > 0) {
+    if (room.states.length === 0) {
       return undefined;
     }
 

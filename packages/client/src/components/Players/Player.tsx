@@ -2,6 +2,7 @@ import { Card } from 'components/Cards/Card';
 import { CardWrapper } from 'components/Cards/CardWrapper';
 import { Deck } from 'components/Cards/Deck';
 import { playerCardWrapper } from 'components/Cards/style';
+import { noop } from 'lodash';
 import { PlayerState } from 'shared';
 import { Box, BoxProps, Flex, Text } from 'theme-ui';
 import { cardKey } from 'utils/cards';
@@ -26,10 +27,11 @@ export const Player = ({
     return <Text>Loading ...</Text>;
   }
   const { username, captured, hand } = player;
+  const isActive = activePlayer === username;
   return (
     <Box {...rest}>
       <Text>
-        You ({username}) {activePlayer === username && 'Active Player'}
+        You ({username}) {isActive && 'Active Player'}
       </Text>
       <Flex sx={{ m: 3, gap: 3, flexWrap: 'wrap', marginBottom: '-3vw' }}>
         <Deck cardNumber={captured.length} />
@@ -41,7 +43,7 @@ export const Player = ({
               key={key}
               isMoving={movingCards.includes(key)}
               sx={playerCardWrapper(activePlayerCard === key)}
-              onClick={() => togglePlayerActiveCard((state) => (state === key ? null : key))}
+              onClick={isActive ? () => togglePlayerActiveCard((state) => (state === key ? null : key)) : noop}
             >
               <Card card={c} />
             </CardWrapper>

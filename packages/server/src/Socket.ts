@@ -32,7 +32,8 @@ export const createSocket = (server: HTTPServer) => {
       await joinRoom(io, socket, store, roomName, username);
     });
 
-    socket.on(GameEvent.UpdateState, (gameState: GameState) => {
+    socket.on(GameEvent.UpdateState, (roomName: string, gameState: GameState) => {
+      store.updateRoomState(roomName, gameState);
       socket.emit(GameEvent.CurrentState, gameState);
     });
   });

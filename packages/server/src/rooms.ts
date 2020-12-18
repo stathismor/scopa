@@ -53,7 +53,7 @@ async function doJoinRoom(io: IOServer, socket: Socket, store: Store, room: Room
 
   // If room is full, emit current state
   if (room.players.length >= MAX_ROOM_SIZE) {
-    let state = store.getCurrentState(room.name);
+    let state = store.getRoomState(room.name);
     if (!state) {
       const playerNames = room.players.map((player) => player.name);
       // HACK: Temporary initial state

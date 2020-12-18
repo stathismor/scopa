@@ -14,12 +14,14 @@ import { cardKey, fromCardKey } from 'utils/cards';
 import { Opponent } from '../components/Players/Opponent';
 import { Player } from '../components/Players/Player';
 import { gameIO } from 'lib/socket';
+import { useParams } from 'react-router-dom';
 
 export const Game = ({ gameState }: { gameState: GameState }) => {
   const [activePlayerCard, togglePlayerActiveCard] = useState<string | null>(null);
   const [activeCardsOnTable, toggleActiveCardsOnTable] = useState<string[]>([]);
   const [movingCards, toggleMovingCards] = useState<string[]>([]);
   const { username } = useUserData();
+  const { roomName } = useParams<{ roomName: string }>();
 
   const { activePlayer, deck, table, players } = gameState;
 
@@ -36,13 +38,14 @@ export const Game = ({ gameState }: { gameState: GameState }) => {
         toggleMovingCards([activePlayerCard, ...activeCardsOnTable]);
         timer = setTimeout(() => {
           console.log('Emit: Cards are going to playerCaptured');
-          gameIO.emit(GameEvent.UpdateState, {
+          gameIO.emit(GameEvent.UpdateState, roomName, {
             ...gameState,
+            activePlayer: opponent.username,
             players: [
               opponent,
               {
                 ...player,
-                hand: player.hand.filter((c) => cardKey(c) === activePlayerCard),
+                hand: player.hand.filter((c) => cardKey(c) !== activePlayerCard),
                 captured: [
                   ...player.captured,
                   fromCardKey(activePlayerCard),
@@ -59,18 +62,19 @@ export const Game = ({ gameState }: { gameState: GameState }) => {
       }
     }
     return () => clearTimeout(timer);
-  }, [activeCardsOnTable, activePlayerCard, gameState, opponent, player]);
+  }, [activeCardsOnTable, activePlayerCard, gameState, opponent, player, roomName]);
 
   const playCardOnTable = () => {
     if (activePlayerCard) {
       console.log('Emit: Card is going to the table');
-      gameIO.emit(GameEvent.UpdateState, {
+      gameIO.emit(GameEvent.UpdateState, roomName, {
         ...gameState,
+        activePlayer: opponent.username,
         players: [
           opponent,
           {
             ...player,
-            hand: player.hand.filter((c) => cardKey(c) === activePlayerCard),
+            hand: player.hand.filter((c) => cardKey(c) !== activePlayerCard),
           },
         ],
         table: [...gameState.table, fromCardKey(activePlayerCard)],

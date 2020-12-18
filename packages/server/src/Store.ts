@@ -38,7 +38,7 @@ export class Store {
     this.rooms[roomName].players.push(player);
   }
 
-  getCurrentState(roomName: string): GameState | undefined {
+  getRoomState(roomName: string): GameState | undefined {
     const room = this.getRoom(roomName);
 
     if (room.states.length === 0) {
@@ -46,6 +46,16 @@ export class Store {
     }
 
     return room.states[room.states.length - 1];
+  }
+
+  updateRoomState(roomName: string, gameState: GameState): GameState | undefined {
+    const room = this.getRoom(roomName);
+
+    if (room.states.length === 0) {
+      return undefined;
+    }
+
+    room.states[room.states.length - 1] = gameState;
   }
 
   addGameState(roomName: string, state: GameState) {

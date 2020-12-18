@@ -4,10 +4,9 @@ import { MouseEvent, useEffect, useState } from 'react';
 import { Box, Flex, jsx } from 'theme-ui';
 import { Card } from 'components/Cards/Card';
 import { Deck } from 'components/Cards/Deck';
-import { gameIO } from 'lib/socket';
 import { useUserData } from 'components/UserContext';
 import { GameTable } from 'components/GameTable';
-import { GameEvent, GameState, GameStatus } from 'shared';
+import { GameState } from 'shared';
 import { cardWrapper } from 'components/Cards/style';
 import { CardWrapper } from 'components/Cards/CardWrapper';
 import { sum } from 'lodash';
@@ -15,29 +14,11 @@ import { cardKey, fromCardKey } from 'utils/cards';
 import { Opponent } from '../components/Players/Opponent';
 import { Player } from '../components/Players/Player';
 
-const INITIAL_STATE = {
-  status: GameStatus.Waiting,
-  activePlayer: null,
-  deck: [],
-  table: [],
-  players: [],
-};
-
-export const Game = () => {
+export const Game = ({ gameState }: { gameState: GameState }) => {
   const [activePlayerCard, togglePlayerActiveCard] = useState<string | null>(null);
   const [activeCardsOnTable, toggleActiveCardsOnTable] = useState<string[]>([]);
   const [movingCards, toggleMovingCards] = useState<string[]>([]);
   const { username } = useUserData();
-  const [gameState, setGameState] = useState<GameState>(INITIAL_STATE);
-
-  useEffect(() => {
-    const handleCurrentGameState = (gameState: GameState) => {
-      console.log(gameState);
-      setGameState(gameState);
-    };
-
-    gameIO.on(GameEvent.CurrentState, handleCurrentGameState);
-  }, []);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -69,7 +50,6 @@ export const Game = () => {
   // TODO figure out what to do when more than 2 players
   const [opponent] = players.filter((player) => player.username !== username);
   const [player] = players.filter((player) => player.username === username);
-  console.log(opponent, player, players)
   return (
     <GameTable>
       <Opponent player={opponent} sx={{ transform: 'rotate(180deg)' }} />

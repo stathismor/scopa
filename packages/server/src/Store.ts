@@ -1,5 +1,5 @@
 import { GameState } from 'shared';
-
+import { isEmpty, last } from 'lodash';
 export class Player {
   name: string;
 
@@ -41,19 +41,15 @@ export class Store {
   getRoomState(roomName: string): GameState | undefined {
     const room = this.getRoom(roomName);
 
-    if (room.states.length === 0) {
+    if (isEmpty(room.states)) {
       return undefined;
     }
 
-    return room.states[room.states.length - 1];
+    return last(room.states);
   }
 
-  updateRoomState(roomName: string, gameState: GameState): GameState | undefined {
+  updateRoomState(roomName: string, gameState: GameState) {
     const room = this.getRoom(roomName);
-
-    if (room.states.length === 0) {
-      return undefined;
-    }
     room.states.push(gameState);
   }
 

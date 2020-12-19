@@ -9,6 +9,12 @@ export const baseCard = {
   boxShadow: '1px 1px 5px rgba(0, 0, 0, 0.5)',
 };
 
+export const mainDeckPosition: SxStyleProp = {
+  position: 'absolute',
+  bottom: ['-7vw', null, '-3.5vw'],
+  left: ['-3vw', null, '2vw'],
+};
+
 export const cardWrapper = (isActive: boolean): SxStyleProp => ({
   position: 'relative',
   '&::after': isActive
@@ -34,3 +40,8 @@ export const playerCardWrapper = (isActive: boolean): SxStyleProp => ({
     transform: 'translateY(-3.5vw)',
   },
 });
+
+export const cardDrop = {
+  ...baseCard,
+  bg: 'muted',
+};

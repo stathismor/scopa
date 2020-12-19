@@ -34,7 +34,7 @@ export const createSocket = (server: HTTPServer) => {
 
     socket.on(GameEvent.UpdateState, (roomName: string, gameState: GameState) => {
       store.updateRoomState(roomName, gameState);
-      socket.emit(GameEvent.CurrentState, gameState);
+      io.in(roomName).emit(GameEvent.CurrentState, gameState);
     });
   });
 };

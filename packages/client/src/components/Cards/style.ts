@@ -42,6 +42,9 @@ export const playerCardWrapper = (isActive: boolean): SxStyleProp => ({
 });
 
 export const cardDrop = {
-  ...baseCard,
-  bg: 'muted',
+  height: ['26vw', null, '13vw'],
+  width: ['15vw', null, '7.5vw'],
+  borderRadius: 1,
+  border: '3px dashed',
+  borderColor: 'lightGrey',
 };

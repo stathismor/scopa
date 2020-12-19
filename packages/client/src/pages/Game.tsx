@@ -79,6 +79,7 @@ export const Game = ({ gameState }: { gameState: GameState }) => {
         ],
         table: [...gameState.table, fromCardKey(activePlayerCard)],
       });
+      // TODO Might need to add a timeout here to keep the space of the card and avoid flickering
       togglePlayerActiveCard(null);
     }
   };

@@ -54,8 +54,7 @@ export class Store {
     if (room.states.length === 0) {
       return undefined;
     }
-
-    room.states[room.states.length - 1] = gameState;
+    room.states.push(gameState);
   }
 
   addGameState(roomName: string, state: GameState) {

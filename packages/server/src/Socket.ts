@@ -1,8 +1,9 @@
 import { Server as HTTPServer } from 'http';
 import { Server as IOServer, Socket } from 'socket.io';
-import { UserEvent, RoomEvent, GameEvent, GameState, GameStatus } from 'shared';
+import { UserEvent, RoomEvent, GameEvent, GameState } from 'shared';
 import { createUsername } from './users';
-import { createRoom, joinRoom, updateGameState } from './rooms';
+import { createRoom, joinRoom } from './rooms';
+import { updateGameState } from './games';
 import { Store } from './Store';
 
 export const createSocket = (server: HTTPServer) => {

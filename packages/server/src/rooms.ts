@@ -1,7 +1,7 @@
 import { Server as IOServer, Socket } from 'socket.io';
 
 import { Store, Room, Player } from './Store';
-import { RoomEvent, GameEvent, GameState, GameStatus } from 'shared';
+import { RoomEvent, GameEvent } from 'shared';
 import { generateRoomName, generateGameState } from './utils';
 
 const MAX_ROOM_SIZE = 2;
@@ -62,32 +62,5 @@ async function doJoinRoom(io: IOServer, socket: Socket, store: Store, room: Room
     }
 
     io.in(room.name).emit(GameEvent.CurrentState, state);
-  }
-}
-
-export function updateGameState(io: IOServer, store: Store, roomName: string, gameState: GameState) {
-  store.updateRoomState(roomName, gameState);
-  io.in(roomName).emit(GameEvent.CurrentState, gameState);
-  const isRoundFinshed = gameState.players.every((player) => player.hand.length === 0);
-
-  const isMatchFinished = isRoundFinshed && gameState.table.length === 0;
-
-  if (isMatchFinished) {
-    // TODO send the final score need to figure out who was the last player to capture cards because
-    // all the final cards on the table will need to go to them
-    io.in(roomName).emit(GameStatus.Ended);
-  } else if (isRoundFinshed) {
-    const { deck, players, ...rest } = gameState;
-    const updatedPlayers = players.map((player) => ({
-      ...player,
-      hand: deck.splice(0, 3),
-    }));
-    const updatedGameState = {
-      ...rest,
-      players: updatedPlayersHands,
-      deck,
-    };
-    store.updateRoomState(roomName, updatedGameState);
-    io.in(roomName).emit(GameEvent.CurrentState, updatedGameState);
   }
 }

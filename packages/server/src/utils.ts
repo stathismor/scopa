@@ -1,5 +1,4 @@
-import { shuffle, range } from 'lodash';
-
+import { shuffle, range, sample } from 'lodash';
 import { GameState, PlayerState, Suit, Card, GameStatus, Deck } from 'shared';
 
 export function generateRoomName(): string {
@@ -19,7 +18,7 @@ export function generateDeck(): Deck {
 }
 
 export function generateGameState(usernames: string[]): GameState {
-  const activePlayer = usernames[Math.floor(Math.random() * usernames.length)];
+  const activePlayer = sample(usernames) as string;
   const deck = shuffle(generateDeck());
   const players = usernames.map((username) => {
     const hand = deck.splice(0, 3);
@@ -27,7 +26,7 @@ export function generateGameState(usernames: string[]): GameState {
   });
   const table = deck.splice(0, 4);
 
-  return { status: GameStatus.Playing, activePlayer, deck: generateDeck(), table, players };
+  return { status: GameStatus.Playing, activePlayer, deck, table, players };
 }
 
 function generatePlayerState(username: string, hand: Deck): PlayerState {

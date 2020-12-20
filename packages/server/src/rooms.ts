@@ -78,7 +78,7 @@ export function updateGameState(io: IOServer, store: Store, roomName: string, ga
     io.in(roomName).emit(GameStatus.Ended);
   } else if (isRoundFinshed) {
     const { deck, players, ...rest } = gameState;
-    const updatedPlayersHands = players.map((player) => ({
+    const updatedPlayers = players.map((player) => ({
       ...player,
       hand: deck.splice(0, 3),
     }));

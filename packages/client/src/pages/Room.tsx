@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 import { Layout } from 'components/Layout';
 import { gameIO } from 'lib/socket';
-import { RoomState, RoomEvent, GameEvent, GameState, GameStatus } from 'shared';
+import { RoomState, RoomEvent, GameEvent, GameState, GameStatus, Score } from 'shared';
 import { useUserData } from 'components/UserContext';
 import { Game } from './Game';
 
@@ -23,6 +23,7 @@ export const Room = () => {
   const { roomName } = useParams<{ roomName: string }>();
   const { username } = useUserData();
   const [gameState, setGameState] = useState<GameState>(INITIAL_STATE);
+  const [gameScore, setGameScore] = useState<Score[]>();
 
   useEffect(() => {
     const handleSuccess = () => {
@@ -49,11 +50,16 @@ export const Room = () => {
     const handleCurrentGameState = (state: GameState) => {
       setGameState(state);
     };
+    const handleGameEnded = (score: Score[]) => {
+      setGameScore(score);
+    };
 
     gameIO.on(GameEvent.CurrentState, handleCurrentGameState);
+    gameIO.on(GameStatus.Ended, handleGameEnded);
 
     return () => {
       gameIO.off(GameEvent.CurrentState, handleCurrentGameState);
+      gameIO.off(GameStatus.Ended, handleGameEnded);
     };
   }, []);
 
@@ -66,7 +72,7 @@ export const Room = () => {
           <Box sx={{ position: 'absolute', left: 0, top: 0 }}>
             <Link to="/">Back</Link>
           </Box>
-          <Game gameState={gameState} />
+          <Game gameState={gameState} gameScore={gameScore} />
         </Layout>
       );
     default:

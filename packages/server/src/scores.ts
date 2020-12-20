@@ -16,7 +16,6 @@ const PrimePoints: { [value: number]: number } = {
   10: 10,
 };
 
-
 const primeCards = (captured: Card[]): Card[] => {
   return Object.values(
     mapValues(

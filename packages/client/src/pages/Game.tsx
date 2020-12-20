@@ -1,12 +1,12 @@
 /** @jsx jsx */
 /** @jsxRuntime classic */
 import { useEffect, useMemo, useState } from 'react';
-import { Box, Grid, jsx } from 'theme-ui';
+import { Box, Flex, Grid, Heading, jsx, Text } from 'theme-ui';
 import { Card } from 'components/Cards/Card';
 import { Deck } from 'components/Cards/Deck';
 import { useUserData } from 'components/UserContext';
 import { GameTable } from 'components/GameTable';
-import { GameEvent, GameState } from 'shared';
+import { GameEvent, GameState, Score } from 'shared';
 import { cardDrop, cardWrapper, mainDeckPosition } from 'components/Cards/style';
 import { CardWrapper } from 'components/Cards/CardWrapper';
 import { sum } from 'lodash';
@@ -16,7 +16,7 @@ import { Player } from '../components/Players/Player';
 import { gameIO } from 'lib/socket';
 import { useParams } from 'react-router-dom';
 
-export const Game = ({ gameState }: { gameState: GameState }) => {
+export const Game = ({ gameState, gameScore }: { gameState: GameState; gameScore?: Score[] }) => {
   const [activePlayerCard, togglePlayerActiveCard] = useState<string | null>(null);
   const [activeCardsOnTable, toggleActiveCardsOnTable] = useState<string[]>([]);
   const [movingCards, toggleMovingCards] = useState<string[]>([]);
@@ -84,6 +84,8 @@ export const Game = ({ gameState }: { gameState: GameState }) => {
     }
   };
 
+  console.log({ gameScore });
+
   return (
     <GameTable>
       <Deck cardNumber={deck.length} title={`${deck.length} cards left`} sx={mainDeckPosition} />
@@ -110,6 +112,24 @@ export const Game = ({ gameState }: { gameState: GameState }) => {
         })}
         {activePlayerCard && <Box role="button" sx={cardDrop} onClick={playCardOnTable} />}
       </Grid>
+      {gameScore && (
+        <Flex sx={{ gap: 3 }}>
+          {gameScore.map(({ details, total }, i) => (
+            <Box key={i}>
+              <Heading as="h3" mt={2}>
+                {gameState.players[i].username}
+              </Heading>
+              {details.map(({ label, value }) => (
+                <Flex key={label}>
+                  <Text mr={1}>{label}:</Text>
+                  <Text mr={1}>{value ?? '-'}</Text>
+                </Flex>
+              ))}
+              <Text sx={{ fontWeight: 700 }}>Total: {total}</Text>
+            </Box>
+          ))}
+        </Flex>
+      )}
       <Player
         player={player}
         activePlayer={activePlayer}

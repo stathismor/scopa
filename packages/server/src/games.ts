@@ -14,20 +14,10 @@ export function updateGameState(io: IOServer, store: Store, roomName: string, ga
   console.log({ isRoundFinshed, isMatchFinished });
 
   if (isMatchFinished) {
-    const { players, ...rest } = gameState;
+    const { players } = gameState;
     // TODO need to figure out who was the last player to capture cards because
     // all the final cards on the table will need to go to them https://github.com/strahius/scopa/issues/24
-    const updatedPlayers = players.map((player) => ({
-      ...player,
-      hand: player.captured,
-      captured: [],
-    }));
-    console.info(GameEvent.CurrentState, updatedPlayers);
-    io.in(roomName).emit(GameEvent.CurrentState, {
-      ...rest,
-      players: updatedPlayers,
-    });
-    console.info(GameStatus.Ended, finalScore(players));
+    console.info(GameStatus.Ended);
     io.in(roomName).emit(GameStatus.Ended, finalScore(players));
   } else if (isRoundFinshed) {
     const { deck, players, ...rest } = gameState;

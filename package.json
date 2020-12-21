@@ -4,7 +4,9 @@
   "repository": "git@github.com:strahius/scopa.git",
   "license": "MIT",
   "workspaces": [
-    "packages/*"
+    "packages/server",
+    "packages/client",
+    "packages/shared"
   ],
   "scripts": {
     "client": "yarn workspace client start",

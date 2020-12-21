@@ -1,1 +1,1 @@
-web: yarn workspace client heroku-start
+web: bin/boot

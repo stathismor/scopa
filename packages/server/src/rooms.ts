@@ -11,7 +11,7 @@ export function createRoom(io: IOServer, socket: Socket, store: Store, username:
 
   const room = store.getRoom(roomName);
   if (room !== undefined) {
-    console.warn(`[CREATE FAILED] Room ${roomName} already exists!`);
+    console.warn(`[CREATE FAILED] Room ${roomName} already exists`);
     socket.emit(RoomEvent.CreateError, 'Room already exists');
     return;
   }

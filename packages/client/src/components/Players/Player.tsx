@@ -2,6 +2,7 @@ import { Card } from 'components/Cards/Card';
 import { CardWrapper } from 'components/Cards/CardWrapper';
 import { Deck } from 'components/Cards/Deck';
 import { playerCardWrapper } from 'components/Cards/style';
+import { InvitePlayer } from 'components/InvitePlayer';
 import { noop } from 'lodash';
 import { PlayerState } from 'shared';
 import { Box, BoxProps, Flex, Text } from 'theme-ui';
@@ -24,7 +25,7 @@ export const Player = ({
   ...rest
 }: Props & BoxProps) => {
   if (!player) {
-    return <Text>Loading ...</Text>;
+    return <InvitePlayer />;
   }
   const { username, captured, hand } = player;
   const isActive = activePlayer === username;

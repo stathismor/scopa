@@ -11,8 +11,8 @@ export const baseCard = {
 
 export const mainDeckPosition: SxStyleProp = {
   position: 'absolute',
-  bottom: ['-7vw', null, '-3.5vw'],
-  left: ['-3vw', null, '2vw'],
+  top: ['-3vw', null, '2vw'],
+  right: ['-3vw', null, '2vw'],
 };
 
 export const cardWrapper = (isActive: boolean): SxStyleProp => ({

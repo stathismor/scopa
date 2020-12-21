@@ -1,1 +1,1 @@
-main: yarn workspace server start
+main: yarn workspace server heroku-start

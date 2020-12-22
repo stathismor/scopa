@@ -10,7 +10,6 @@
   ],
   "scripts": {
     "client": "yarn workspace client start",
-    "heroku-client": "yarn workspace client heroku-start",
     "server": "yarn workspace server start",
     "heroku-server": "yarn workspace server heroku-start",
     "shared": "yarn workspace shared start",

@@ -51,6 +51,7 @@ export const Game = ({ gameState, gameScore }: { gameState: GameState; gameScore
               },
             ],
             table: gameState.table.filter((c) => !activeCardsOnTable.includes(cardKey(c))),
+            latestCaptured: username,
           });
           togglePlayerActiveCard(null);
           toggleActiveCardsOnTable([]);
@@ -59,7 +60,7 @@ export const Game = ({ gameState, gameScore }: { gameState: GameState; gameScore
       }
     }
     return () => clearTimeout(timer);
-  }, [activeCardsOnTable, activePlayerCard, gameState, opponent, player, roomName]);
+  }, [activeCardsOnTable, activePlayerCard, gameState, opponent, player, roomName, username]);
 
   const playCardOnTable = () => {
     if (activePlayerCard) {

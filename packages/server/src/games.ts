@@ -5,13 +5,10 @@ import { Store } from './Store';
 import { finalScore } from './scores';
 
 export function updateGameState(io: IOServer, store: Store, roomName: string, gameState: GameState) {
-  store.updateRoomState(roomName, gameState);
-  io.in(roomName).emit(GameEvent.CurrentState, gameState);
   const isRoundFinshed = gameState.players.every((player) => player.hand.length === 0);
 
   const isMatchFinished = isRoundFinshed && gameState.deck.length === 0;
 
-  console.log({ isRoundFinshed, isMatchFinished });
   if (isMatchFinished) {
     const { players, table, latestCaptured, ...rest } = gameState;
 
@@ -27,15 +24,21 @@ export function updateGameState(io: IOServer, store: Store, roomName: string, ga
       players,
       table: [],
     };
+
+    store.updateRoomState(roomName, updatedGameState);
+    console.info(GameEvent.CurrentState, updatedGameState);
     io.in(roomName).emit(GameEvent.CurrentState, updatedGameState);
     console.info(GameStatus.Ended);
     io.in(roomName).emit(GameStatus.Ended, finalScore(players));
   } else {
-    const { deck, players, table, latestCaptured, ...rest } = gameState;
+    const { players, deck, table, latestCaptured, ...rest } = gameState;
     if (table.length === 0) {
       players.forEach((player) => {
         if (player.username === latestCaptured) {
           player.scopa.push(last(player.captured) as Card);
+          // TODO notify users that a scopa happened
+          console.info(GameEvent.Scopa, player.username, player.scopa);
+          io.in(roomName).emit(GameEvent.Scopa, player.username);
         }
       });
     }
@@ -43,16 +46,16 @@ export function updateGameState(io: IOServer, store: Store, roomName: string, ga
       players.forEach((player) => {
         player.hand = deck.splice(0, 3);
       });
-      const updatedGameState = {
-        ...rest,
-        table,
-        players,
-        deck,
-        latestCaptured,
-      };
-      store.updateRoomState(roomName, updatedGameState);
-      console.info(GameEvent.CurrentState, updatedGameState);
-      io.in(roomName).emit(GameEvent.CurrentState, updatedGameState);
     }
+    const updatedGameState = {
+      ...rest,
+      table,
+      players,
+      deck,
+      latestCaptured,
+    };
+    store.updateRoomState(roomName, updatedGameState);
+    console.info(GameEvent.CurrentState, updatedGameState);
+    io.in(roomName).emit(GameEvent.CurrentState, updatedGameState);
   }
 }

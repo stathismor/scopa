@@ -10,6 +10,7 @@ export type PlayerState = {
 export const GameEvent = {
   CurrentState: 'current-game-state',
   UpdateState: 'update-game-state',
+  Scopa: 'scopa-game-state',
 } as const;
 export type GameEvent = typeof GameEvent[keyof typeof GameEvent];
 

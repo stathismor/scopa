@@ -55,7 +55,7 @@ $ heroku buildpacks:add -a scopa-client heroku-community/multi-procfile
 $ heroku buildpacks:add -a scopa-client mars/create-react-app
 
 $ heroku config:set -a scopa-client PROCFILE=packages/client/Procfile
-$ heroku config:set -a scopa-client JS_RUNTIME_TARGET_BUNDLE="/app/packages/client/build/static/js/\*.js"
+$ heroku config:set -a scopa-client JS_RUNTIME_TARGET_BUNDLE="/app/packages/client/build/static/js/*.js"
 $ heroku config:set -a scopa-client REACT_APP_HTTP_URL=https://scopa-server.herokuapp.com
 $ heroku config:set -a scopa-client REACT_APP_SOCKET_URL=https://scopa-server.herokuapp.com
 ```

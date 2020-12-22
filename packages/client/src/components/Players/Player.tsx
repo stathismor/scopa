@@ -34,7 +34,7 @@ export const Player = ({
       <Text>
         You ({username}) {isActive && 'Active Player'}
       </Text>
-      <Grid sx={{ m: 3, marginBottom: '-3vw' }} columns="1.5fr 1fr 1fr 1fr">
+      <Grid sx={{ m: 3 }} columns="1.5fr 1fr 1fr 1fr">
         <Deck cardNumber={captured.length} />
 
         {hand?.map((c) => {

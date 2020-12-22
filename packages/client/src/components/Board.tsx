@@ -27,10 +27,10 @@ export const Board = ({
   playCardOnTable,
 }: Props) => {
   return (
-    <Flex sx={{ flex: 1, gap: 5, alignItems: 'center' }}>
+    <Flex sx={{ flex: 1, alignItems: 'center' }}>
       <Deck cardNumber={deck.length} title={`${deck.length} cards left`} />
-
-      <Grid sx={{ mx: 3, alignContent: 'center' }} columns="1fr 1fr 1fr 1fr" gap={3}>
+      <Box pl={[4, null, 5]} />
+      <Grid sx={{ alignContent: 'center' }} columns="1fr 1fr 1fr 1fr" gap={[2, null, 3]}>
         {table.map((c) => {
           const key = cardKey(c);
           const isActive = activeCardsOnTable.includes(key);

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box } from 'theme-ui';
-import { padStart, startCase } from 'lodash';
+import { startCase } from 'lodash';
 
 import { Suit, Card as CardType } from 'shared';
 import back from 'images/back.jpg';
@@ -24,7 +24,7 @@ function name({ value, suit }: CardType) {
 }
 
 function imgUrl({ value, suit }: CardType) {
-  return require(`images/${suit.toLowerCase()}/${padStart(`${value}`, 2, '0')}.jpg`).default;
+  return require(`images/${suit.toLowerCase()}/${`${value}`.padStart(2, '0')}.jpg`).default;
 }
 
 interface CardProps {

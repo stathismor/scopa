@@ -2,9 +2,10 @@ import { Card } from 'components/Cards/Card';
 import { CardWrapper } from 'components/Cards/CardWrapper';
 import { Deck } from 'components/Cards/Deck';
 import { playerCardWrapper } from 'components/Cards/style';
+import { InvitePlayer } from 'components/InvitePlayer';
 import { noop } from 'lodash';
 import { PlayerState } from 'shared';
-import { Box, BoxProps, Flex, Text } from 'theme-ui';
+import { Box, BoxProps, Grid, Text } from 'theme-ui';
 import { cardKey } from 'utils/cards';
 
 type Props = {
@@ -24,7 +25,7 @@ export const Player = ({
   ...rest
 }: Props & BoxProps) => {
   if (!player) {
-    return <Text>Loading ...</Text>;
+    return <InvitePlayer />;
   }
   const { username, captured, hand } = player;
   const isActive = activePlayer === username;
@@ -33,7 +34,7 @@ export const Player = ({
       <Text>
         You ({username}) {isActive && 'Active Player'}
       </Text>
-      <Flex sx={{ m: 3, gap: 3, flexWrap: 'wrap', marginBottom: '-3vw' }}>
+      <Grid sx={{ m: 3, marginBottom: '-3vw' }} columns="1.5fr 1fr 1fr 1fr">
         <Deck cardNumber={captured.length} />
 
         {hand?.map((c) => {
@@ -49,7 +50,7 @@ export const Player = ({
             </CardWrapper>
           );
         })}
-      </Flex>
+      </Grid>
     </Box>
   );
 };

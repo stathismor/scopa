@@ -23,12 +23,14 @@ export const theme = {
     secondary: '#30c',
     muted: '#f6f6f6',
     darkGrey: '#444',
+    lightGrey: '#ccc',
   },
   styles: {
     root: {
       fontFamily: 'body',
       lineHeight: 'body',
       fontWeight: 'body',
+      overflow: 'hidden',
     },
   },
 };

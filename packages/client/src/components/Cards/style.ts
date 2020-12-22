@@ -34,3 +34,11 @@ export const playerCardWrapper = (isActive: boolean): SxStyleProp => ({
     transform: 'translateY(-3.5vw)',
   },
 });
+
+export const cardDrop = {
+  height: ['26vw', null, '13vw'],
+  width: ['15vw', null, '7.5vw'],
+  borderRadius: 1,
+  border: '3px dashed',
+  borderColor: 'lightGrey',
+};

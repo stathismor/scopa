@@ -3,6 +3,7 @@ import { Server as IOServer, Socket } from 'socket.io';
 import { UserEvent, RoomEvent, GameEvent, GameState } from 'shared';
 import { createUsername } from './users';
 import { createRoom, joinRoom } from './rooms';
+import { updateGameState } from './games';
 import { Store } from './Store';
 
 export const createSocket = (server: HTTPServer) => {
@@ -33,8 +34,7 @@ export const createSocket = (server: HTTPServer) => {
     });
 
     socket.on(GameEvent.UpdateState, (roomName: string, gameState: GameState) => {
-      store.updateRoomState(roomName, gameState);
-      io.in(roomName).emit(GameEvent.CurrentState, gameState);
+      updateGameState(io, store, roomName, gameState);
     });
   });
 };

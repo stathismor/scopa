@@ -36,3 +36,14 @@ export type GameState = GameStateStatus & {
   table: Card[];
   players: PlayerState[];
 };
+
+type ScoreDetail = {
+  label: string;
+  value?: string | number;
+  cards?: readonly Card[];
+};
+
+export type Score = {
+  details: readonly ScoreDetail[];
+  total: number;
+};

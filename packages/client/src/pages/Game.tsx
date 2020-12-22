@@ -1,22 +1,19 @@
 /** @jsx jsx */
 /** @jsxRuntime classic */
 import { useEffect, useMemo, useState } from 'react';
-import { Box, Grid, jsx } from 'theme-ui';
-import { Card } from 'components/Cards/Card';
-import { Deck } from 'components/Cards/Deck';
+import { Box, Flex, Heading, jsx, Text } from 'theme-ui';
 import { useUserData } from 'components/UserContext';
 import { GameTable } from 'components/GameTable';
-import { GameEvent, GameState } from 'shared';
-import { cardDrop, cardWrapper, mainDeckPosition } from 'components/Cards/style';
-import { CardWrapper } from 'components/Cards/CardWrapper';
+import { GameEvent, GameState, Score } from 'shared';
 import { sum } from 'lodash';
 import { cardKey, fromCardKey } from 'utils/cards';
 import { Opponent } from '../components/Players/Opponent';
 import { Player } from '../components/Players/Player';
 import { gameIO } from 'lib/socket';
 import { useParams } from 'react-router-dom';
+import { Board } from 'components/Board';
 
-export const Game = ({ gameState }: { gameState: GameState }) => {
+export const Game = ({ gameState, gameScore }: { gameState: GameState; gameScore?: Score[] }) => {
   const [activePlayerCard, togglePlayerActiveCard] = useState<string | null>(null);
   const [activeCardsOnTable, toggleActiveCardsOnTable] = useState<string[]>([]);
   const [movingCards, toggleMovingCards] = useState<string[]>([]);
@@ -31,6 +28,7 @@ export const Game = ({ gameState }: { gameState: GameState }) => {
   console.log(gameState);
   useEffect(() => {
     let timer: NodeJS.Timeout;
+
     if (activePlayerCard && activeCardsOnTable) {
       const { value: playerCardNumber } = fromCardKey(activePlayerCard);
       const tableCardsSum = sum(activeCardsOnTable.map((c) => fromCardKey(c).value));
@@ -84,32 +82,38 @@ export const Game = ({ gameState }: { gameState: GameState }) => {
     }
   };
 
+  console.log({ gameScore });
+
   return (
     <GameTable>
-      <Deck cardNumber={deck.length} title={`${deck.length} cards left`} sx={mainDeckPosition} />
       <Opponent player={opponent} sx={{ transform: 'rotate(180deg)' }} />
-      <Grid sx={{ mx: 3, alignContent: 'center', flex: 1 }} columns="1fr 1fr 1fr 1fr" gap={3}>
-        {table.map((c) => {
-          const key = cardKey(c);
-          const isActive = activeCardsOnTable.includes(key);
-          const needsToMove = movingCards.includes(key);
-          return (
-            <CardWrapper
-              key={key}
-              isMoving={needsToMove}
-              sx={cardWrapper(isActive)}
-              onClick={() => {
-                toggleActiveCardsOnTable(
-                  isActive ? activeCardsOnTable.filter((c) => c !== key) : [...activeCardsOnTable, key],
-                );
-              }}
-            >
-              <Card card={c} />
-            </CardWrapper>
-          );
-        })}
-        {activePlayerCard && <Box role="button" sx={cardDrop} onClick={playCardOnTable} />}
-      </Grid>
+      <Board
+        table={table}
+        deck={deck}
+        activeCardsOnTable={activeCardsOnTable}
+        movingCards={movingCards}
+        toggleActiveCardsOnTable={toggleActiveCardsOnTable}
+        activePlayerCard={activePlayerCard}
+        playCardOnTable={playCardOnTable}
+      />
+      {gameScore && (
+        <Flex sx={{ gap: 3 }}>
+          {gameScore.map(({ details, total }, i) => (
+            <Box key={i}>
+              <Heading as="h3" mt={2}>
+                {gameState.players[i].username}
+              </Heading>
+              {details.map(({ label, value }) => (
+                <Flex key={label}>
+                  <Text mr={1}>{label}:</Text>
+                  <Text mr={1}>{value ?? '-'}</Text>
+                </Flex>
+              ))}
+              <Text sx={{ fontWeight: 700 }}>Total: {total}</Text>
+            </Box>
+          ))}
+        </Flex>
+      )}
       <Player
         player={player}
         activePlayer={activePlayer}

@@ -4,13 +4,17 @@
   "repository": "git@github.com:strahius/scopa.git",
   "license": "MIT",
   "workspaces": [
-    "packages/*"
+    "packages/shared",
+    "packages/server",
+    "packages/client"
   ],
   "scripts": {
     "client": "yarn workspace client start",
     "server": "yarn workspace server start",
+    "heroku-server": "yarn workspace server heroku-start",
     "shared": "yarn workspace shared start",
-    "start": "concurrently --kill-others-on-fail \"yarn server\" \"yarn shared\" \"yarn client\""
+    "start": "concurrently --kill-others-on-fail \"yarn server\" \"yarn shared\" \"yarn client\"",
+    "heroku-postbuild": "yarn workspaces run build"
   },
   "dependencies": {
     "concurrently": "^5.3.0"

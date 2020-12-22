@@ -20,6 +20,10 @@ To run both, just do:
 
 `$ yarn start`
 
+# Deploy
+
+The app is deployed on Heroku. For more information about how to deploy, set it up, etc check the [deployment](DEPLOYMENT.md) document.
+
 ## License
 
 Copyright © 2020 Daniele Bertella & Stathis Moraitidis

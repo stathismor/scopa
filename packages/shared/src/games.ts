@@ -35,6 +35,7 @@ export type GameState = GameStateStatus & {
   deck: Card[];
   table: Card[];
   players: PlayerState[];
+  latestCaptured: string;
 };
 
 type ScoreDetail = {

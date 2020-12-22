@@ -15,6 +15,7 @@ const INITIAL_STATE = {
   deck: [],
   table: [],
   players: [],
+  latestCaptured: '',
 };
 
 export const Room = () => {

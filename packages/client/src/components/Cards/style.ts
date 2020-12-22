@@ -9,12 +9,6 @@ export const baseCard = {
   boxShadow: '1px 1px 5px rgba(0, 0, 0, 0.5)',
 };
 
-export const mainDeckPosition: SxStyleProp = {
-  position: 'absolute',
-  top: ['-3vw', null, '2vw'],
-  right: ['-3vw', null, '2vw'],
-};
-
 export const cardWrapper = (isActive: boolean): SxStyleProp => ({
   position: 'relative',
   '&::after': isActive

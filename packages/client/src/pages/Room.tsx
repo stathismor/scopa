@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Box } from 'theme-ui';
+import { Box, Button } from 'theme-ui';
 import { Link } from 'react-router-dom';
 
 import { Layout } from 'components/Layout';
@@ -65,7 +65,7 @@ export const Room = () => {
 
   switch (status) {
     case RoomState.Pending:
-      return <div>Pending</div>;
+      return <Box>Pending</Box>;
     case RoomState.Joined:
       return (
         <Layout>
@@ -77,6 +77,15 @@ export const Room = () => {
       );
     default:
     case RoomState.Failed:
-      return <div>Error: {errorMessage}</div>;
+      return (
+        <Box>
+          Error: {errorMessage}
+          <Box mt={3}>
+            <Link to="/">
+              <Button>Back to Lobby</Button>
+            </Link>
+          </Box>
+        </Box>
+      );
   }
 };

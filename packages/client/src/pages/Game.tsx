@@ -2,11 +2,9 @@
 /** @jsxRuntime classic */
 import { useEffect, useMemo, useState } from 'react';
 import { Box, Flex, Heading, jsx, Text } from 'theme-ui';
-import { Deck } from 'components/Cards/Deck';
 import { useUserData } from 'components/UserContext';
 import { GameTable } from 'components/GameTable';
 import { GameEvent, GameState, Score } from 'shared';
-import { mainDeckPosition } from 'components/Cards/style';
 import { sum } from 'lodash';
 import { cardKey, fromCardKey } from 'utils/cards';
 import { Opponent } from '../components/Players/Opponent';
@@ -88,10 +86,10 @@ export const Game = ({ gameState, gameScore }: { gameState: GameState; gameScore
 
   return (
     <GameTable>
-      <Deck cardNumber={deck.length} title={`${deck.length} cards left`} sx={mainDeckPosition} />
       <Opponent player={opponent} sx={{ transform: 'rotate(180deg)' }} />
       <Board
         table={table}
+        deck={deck}
         activeCardsOnTable={activeCardsOnTable}
         movingCards={movingCards}
         toggleActiveCardsOnTable={toggleActiveCardsOnTable}

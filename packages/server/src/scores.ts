@@ -53,20 +53,22 @@ export function finalScore(players: readonly PlayerState[]): readonly Score[] {
     const settebello = some(captured, SETTEBELLO);
     const goldsCards = captured.filter(({ suit }) => suit === Suit.Golds);
     const scope = scopa.length;
+    const settebelloPoint = settebello ? 1 : 0;
+    const primePoint = highestPrime === playerIndex ? 1 : 0;
     return {
       details: [
         { label: 'Scopa', value: scope, cards: scopa },
         { label: 'Captured', value: captured.length, cards: captured },
         { label: 'Golds', value: goldsTotal[playerIndex], cards: goldsCards },
-        { label: 'Sette Bello', cards: settebello ? [SETTEBELLO] : [] },
-        { label: 'Primiera', ...primes[playerIndex] },
+        { label: 'Sette Bello', value: settebelloPoint, cards: settebello ? [SETTEBELLO] : [] },
+        { label: 'Primiera', value: primePoint, ...primes[playerIndex] },
       ],
       total:
         scope +
-        (settebello ? 1 : 0) +
+        settebelloPoint +
         (mostCards === playerIndex ? 1 : 0) +
         (mostGolds === playerIndex ? 1 : 0) +
-        (highestPrime === playerIndex ? 1 : 0),
+        primePoint,
     };
   });
 }

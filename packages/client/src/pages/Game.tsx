@@ -25,7 +25,6 @@ export const Game = ({ gameState, gameScore }: { gameState: GameState; gameScore
   // TODO figure out what to do when more than 2 players
   const [opponent] = useMemo(() => players.filter((player) => player.username !== username), [players, username]);
   const [player] = useMemo(() => players.filter((player) => player.username === username), [players, username]);
-  console.log(gameState);
   useEffect(() => {
     let timer: NodeJS.Timeout;
 
@@ -81,8 +80,6 @@ export const Game = ({ gameState, gameScore }: { gameState: GameState; gameScore
       togglePlayerActiveCard(null);
     }
   };
-
-  console.log({ gameScore });
 
   return (
     <GameTable>

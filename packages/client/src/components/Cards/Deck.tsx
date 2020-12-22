@@ -11,7 +11,7 @@ export const Deck = ({ cardNumber, ...rest }: { cardNumber: number } & BoxProps)
         ...baseCard,
         bg: 'muted',
         backgroundImage: cardNumber === 0 ? undefined : `url(${back})`,
-        boxShadow: `${deckElevation}px ${deckElevation}px 0 ${theme.colors.darkGrey}`,
+        boxShadow: `0.${deckElevation}vw 0.${deckElevation}vw 0 ${theme.colors.darkGrey}`,
       }}
       {...rest}
     />

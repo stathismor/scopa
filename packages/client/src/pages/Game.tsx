@@ -1,10 +1,10 @@
 /** @jsx jsx */
 /** @jsxRuntime classic */
 import { useEffect, useMemo, useState } from 'react';
-import { Box, Flex, Heading, jsx, Text } from 'theme-ui';
+import { jsx } from 'theme-ui';
 import { useUserData } from 'components/UserContext';
 import { GameTable } from 'components/GameTable';
-import { GameEvent, GameState, Score } from 'shared';
+import { GameEvent, GameState, GameStatus, Score, Suit } from 'shared';
 import { sum } from 'lodash';
 import { cardKey, fromCardKey } from 'utils/cards';
 import { Opponent } from '../components/Players/Opponent';
@@ -12,6 +12,13 @@ import { Player } from '../components/Players/Player';
 import { gameIO } from 'lib/socket';
 import { useParams } from 'react-router-dom';
 import { Board } from 'components/Board';
+import { GameScore } from 'components/GameScore';
+import { PlayerName } from 'components/Players/PlayerName';
+
+const SETTEBELLO = {
+  value: 7,
+  suit: Suit.Golds,
+};
 
 export const Game = ({ gameState, gameScore }: { gameState: GameState; gameScore?: Score[] }) => {
   const [activePlayerCard, togglePlayerActiveCard] = useState<string | null>(null);
@@ -81,40 +88,24 @@ export const Game = ({ gameState, gameScore }: { gameState: GameState; gameScore
       togglePlayerActiveCard(null);
     }
   };
-
   return (
     <GameTable>
       <Opponent player={opponent} sx={{ transform: 'rotate(180deg)' }} />
+      {opponent && <PlayerName playerName={opponent.username} isActive={activePlayer === opponent.username} />}
       <Board
         table={table}
-        deck={deck}
+        deck={gameState.status === GameStatus.Waiting ? [SETTEBELLO] : deck}
         activeCardsOnTable={activeCardsOnTable}
         movingCards={movingCards}
         toggleActiveCardsOnTable={toggleActiveCardsOnTable}
         activePlayerCard={activePlayerCard}
         playCardOnTable={playCardOnTable}
       />
-      {gameScore && (
-        <Flex sx={{ gap: 3 }}>
-          {gameScore.map(({ details, total }, i) => (
-            <Box key={i}>
-              <Heading as="h3" mt={2}>
-                {gameState.players[i].username}
-              </Heading>
-              {details.map(({ label, value }) => (
-                <Flex key={label}>
-                  <Text mr={1}>{label}:</Text>
-                  <Text mr={1}>{value ?? '-'}</Text>
-                </Flex>
-              ))}
-              <Text sx={{ fontWeight: 700 }}>Total: {total}</Text>
-            </Box>
-          ))}
-        </Flex>
-      )}
+      {gameScore && <GameScore gameScore={gameScore} gameState={gameState} />}
+      {player && <PlayerName playerName={`You (${player.username})`} isActive={activePlayer === player.username} />}
       <Player
         player={player}
-        activePlayer={activePlayer}
+        isActive={activePlayer === player?.username}
         movingCards={movingCards}
         togglePlayerActiveCard={togglePlayerActiveCard}
         activePlayerCard={activePlayerCard}

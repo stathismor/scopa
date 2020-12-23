@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Box, Button } from 'theme-ui';
 import { Link } from 'react-router-dom';
-
+import { FiArrowLeftCircle } from 'react-icons/fi';
 import { Layout } from 'components/Layout';
 import { gameIO } from 'lib/socket';
 import { RoomState, RoomEvent, GameEvent, GameState, GameStatus, Score } from 'shared';
 import { useUserData } from 'components/UserContext';
 import { Game } from './Game';
+import { theme } from 'theme';
 
 const INITIAL_STATE = {
   status: GameStatus.Waiting,
@@ -70,8 +71,10 @@ export const Room = () => {
     case RoomState.Joined:
       return (
         <Layout>
-          <Box sx={{ position: 'absolute', left: 0, top: 0 }}>
-            <Link to="/">Back</Link>
+          <Box sx={{ position: 'absolute', left: 1, top: 1 }}>
+            <Link to="/" aria-label="Back to Lobby">
+              <FiArrowLeftCircle title="Back to Lobby" size={24} color={theme.colors.text} />
+            </Link>
           </Box>
           <Game gameState={gameState} gameScore={gameScore} />
         </Layout>

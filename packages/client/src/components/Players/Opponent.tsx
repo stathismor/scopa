@@ -8,10 +8,9 @@ export const Opponent = ({ player, ...rest }: { player: PlayerState } & BoxProps
   if (!player) {
     return <Text>Waiting for a player to join</Text>;
   }
-  const { username, captured, hand } = player;
+  const { captured, hand } = player;
   return (
     <Box {...rest}>
-      <Text>{username}</Text>
       <Grid sx={{ m: 3, marginBottom: '-7vw' }} columns="1.5fr 1fr 1fr 1fr">
         <Deck cardNumber={captured.length} />
         {hand?.map((c) => (

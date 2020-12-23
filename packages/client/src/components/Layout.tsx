@@ -8,6 +8,7 @@ export const Layout = (props: BoxProps) => (
       maxWidth: 1200,
       m: '0 auto',
       px: 2,
+      position: 'relative',
     }}
     {...props}
   />

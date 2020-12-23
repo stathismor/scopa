@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from 'react';
-import { cardDrop, cardWrapper } from 'components/Cards/style';
+import { cardDrop, cardWrapper, BOARD_MIN_WIDTH } from 'components/Cards/style';
 import { CardWrapper } from 'components/Cards/CardWrapper';
 import { Box, Flex, Grid } from 'theme-ui';
 import { cardKey } from 'utils/cards';
@@ -27,10 +27,10 @@ export const Board = ({
   playCardOnTable,
 }: Props) => {
   return (
-    <Flex sx={{ flex: 1, alignItems: 'center' }}>
+    <Flex sx={{ flex: 1, alignItems: 'center', minWidth: BOARD_MIN_WIDTH }}>
       <Deck cardNumber={deck.length} title={`${deck.length} cards left`} />
       <Box pl={[4, null, 5]} />
-      <Grid sx={{ alignContent: 'center' }} columns="1fr 1fr 1fr 1fr" gap={[2, null, 3]}>
+      <Grid sx={{ alignContent: 'center', flex: 1 }} columns="1fr 1fr 1fr 1fr" gap={[2, null, 3]}>
         {table.map((c) => {
           const key = cardKey(c);
           const isActive = activeCardsOnTable.includes(key);

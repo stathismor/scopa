@@ -1,11 +1,13 @@
-import { Button, Heading } from 'theme-ui';
+import { Button, Flex, Heading, Image } from 'theme-ui';
 import { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
+import { FiArrowRightCircle } from 'react-icons/fi';
 
 import { gameIO } from 'lib/socket';
 import { Layout } from 'components/Layout';
 import { useUserData } from 'components/UserContext';
 import { RoomEvent } from 'shared';
+import logo from 'images/logo.svg';
 
 export const Lobby = () => {
   const history = useHistory();
@@ -17,7 +19,7 @@ export const Lobby = () => {
       history.push(`/game/${roomName}`);
     };
     gameIO.on(RoomEvent.CreateSuccess, handleCreateRoomSuccess);
-    
+
     return () => {
       gameIO.off(RoomEvent.CreateSuccess, handleCreateRoomSuccess);
     };
@@ -27,10 +29,33 @@ export const Lobby = () => {
 
   return (
     <Layout>
-      <Heading as="h1">Scopa</Heading>
-      <p>Welcome {username}</p>
-      <Heading as="h2" my={2}>Start a new game</Heading>
-      <Button onClick={() => gameIO.emit(RoomEvent.Create, username)}>Create a new game</Button>
+      <Flex sx={{ alignItems: 'center', gap: 2, mt: 2 }}>
+        <Image src={logo} width={50} />
+        <Heading as="h1">The Two of Spades</Heading>
+      </Flex>
+
+      <p>
+        Welcome <strong>{username}</strong>
+      </p>
+      <p>Let's Play</p>
+      <Heading as="h2" my={2}>
+        Available games
+      </Heading>
+      <ul>
+        <Flex as="li" sx={{ alignItems: 'center', mt: 3 }}>
+          <Heading as="h3">Scopa</Heading>
+          <Button
+            variant="outline"
+            sx={{ display: 'flex', gap: 2, alignItems: 'center', ml: 3 }}
+            onClick={() => gameIO.emit(RoomEvent.Create, username)}
+          >
+            Create a new game <FiArrowRightCircle />
+          </Button>
+        </Flex>
+        <Flex as="li" sx={{ alignItems: 'center', mt: 3 }}>
+          <Heading as="h3">Briscola 🔜</Heading>
+        </Flex>
+      </ul>
     </Layout>
   );
 };

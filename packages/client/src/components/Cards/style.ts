@@ -1,8 +1,23 @@
+import { theme } from 'theme';
 import { SxStyleProp } from 'theme-ui';
 
+export const CARD_HEIGHT_MOBILE = 26;
+export const CARD_HEIGHT_DESKTOP = 13;
+export const CARD_WIDTH_MOBILE = 15;
+export const CARD_WIDTH_DESKTOP = 7.5;
+const NUM_CARD_ON_ROW = 5;
+
+export const CARD_HEIGHT = [`${CARD_HEIGHT_MOBILE}vw`, null, `${CARD_HEIGHT_DESKTOP}vw`];
+export const CARD_WIDTH = [`${CARD_WIDTH_MOBILE}vw`, null, `${CARD_WIDTH_DESKTOP}vw`];
+export const BOARD_MIN_WIDTH = [
+  `calc(${CARD_WIDTH_MOBILE * NUM_CARD_ON_ROW}vw + ${theme.space[4]}px)`,
+  null,
+  `calc(${CARD_WIDTH_DESKTOP * NUM_CARD_ON_ROW}vw + ${theme.space[5]}px)`,
+];
+
 export const baseCard = {
-  height: ['26vw', null, '13vw'],
-  width: ['15vw', null, '7.5vw'],
+  height: CARD_HEIGHT,
+  width: CARD_WIDTH,
   borderRadius: 1,
   backgroundSize: 'cover',
   backgroundPosition: 'center',
@@ -36,8 +51,8 @@ export const playerCardWrapper = (isActive: boolean): SxStyleProp => ({
 });
 
 export const cardDrop = {
-  height: ['26vw', null, '13vw'],
-  width: ['15vw', null, '7.5vw'],
+  height: CARD_HEIGHT,
+  width: CARD_WIDTH,
   borderRadius: 1,
   border: '3px dashed',
   borderColor: 'lightGrey',

@@ -33,4 +33,22 @@ export const theme = {
       overflow: 'hidden',
     },
   },
+  buttons: {
+    outline: {
+      border: '2px solid',
+      borderColor: 'text',
+      color: 'text',
+      bg: 'transparent',
+      '&:disabled': {
+        borderColor: 'lightGrey',
+        color: 'lightGrey',
+      },
+      '&:focus': {
+        boxShadow: `rgba(32, 51, 69, 0.04) 0.25rem 0px 0px 0px,
+            rgba(32, 51, 69, 0.04) -0.25rem 0px 0px 0px,
+            rgba(32, 51, 69, 0.04) 0px 0px 0px 9999px inset`,
+        outline: 0,
+      },
+    },
+  },
 };

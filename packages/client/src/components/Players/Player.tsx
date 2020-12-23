@@ -5,12 +5,12 @@ import { playerCardWrapper } from 'components/Cards/style';
 import { InvitePlayer } from 'components/InvitePlayer';
 import { noop } from 'lodash';
 import { PlayerState } from 'shared';
-import { Box, BoxProps, Grid, Text } from 'theme-ui';
+import { Box, BoxProps, Grid } from 'theme-ui';
 import { cardKey } from 'utils/cards';
 
 type Props = {
   player: PlayerState;
-  activePlayer: string | null;
+  isActive: boolean;
   movingCards: string[];
   togglePlayerActiveCard: React.Dispatch<React.SetStateAction<string | null>>;
   activePlayerCard: string | null;
@@ -18,7 +18,7 @@ type Props = {
 
 export const Player = ({
   player,
-  activePlayer,
+  isActive,
   movingCards,
   togglePlayerActiveCard,
   activePlayerCard,
@@ -27,16 +27,11 @@ export const Player = ({
   if (!player) {
     return <InvitePlayer />;
   }
-  const { username, captured, hand } = player;
-  const isActive = activePlayer === username;
+  const { captured, hand } = player;
   return (
     <Box {...rest}>
-      <Text>
-        You ({username}) {isActive && 'Active Player'}
-      </Text>
       <Grid sx={{ m: 3 }} columns="1.5fr 1fr 1fr 1fr">
-        <Deck cardNumber={captured.length} />
-
+        <Deck cardNumber={captured.length} scopa={player.scopa} />
         {hand?.map((c) => {
           const key = cardKey(c);
           return (

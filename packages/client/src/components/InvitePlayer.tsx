@@ -22,7 +22,7 @@ export const InvitePlayer = () => {
     }
   };
   return (
-    <Box sx={{ textAlign: 'center' }}>
+    <Box sx={{ textAlign: 'center', mb: 3 }}>
       {message && <Text my={2}>{message}</Text>}
       <Text>Invite a player to join</Text>
       <Button onClick={share}>Share this game</Button>

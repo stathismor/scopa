@@ -17,11 +17,13 @@ export const UserProvider: FC = ({ children }) => {
 
   useEffect(() => {
     gameIO.on('connect', () => {
-      if (!username) {
-        gameIO.emit(UserEvent.UsernameMissing);
-      }
       console.log(`connect ${gameIO.id}`);
     });
+
+    if (!username) {
+      gameIO.emit(UserEvent.UsernameMissing);
+    }
+
     const handleUsernameCreated = (randomUsername: string) => {
       setUsername(randomUsername);
       persistUsername(randomUsername);

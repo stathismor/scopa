@@ -14,12 +14,12 @@ export const UserContext = createContext<{
 const persistedUsername = getStoredUsername();
 export const UserProvider: FC = ({ children }) => {
   const [username, setUsername] = useState<string>(persistedUsername ?? '');
-  if (!username) {
-    gameIO.emit(UserEvent.UsernameMissing);
-  }
 
   useEffect(() => {
     gameIO.on('connect', () => {
+      if (!username) {
+        gameIO.emit(UserEvent.UsernameMissing);
+      }
       console.log(`connect ${gameIO.id}`);
     });
     const handleUsernameCreated = (randomUsername: string) => {
@@ -30,7 +30,7 @@ export const UserProvider: FC = ({ children }) => {
     return () => {
       gameIO.off(UserEvent.UsernameCreated, handleUsernameCreated);
     };
-  }, []);
+  }, [username]);
 
   return (
     <UserContext.Provider value={{ username: username }}>{username ? children : 'Pending ...'}</UserContext.Provider>

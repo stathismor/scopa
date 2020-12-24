@@ -2,7 +2,7 @@ import { PropsWithChildren, MouseEvent, useRef } from 'react';
 import { Box } from 'theme-ui';
 import { useSpring, animated, config } from 'react-spring';
 
-type CardWrapperProps = PropsWithChildren<{ onClick: (e: MouseEvent<HTMLElement>) => void; isMoving: boolean }>;
+type CardWrapperProps = PropsWithChildren<{ onClick?: (e: MouseEvent<HTMLElement>) => void; isMoving: boolean }>;
 
 const INITIAL_POSITION = { y: 0, x: 0 };
 

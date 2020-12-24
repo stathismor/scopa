@@ -1,31 +1,25 @@
-import { Dispatch, SetStateAction } from 'react';
 import { cardDrop, cardWrapper, BOARD_MIN_WIDTH } from 'components/Cards/style';
 import { CardWrapper } from 'components/Cards/CardWrapper';
 import { Box, Flex, Grid } from 'theme-ui';
 import { cardKey } from 'utils/cards';
 import { Card } from './Cards/Card';
-import { Deck as DeckType } from 'shared';
+import { Deck as DeckType, GameTurnEvent } from 'shared';
 import { Deck } from './Cards/Deck';
+import { gameIO } from 'lib/socket';
+import { useParams } from 'react-router-dom';
 
 type Props = {
   table: DeckType;
   deck: DeckType;
   activeCardsOnTable: string[];
   movingCards: string[];
-  toggleActiveCardsOnTable: Dispatch<SetStateAction<string[]>>;
   activePlayerCard: string | null;
   playCardOnTable: () => void;
 };
 
-export const Board = ({
-  table,
-  deck,
-  activeCardsOnTable,
-  movingCards,
-  toggleActiveCardsOnTable,
-  activePlayerCard,
-  playCardOnTable,
-}: Props) => {
+export const Board = ({ table, deck, activeCardsOnTable, movingCards, activePlayerCard, playCardOnTable }: Props) => {
+  const { roomName } = useParams<{ roomName: string }>();
+
   return (
     <Flex sx={{ flex: 1, alignItems: 'center', minWidth: BOARD_MIN_WIDTH }}>
       <Deck cardNumber={deck.length} title={`${deck.length} cards left`} />
@@ -41,7 +35,9 @@ export const Board = ({
               isMoving={needsToMove}
               sx={cardWrapper(isActive)}
               onClick={() => {
-                toggleActiveCardsOnTable(
+                gameIO.emit(
+                  GameTurnEvent.SelectTableCards,
+                  roomName,
                   isActive ? activeCardsOnTable.filter((c) => c !== key) : [...activeCardsOnTable, key],
                 );
               }}

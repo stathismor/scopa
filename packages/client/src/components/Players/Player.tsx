@@ -3,8 +3,10 @@ import { CardWrapper } from 'components/Cards/CardWrapper';
 import { Deck } from 'components/Cards/Deck';
 import { playerCardWrapper } from 'components/Cards/style';
 import { InvitePlayer } from 'components/InvitePlayer';
+import { gameIO } from 'lib/socket';
 import { noop } from 'lodash';
-import { PlayerState } from 'shared';
+import { useParams } from 'react-router-dom';
+import { GameTurnEvent, PlayerState } from 'shared';
 import { Box, BoxProps, Grid } from 'theme-ui';
 import { cardKey } from 'utils/cards';
 
@@ -12,22 +14,16 @@ type Props = {
   player: PlayerState;
   isActive: boolean;
   movingCards: string[];
-  togglePlayerActiveCard: React.Dispatch<React.SetStateAction<string | null>>;
   activePlayerCard: string | null;
 };
 
-export const Player = ({
-  player,
-  isActive,
-  movingCards,
-  togglePlayerActiveCard,
-  activePlayerCard,
-  ...rest
-}: Props & BoxProps) => {
+export const Player = ({ player, isActive, movingCards, activePlayerCard, ...rest }: Props & BoxProps) => {
+  const { roomName } = useParams<{ roomName: string }>();
   if (!player) {
     return <InvitePlayer />;
   }
   const { captured, hand } = player;
+
   return (
     <Box {...rest}>
       <Grid sx={{ m: 3 }} columns="1.5fr 1fr 1fr 1fr">
@@ -39,7 +35,11 @@ export const Player = ({
               key={key}
               isMoving={movingCards.includes(key)}
               sx={playerCardWrapper(activePlayerCard === key)}
-              onClick={isActive ? () => togglePlayerActiveCard((state) => (state === key ? null : key)) : noop}
+              onClick={
+                isActive
+                  ? () => gameIO.emit(GameTurnEvent.SelectPlayerCard, roomName, activePlayerCard === key ? null : key)
+                  : noop
+              }
             >
               <Card card={c} />
             </CardWrapper>

@@ -14,6 +14,16 @@ export const GameEvent = {
 } as const;
 export type GameEvent = typeof GameEvent[keyof typeof GameEvent];
 
+export const GameTurnEvent = {
+  SelectPlayerCard: 'select-player-card',
+  SelectTableCards: 'select-table-cards',
+  AnimateCards: 'animate-cards',
+  SelectedPlayerCard: 'selected-player-card',
+  SelectedTableCards: 'selected-table-cards',
+  AnimatedCards: 'animated-cards',
+} as const;
+export type GameTurnEvent = typeof GameTurnEvent[keyof typeof GameTurnEvent];
+
 export const GameStatus = {
   Waiting: 'waiting',
   Started: 'started',

@@ -37,7 +37,7 @@ export const UserProvider: FC = ({ children }) => {
         gameIO.off(UserEvent.UsernameCreated, handleUsernameCreated);
       }
     };
-  }, [username]);
+  }, []);
 
   return (
     <UserContext.Provider value={{ username: username }}>{username ? children : 'Pending ...'}</UserContext.Provider>

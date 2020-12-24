@@ -1,7 +1,5 @@
 import { gameIO } from 'lib/socket';
-import { useEffect } from 'react';
-import { useState } from 'react';
-import { FC, createContext, useContext } from 'react';
+import { useState, useEffect, useRef, FC, createContext, useContext } from 'react';
 import { getStoredUsername, persistUsername } from 'utils/storage';
 import { UserEvent } from 'shared';
 
@@ -14,23 +12,30 @@ export const UserContext = createContext<{
 const persistedUsername = getStoredUsername();
 export const UserProvider: FC = ({ children }) => {
   const [username, setUsername] = useState<string>(persistedUsername ?? '');
+  const hasUserName = useRef(username !== '');
+
+  const handleUsernameCreated = (randomUsername: string) => {
+    setUsername(randomUsername);
+    persistUsername(randomUsername);
+    hasUserName.current = false;
+  };
 
   useEffect(() => {
     gameIO.on('connect', () => {
       console.log(`connect ${gameIO.id}`);
     });
 
-    if (!username) {
+    // We check if username exists to avoid double-registering the callback.
+    // Same for de-registering.
+    if (!hasUserName.current) {
       gameIO.emit(UserEvent.UsernameMissing);
+      gameIO.on(UserEvent.UsernameCreated, handleUsernameCreated);
     }
 
-    const handleUsernameCreated = (randomUsername: string) => {
-      setUsername(randomUsername);
-      persistUsername(randomUsername);
-    };
-    gameIO.on(UserEvent.UsernameCreated, handleUsernameCreated);
     return () => {
-      gameIO.off(UserEvent.UsernameCreated, handleUsernameCreated);
+      if (!hasUserName.current) {
+        gameIO.off(UserEvent.UsernameCreated, handleUsernameCreated);
+      }
     };
   }, [username]);
 

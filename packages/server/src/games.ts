@@ -1,8 +1,41 @@
 import { Server as IOServer } from 'socket.io';
 import { last } from 'lodash';
-import { Card, GameEvent, GameState, GameStatus } from 'shared';
+import { Card, GameEvent, GameState, GameStatus, cardKey, fromCardKey, TurnUpdates } from 'shared';
 import { Store } from './Store';
 import { finalScore } from './scores';
+
+export function handCaptured(io: IOServer, store: Store, roomName: string, turnUpdates: TurnUpdates) {
+  const prevGameState = store.getRoomState(roomName);
+
+  if (!prevGameState) {
+    return;
+  }
+  const { activePlayer, opponent } = Object.fromEntries(
+    prevGameState?.players?.map((player) => [
+      player.username !== prevGameState?.activePlayer ? 'activePlayer' : 'opponent',
+      player,
+    ]),
+  );
+  const gameState = {
+    ...prevGameState,
+    activePlayer: opponent.username,
+    players: [
+      opponent,
+      {
+        ...activePlayer,
+        hand: activePlayer.hand.filter((c) => cardKey(c) !== turnUpdates.activePlayerCard),
+        captured: [
+          ...activePlayer.captured,
+          fromCardKey(turnUpdates.activePlayerCard),
+          ...turnUpdates.activeCardsOnTable.map((c) => fromCardKey(c)),
+        ],
+      },
+    ],
+    table: prevGameState?.table.filter((c) => !turnUpdates.activeCardsOnTable.includes(cardKey(c))),
+    latestCaptured: activePlayer.username,
+  };
+  return updateGameState(io, store, roomName, gameState);
+}
 
 export function updateGameState(io: IOServer, store: Store, roomName: string, gameState: GameState) {
   const isRoundFinshed = gameState.players.every((player) => player.hand.length === 0);

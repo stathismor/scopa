@@ -1,9 +1,8 @@
 import { cardDrop, cardWrapper, BOARD_MIN_WIDTH } from 'components/Cards/style';
 import { CardWrapper } from 'components/Cards/CardWrapper';
 import { Box, Flex, Grid } from 'theme-ui';
-import { cardKey } from 'utils/cards';
 import { Card } from './Cards/Card';
-import { Deck as DeckType, GameTurnEvent } from 'shared';
+import { Deck as DeckType, GameTurnEvent, cardKey } from 'shared';
 import { Deck } from './Cards/Deck';
 import { gameIO } from 'lib/socket';
 import { useParams } from 'react-router-dom';

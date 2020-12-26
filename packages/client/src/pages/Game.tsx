@@ -4,9 +4,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { jsx } from 'theme-ui';
 import { useUserData } from 'components/UserContext';
 import { GameTable } from 'components/GameTable';
-import { GameEvent, GameTurnEvent, GameState, GameStatus, Score, Suit } from 'shared';
+import { GameEvent, GameTurnEvent, GameState, GameStatus, Score, Suit, cardKey, fromCardKey } from 'shared';
 import { sum } from 'lodash';
-import { cardKey, fromCardKey } from 'utils/cards';
 import { Opponent } from '../components/Players/Opponent';
 import { Player } from '../components/Players/Player';
 import { gameIO } from 'lib/socket';
@@ -53,7 +52,7 @@ const useGameTurn = () => {
 };
 
 const EMPTY_LIST: string[] = [];
-const cleanup = (roomName: string) => {
+export const cleanupTurnEvents = (roomName: string) => {
   gameIO.emit(GameTurnEvent.SelectPlayerCard, roomName, null);
   gameIO.emit(GameTurnEvent.SelectTableCards, roomName, EMPTY_LIST);
   gameIO.emit(GameTurnEvent.AnimateCards, roomName, EMPTY_LIST);
@@ -70,33 +69,17 @@ export const Game = ({ gameState, gameScore }: { gameState: GameState; gameScore
   const [player] = useMemo(() => players.filter((player) => player.username === username), [players, username]);
   const { activePlayerCard, activeCardsOnTable, movingCards } = useGameTurn();
   useEffect(() => {
-    if (activePlayerCard && activeCardsOnTable) {
+    if (activePlayerCard && activeCardsOnTable && username === player.username) {
       const { value: playerCardNumber } = fromCardKey(activePlayerCard);
       const tableCardsSum = sum(activeCardsOnTable.map((c) => fromCardKey(c).value));
       if (playerCardNumber === tableCardsSum) {
         gameIO.emit(GameTurnEvent.AnimateCards, roomName, [activePlayerCard, ...activeCardsOnTable]);
         timer.current = setTimeout(() => {
           console.log('Emit: Cards are going to playerCaptured');
-          gameIO.emit(GameEvent.UpdateState, roomName, {
-            ...gameState,
-            activePlayer: opponent.username,
-            players: [
-              opponent,
-              {
-                ...player,
-                hand: player.hand.filter((c) => cardKey(c) !== activePlayerCard),
-                captured: [
-                  ...player.captured,
-                  fromCardKey(activePlayerCard),
-                  ...activeCardsOnTable.map((c) => fromCardKey(c)),
-                ],
-              },
-            ],
-            table: gameState.table.filter((c) => !activeCardsOnTable.includes(cardKey(c))),
-            latestCaptured: username,
+          gameIO.emit(GameEvent.HandCaptured, roomName, {
+            activePlayerCard,
+            activeCardsOnTable,
           });
-          console.log('cleanup');
-          cleanup(roomName);
         }, 600);
       }
     }
@@ -121,8 +104,6 @@ export const Game = ({ gameState, gameScore }: { gameState: GameState; gameScore
         ],
         table: [...gameState.table, fromCardKey(activePlayerCard)],
       });
-      // TODO Might need to add a timeout here to keep the space of the card and avoid flickering
-      gameIO.emit(GameTurnEvent.SelectPlayerCard, roomName, null);
     }
   };
 

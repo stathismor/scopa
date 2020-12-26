@@ -1,9 +1,8 @@
 import { Card } from 'components/Cards/Card';
 import { CardWrapper } from 'components/Cards/CardWrapper';
 import { Deck } from 'components/Cards/Deck';
-import { PlayerState } from 'shared';
+import { PlayerState, cardKey } from 'shared';
 import { Box, BoxProps, Grid, Text } from 'theme-ui';
-import { cardKey } from 'utils/cards';
 
 export const Opponent = ({
   player,
@@ -21,10 +20,7 @@ export const Opponent = ({
         {hand?.map((c) => {
           const key = cardKey(c);
           return (
-            <CardWrapper
-              key={key}
-              isMoving={movingCards.includes(key)}
-            >
+            <CardWrapper key={key} isMoving={movingCards.includes(key)}>
               <Card card={c} faceDown={!movingCards.includes(key)} />
             </CardWrapper>
           );

@@ -7,7 +7,7 @@ import { Layout } from 'components/Layout';
 import { gameIO } from 'lib/socket';
 import { RoomState, RoomEvent, GameEvent, GameState, GameStatus, Score } from 'shared';
 import { useUserData } from 'components/UserContext';
-import { Game } from './Game';
+import { Game, cleanupTurnEvents } from './Game';
 import { theme } from 'theme';
 
 const INITIAL_STATE = {
@@ -49,8 +49,9 @@ export const Room = () => {
   }, [roomName, username]);
 
   useEffect(() => {
-    const handleCurrentGameState = (state: GameState) => {
+    const handleCurrentGameState = (state: GameState, room: string) => {
       setGameState(state);
+      cleanupTurnEvents(room);
     };
     const handleGameEnded = (score: Score[]) => {
       setGameScore(score);

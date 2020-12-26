@@ -6,9 +6,8 @@ import { InvitePlayer } from 'components/InvitePlayer';
 import { gameIO } from 'lib/socket';
 import { noop } from 'lodash';
 import { useParams } from 'react-router-dom';
-import { GameTurnEvent, PlayerState } from 'shared';
+import { GameTurnEvent, PlayerState, cardKey } from 'shared';
 import { Box, BoxProps, Grid } from 'theme-ui';
-import { cardKey } from 'utils/cards';
 
 type Props = {
   player: PlayerState;

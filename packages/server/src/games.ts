@@ -55,7 +55,6 @@ export function updateGameState(io: IOServer, store: Store, roomName: string, ga
       latestCaptured,
     };
     store.updateRoomState(roomName, updatedGameState);
-    console.info(GameEvent.CurrentState, updatedGameState);
     io.in(roomName).emit(GameEvent.CurrentState, updatedGameState);
   }
 }

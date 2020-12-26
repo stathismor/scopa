@@ -10,9 +10,16 @@ export type PlayerState = {
 export const GameEvent = {
   CurrentState: 'current-game-state',
   UpdateState: 'update-game-state',
+  PlayerAction: 'player-action',
   Scopa: 'scopa-game-state',
 } as const;
 export type GameEvent = typeof GameEvent[keyof typeof GameEvent];
+
+export const PlayerActionType = {
+  PlayOnTable: 'play-on-table',
+  Capture: 'capture',
+} as const;
+export type PlayerActionType = typeof PlayerActionType[keyof typeof PlayerActionType];
 
 export const GameStatus = {
   Waiting: 'waiting',
@@ -22,21 +29,19 @@ export const GameStatus = {
 } as const;
 export type GameStatus = typeof GameStatus[keyof typeof GameStatus];
 
-type GameStateStatus =
-  | {
-      status: typeof GameStatus.Started | typeof GameStatus.Playing;
-      activePlayer: string;
-    }
-  | {
-      status: typeof GameStatus.Waiting | typeof GameStatus.Ended;
-      activePlayer: null;
-    };
-
-export type GameState = GameStateStatus & {
+export type GameState = {
+  status: typeof GameStatus.Started | typeof GameStatus.Playing | typeof GameStatus.Waiting | typeof GameStatus.Ended;
+  activePlayer: string;
   deck: Card[];
   table: Card[];
   players: PlayerState[];
   latestCaptured: string;
+};
+
+export type PlayerAction = {
+  action: PlayerActionType;
+  playerName: string;
+  card: string;
 };
 
 type ScoreDetail = {

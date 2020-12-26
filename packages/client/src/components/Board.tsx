@@ -2,9 +2,8 @@ import { Dispatch, SetStateAction } from 'react';
 import { cardDrop, cardWrapper, BOARD_MIN_WIDTH } from 'components/Cards/style';
 import { CardWrapper } from 'components/Cards/CardWrapper';
 import { Box, Flex, Grid } from 'theme-ui';
-import { cardKey } from 'utils/cards';
 import { Card } from './Cards/Card';
-import { Deck as DeckType } from 'shared';
+import { Deck as DeckType, cardKey } from 'shared';
 import { Deck } from './Cards/Deck';
 
 type Props = {

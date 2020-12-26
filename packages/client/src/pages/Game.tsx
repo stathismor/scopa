@@ -4,9 +4,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { jsx } from 'theme-ui';
 import { useUserData } from 'components/UserContext';
 import { GameTable } from 'components/GameTable';
-import { GameEvent, GameState, GameStatus, Score, Suit } from 'shared';
+import { GameEvent, GameState, GameStatus, Score, Suit, cardKey, fromCardKey, PlayerActionType } from 'shared';
 import { sum } from 'lodash';
-import { cardKey, fromCardKey } from 'utils/cards';
 import { Opponent } from '../components/Players/Opponent';
 import { Player } from '../components/Players/Player';
 import { gameIO } from 'lib/socket';
@@ -72,20 +71,11 @@ export const Game = ({ gameState, gameScore }: { gameState: GameState; gameScore
   const playCardOnTable = () => {
     if (activePlayerCard) {
       console.log('Emit: Card is going to the table');
-      gameIO.emit(GameEvent.UpdateState, roomName, {
-        ...gameState,
-        activePlayer: opponent.username,
-        players: [
-          opponent,
-          {
-            ...player,
-            hand: player.hand.filter((c) => cardKey(c) !== activePlayerCard),
-          },
-        ],
-        table: [...gameState.table, fromCardKey(activePlayerCard)],
+      gameIO.emit(GameEvent.PlayerAction, roomName, {
+        action: PlayerActionType.PlayOnTable,
+        playerName: player.username,
+        card: activePlayerCard,
       });
-      // TODO Might need to add a timeout here to keep the space of the card and avoid flickering
-      togglePlayerActiveCard(null);
     }
   };
   return (

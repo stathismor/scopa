@@ -76,6 +76,7 @@ export const Game = ({ gameState, gameScore }: { gameState: GameState; gameScore
         playerName: player.username,
         card: activePlayerCard,
       });
+      togglePlayerActiveCard(null);
     }
   };
   return (

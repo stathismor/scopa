@@ -64,24 +64,22 @@ export function updateGameState(io: IOServer, store: Store, roomName: string, ga
  * but an intermediate one to help the following calculations.
  */
 function calculatePlayerAction(oldState: GameState, playerAction: PlayerAction) {
-  const activePlayer = oldState.players.filter((playerState) => playerState.username === playerAction.playerName)[0];
-  // TODO: Later on we will need to add order of players, built into the model
-  const opponent = oldState.players.filter((playerState) => playerState.username !== playerAction.playerName)[0];
-  const hand = activePlayer.hand.filter((c) => cardKey(c) !== playerAction.card);
-  const table = [...oldState.table, fromCardKey(playerAction.card)];
+  const newState = { ...oldState };
 
-  const newState = {
-    ...oldState,
-    activePlayer: opponent.username,
-    players: [
-      opponent,
-      {
-        ...activePlayer,
-        hand,
-      },
-    ],
-    table,
-  };
+  const [activePlayer] = oldState.players.filter((playerState) => playerState.username === playerAction.playerName);
+  // TODO: Later on we will need to add order of players, built into the model
+  const [opponent] = oldState.players.filter((playerState) => playerState.username !== playerAction.playerName);
+  const hand = activePlayer.hand.filter((c) => cardKey(c) !== playerAction.card);
+
+  newState.activePlayer = opponent.username;
+  newState.players = [
+    opponent,
+    {
+      ...activePlayer,
+      hand,
+    },
+  ];
+  newState.table.push(fromCardKey(playerAction.card));
 
   return newState;
 }
@@ -94,7 +92,7 @@ function calculatePlayerTurn(oldState: GameState) {
 
   const isRoundFinshed = oldState.players.every((player) => player.hand.length === 0);
   const isMatchFinished = isRoundFinshed && oldState.deck.length === 0;
-  let newState = <GameState>{};
+  let newState = { ...oldState };
 
   // If match is finished (players and deck have no cards left), we add the remaining table
   // cards to the player captured last and change the status to Ended.
@@ -105,14 +103,7 @@ function calculatePlayerTurn(oldState: GameState) {
       }
     });
 
-    newState = {
-      ...rest,
-      status: GameStatus.Ended,
-      table,
-      players,
-      deck,
-      latestCaptured,
-    };
+    newState.status = GameStatus.Ended;
   } else {
     // If match has not finished but table is empty, this means a Scopa took place.
     if (table.length === 0) {
@@ -127,13 +118,8 @@ function calculatePlayerTurn(oldState: GameState) {
         player.hand = deck.splice(0, 3);
       });
     }
-    newState = {
-      ...rest,
-      table,
-      players,
-      deck,
-      latestCaptured,
-    };
+    newState.players = players;
+    newState.deck = deck;
   }
 
   return newState;

@@ -12,12 +12,12 @@ export const UserContext = createContext<{
 const persistedUsername = getStoredUsername();
 export const UserProvider: FC = ({ children }) => {
   const [username, setUsername] = useState<string>(persistedUsername ?? '');
-  const hasUsername = useRef(username !== '');
+  const isUsernameMissing = useRef(username === '');
 
   const handleUsernameCreated = (randomUsername: string) => {
     setUsername(randomUsername);
     persistUsername(randomUsername);
-    hasUsername.current = false;
+    isUsernameMissing.current = true;
   };
 
   useEffect(() => {
@@ -27,13 +27,13 @@ export const UserProvider: FC = ({ children }) => {
 
     // We check if username exists to avoid double-registering the callback.
     // Same for de-registering.
-    if (!hasUsername.current) {
+    if (isUsernameMissing.current) {
       gameIO.emit(UserEvent.UsernameMissing);
       gameIO.on(UserEvent.UsernameCreated, handleUsernameCreated);
     }
 
     return () => {
-      if (!hasUsername.current) {
+      if (isUsernameMissing.current) {
         gameIO.off(UserEvent.UsernameCreated, handleUsernameCreated);
       }
     };

@@ -1,5 +1,5 @@
 import { Server as IOServer } from 'socket.io';
-import { last } from 'lodash';
+import { last, cloneDeep } from 'lodash';
 import { Card, GameEvent, GameState, GameStatus, PlayerAction, cardKey, fromCardKey, PlayerActionType } from 'shared';
 import { Store } from './Store';
 import { finalScore } from './scores';
@@ -64,7 +64,7 @@ export function updateGameState(io: IOServer, store: Store, roomName: string, ga
  * but an intermediate one to help the following calculations.
  */
 function calculatePlayerAction(oldState: GameState, playerAction: PlayerAction) {
-  const newState = { ...oldState };
+  const newState = cloneDeep(oldState);
 
   const [activePlayer] = oldState.players.filter((playerState) => playerState.username === playerAction.playerName);
   // TODO: Later on we will need to add order of players, built into the model
@@ -92,7 +92,7 @@ function calculatePlayerTurn(oldState: GameState) {
 
   const isRoundFinshed = oldState.players.every((player) => player.hand.length === 0);
   const isMatchFinished = isRoundFinshed && oldState.deck.length === 0;
-  let newState = { ...oldState };
+  let newState = cloneDeep(oldState);
 
   // If match is finished (players and deck have no cards left), we add the remaining table
   // cards to the player captured last and change the status to Ended.

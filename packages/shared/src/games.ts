@@ -30,7 +30,7 @@ export const GameStatus = {
 export type GameStatus = typeof GameStatus[keyof typeof GameStatus];
 
 export type GameState = {
-  status: typeof GameStatus.Started | typeof GameStatus.Playing | typeof GameStatus.Waiting | typeof GameStatus.Ended;
+  status: GameStatus;
   activePlayer: string;
   deck: Card[];
   table: Card[];

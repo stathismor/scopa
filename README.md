@@ -2,6 +2,11 @@
 
 Scopa
 
+# Setup
+
+1. Install [Node.js](https://nodejs.org/en/download/package-manager/)
+2. Install and start [Redis](https://redis.io/topics/quickstart)
+
 # Run
 
 ## Locally

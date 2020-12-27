@@ -1,10 +1,10 @@
 import { Server as IOServer } from 'socket.io';
 import { last, cloneDeep } from 'lodash';
-import { Card, GameEvent, GameState, GameStatus, PlayerAction, cardKey, fromCardKey, PlayerActionType } from 'shared';
-import { Store } from './Store';
+import { Card, GameEvent, GameState, GameStatus, PlayerAction, cardKey, fromCardKey } from 'shared';
 import { finalScore } from './scores';
+import { getRoomState, addGameState } from './controllers/roomController';
 
-export function updateGameState(io: IOServer, store: Store, roomName: string, gameState: GameState) {
+export async function updateGameState(io: IOServer, roomName: string, gameState: GameState) {
   const isRoundFinshed = gameState.players.every((player) => player.hand.length === 0);
 
   const isMatchFinished = isRoundFinshed && gameState.deck.length === 0;
@@ -25,7 +25,7 @@ export function updateGameState(io: IOServer, store: Store, roomName: string, ga
       table: [],
     };
 
-    store.updateRoomState(roomName, updatedGameState);
+    await addGameState(roomName, updatedGameState);
     console.info(GameEvent.CurrentState, updatedGameState);
     io.in(roomName).emit(GameEvent.CurrentState, updatedGameState);
     console.info(GameStatus.Ended);
@@ -54,7 +54,7 @@ export function updateGameState(io: IOServer, store: Store, roomName: string, ga
       deck,
       latestCaptured,
     };
-    store.updateRoomState(roomName, updatedGameState);
+    await addGameState(roomName, updatedGameState);
     io.in(roomName).emit(GameEvent.CurrentState, updatedGameState);
   }
 }
@@ -125,8 +125,8 @@ function calculatePlayerTurn(oldState: GameState) {
   return newState;
 }
 
-export function updateGameStateNew(io: IOServer, store: Store, roomName: string, playerAction: PlayerAction) {
-  const oldState = store.getRoomState(roomName);
+export async function updateGameStateNew(io: IOServer, roomName: string, playerAction: PlayerAction) {
+  const oldState = await getRoomState(roomName);
 
   if (!oldState) {
     // TODO: Need to think about this, this should not be possible I think,
@@ -137,6 +137,6 @@ export function updateGameStateNew(io: IOServer, store: Store, roomName: string,
   const tempState = calculatePlayerAction(oldState, playerAction);
   const finalState = calculatePlayerTurn(tempState);
 
-  store.updateRoomState(roomName, finalState);
+  addGameState(roomName, finalState);
   io.in(roomName).emit(GameEvent.CurrentState, finalState);
 }

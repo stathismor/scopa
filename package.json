@@ -14,7 +14,8 @@
     "heroku-server": "yarn workspace server heroku-start",
     "shared": "yarn workspace shared start",
     "start": "concurrently --kill-others-on-fail \"yarn server\" \"yarn shared\" \"yarn client\"",
-    "heroku-postbuild": "yarn workspaces run build"
+    "heroku-postbuild": "yarn workspaces run build",
+    "test": "echo \"Look at all those tests!\""
   },
   "dependencies": {
     "concurrently": "^5.3.0"

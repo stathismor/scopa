@@ -4,9 +4,8 @@ import { Deck } from 'components/Cards/Deck';
 import { playerCardWrapper } from 'components/Cards/style';
 import { InvitePlayer } from 'components/InvitePlayer';
 import { noop } from 'lodash';
-import { PlayerState } from 'shared';
+import { PlayerState, cardKey } from 'shared';
 import { Box, BoxProps, Grid } from 'theme-ui';
-import { cardKey } from 'utils/cards';
 
 type Props = {
   player: PlayerState;

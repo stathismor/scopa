@@ -1,8 +1,7 @@
 import { Card } from 'components/Cards/Card';
 import { Deck } from 'components/Cards/Deck';
-import { PlayerState } from 'shared';
+import { PlayerState, cardKey } from 'shared';
 import { Box, BoxProps, Grid, Text } from 'theme-ui';
-import { cardKey } from 'utils/cards';
 
 export const Opponent = ({ player, ...rest }: { player: PlayerState } & BoxProps) => {
   if (!player) {

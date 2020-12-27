@@ -4,7 +4,6 @@ import { UserEvent, RoomEvent, GameEvent, GameState } from 'shared';
 import { createUsername } from './users';
 import { createRoom, joinRoom } from './rooms';
 import { updateGameState } from './games';
-import { Store } from './Store';
 
 export const createSocket = (server: HTTPServer) => {
   const io = new IOServer(server, {
@@ -14,27 +13,25 @@ export const createSocket = (server: HTTPServer) => {
     },
   });
 
-  const store = new Store();
-
   io.on('connection', (socket: Socket) => {
     socket.on('disconnect', () => {
       console.log('user disconnected');
     });
 
     socket.on(UserEvent.UsernameMissing, () => {
-      createUsername(socket, store);
+      createUsername(socket);
     });
 
     socket.on(RoomEvent.Create, async (username: string) => {
-      createRoom(io, socket, store, username);
+      await createRoom(io, socket, username);
     });
 
     socket.on(RoomEvent.Join, async (roomName: string, username: string) => {
-      await joinRoom(io, socket, store, roomName, username);
+      await joinRoom(io, socket, roomName, username);
     });
 
-    socket.on(GameEvent.UpdateState, (roomName: string, gameState: GameState) => {
-      updateGameState(io, store, roomName, gameState);
+    socket.on(GameEvent.UpdateState, async (roomName: string, gameState: GameState) => {
+      await updateGameState(io, roomName, gameState);
     });
   });
 };

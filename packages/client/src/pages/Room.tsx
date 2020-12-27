@@ -12,7 +12,7 @@ import { theme } from 'theme';
 
 const INITIAL_STATE = {
   status: GameStatus.Waiting,
-  activePlayer: null,
+  activePlayer: '',
   deck: [],
   table: [],
   players: [],

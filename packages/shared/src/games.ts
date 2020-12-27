@@ -22,17 +22,9 @@ export const GameStatus = {
 } as const;
 export type GameStatus = typeof GameStatus[keyof typeof GameStatus];
 
-type GameStateStatus =
-  | {
-      status: typeof GameStatus.Started | typeof GameStatus.Playing;
-      activePlayer: string;
-    }
-  | {
-      status: typeof GameStatus.Waiting | typeof GameStatus.Ended;
-      activePlayer: null;
-    };
-
-export type GameState = GameStateStatus & {
+export type GameState = {
+  status: GameStatus;
+  activePlayer: string;
   deck: Card[];
   table: Card[];
   players: PlayerState[];

@@ -1,3 +1,5 @@
+import { GameState } from 'shared';
+
 export type Player = {
   name: string;
 };

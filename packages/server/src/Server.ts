@@ -1,6 +1,7 @@
 import express, { Application, Request, Response, NextFunction } from 'express';
 import { createServer as CreateHTTPServer, Server as HTTPServer } from 'http';
 import cors from 'cors';
+import { getRooms } from './controllers/roomController';
 
 export const createServer = () => {
   const app: Application = express();
@@ -10,8 +11,9 @@ export const createServer = () => {
   app.use(cors({ origin: process.env.HTTP_ORIGIN }));
 
   // Application routing
-  app.get('/users', (req: Request, res: Response, next: NextFunction) => {
-    res.status(200).send({ data: ['user1', 'user2'] });
+  app.get('/rooms', async (req: Request, res: Response, next: NextFunction) => {
+    const rooms = await getRooms();
+    res.status(200).send(rooms);
   });
 
   return app.listen(process.env.PORT, () => {

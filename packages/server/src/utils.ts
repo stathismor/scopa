@@ -1,6 +1,7 @@
 import { shuffle, range, sample } from 'lodash';
 import { GameState, PlayerState, Suit, Card, GameStatus, Deck } from 'shared';
 import { uniqueNamesGenerator, Config, adjectives, colors, animals } from 'unique-names-generator';
+import { ROOM_PREFIX } from './database/schema';
 
 const customConfig: Config = {
   dictionaries: [adjectives, colors, animals],
@@ -9,7 +10,7 @@ const customConfig: Config = {
 };
 
 export function generateRoomName(): string {
-  return 'room-' + Math.random().toString(36).substring(4);
+  return `${ROOM_PREFIX}-${Math.random().toString(36).substring(4)}`;
 }
 
 export function generateUsername(): string {

@@ -1,8 +1,8 @@
 import { Server as IOServer } from 'socket.io';
 import { last, cloneDeep } from 'lodash';
-import { Card, GameEvent, GameState, GameStatus, PlayerAction, cardKey, fromCardKey } from 'shared';
+import { Card, GameEvent, GameState, GameStatus, PlayerAction, cardKey, fromCardKey, PlayerActionType } from 'shared';
 import { finalScore } from './scores';
-import { getRoomState, addGameState } from './controllers/roomController';
+import { getRoomState, addGameState, removeGameState } from './controllers/roomController';
 
 export async function updateGameState(io: IOServer, roomName: string, gameState: GameState) {
   const isRoundFinshed = gameState.players.every((player) => player.hand.length === 0);
@@ -66,21 +66,42 @@ export async function updateGameState(io: IOServer, roomName: string, gameState:
 function calculatePlayerAction(oldState: GameState, playerAction: PlayerAction) {
   const newState = cloneDeep(oldState);
 
-  const [activePlayer] = oldState.players.filter((playerState) => playerState.username === playerAction.playerName);
   // TODO: Later on we will need to add order of players, built into the model
-  const [opponent] = oldState.players.filter((playerState) => playerState.username !== playerAction.playerName);
+  const { activePlayer, opponent } = Object.fromEntries(
+    oldState?.players?.map((player) => [
+      player.username === oldState?.activePlayer ? 'activePlayer' : 'opponent',
+      player,
+    ]),
+  );
+
   const hand = activePlayer.hand.filter((c) => cardKey(c) !== playerAction.card);
 
   newState.activePlayer = opponent.username;
-  newState.players = [
-    opponent,
-    {
-      ...activePlayer,
-      hand,
-    },
-  ];
-  newState.table.push(fromCardKey(playerAction.card));
-
+  if (playerAction.action === PlayerActionType.PlayOnTable) {
+    newState.players = [
+      opponent,
+      {
+        ...activePlayer,
+        hand,
+      },
+    ];
+    newState.table.push(fromCardKey(playerAction.card));
+  } else if (playerAction.action === PlayerActionType.Capture) {
+    newState.players = [
+      opponent,
+      {
+        ...activePlayer,
+        hand,
+        captured: [
+          ...activePlayer.captured,
+          fromCardKey(playerAction.card),
+          ...(playerAction?.tableCards?.map((c) => fromCardKey(c)) ?? []),
+        ],
+      },
+    ];
+    newState.table = newState.table.filter((c) => !playerAction?.tableCards?.includes(cardKey(c)));
+    newState.latestCaptured = activePlayer.username;
+  }
   return newState;
 }
 
@@ -88,12 +109,12 @@ function calculatePlayerAction(oldState: GameState, playerAction: PlayerAction) 
  * Calculate the new game state, as it should be at the end of a player's turn.
  */
 function calculatePlayerTurn(oldState: GameState) {
-  const { players, deck, table, latestCaptured, ...rest } = oldState;
+  const newState = cloneDeep(oldState);
+
+  const { players, deck, table, latestCaptured } = newState;
 
   const isRoundFinshed = oldState.players.every((player) => player.hand.length === 0);
   const isMatchFinished = isRoundFinshed && oldState.deck.length === 0;
-  let newState = cloneDeep(oldState);
-
   // If match is finished (players and deck have no cards left), we add the remaining table
   // cards to the player captured last and change the status to Ended.
   if (isMatchFinished) {
@@ -102,7 +123,7 @@ function calculatePlayerTurn(oldState: GameState) {
         player.captured.push(...table);
       }
     });
-
+    newState.table = [];
     newState.status = GameStatus.Ended;
   } else {
     // If match has not finished but table is empty, this means a Scopa took place.
@@ -118,11 +139,11 @@ function calculatePlayerTurn(oldState: GameState) {
         player.hand = deck.splice(0, 3);
       });
     }
-    newState.players = players;
-    newState.deck = deck;
   }
+  newState.players = players;
+  newState.deck = deck;
 
-  return newState;
+  return [newState, isMatchFinished] as const;
 }
 
 export async function updateGameStateNew(io: IOServer, roomName: string, playerAction: PlayerAction) {
@@ -134,9 +155,19 @@ export async function updateGameStateNew(io: IOServer, roomName: string, playerA
     return;
   }
 
+  if (playerAction.action === PlayerActionType.Undo) {
+    await removeGameState(roomName);
+    const prevState = await getRoomState(roomName);
+    io.in(roomName).emit(GameEvent.CurrentState, prevState);
+    return;
+  }
+
   const tempState = calculatePlayerAction(oldState, playerAction);
-  const finalState = calculatePlayerTurn(tempState);
+  const [finalState, isMatchFinished] = calculatePlayerTurn(tempState);
 
   addGameState(roomName, finalState);
   io.in(roomName).emit(GameEvent.CurrentState, finalState);
+  if (isMatchFinished) {
+    io.in(roomName).emit(GameStatus.Ended, finalScore(finalState.players));
+  }
 }

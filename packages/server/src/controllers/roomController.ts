@@ -34,6 +34,12 @@ export async function addGameState(roomName: string, state: GameState) {
   await redisClient.setRoom(roomName, room);
 }
 
+export async function removeGameState(roomName: string) {
+  const room = await getRoom(roomName);
+  room.states.pop();
+  await redisClient.setRoom(roomName, room);
+}
+
 export async function getRoomState(roomName: string): Promise<GameState | undefined> {
   const room = await redisClient.getRoom(roomName);
 

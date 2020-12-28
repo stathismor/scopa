@@ -14,7 +14,7 @@ export const Deck = ({ cardNumber, scopa, ...rest }: { cardNumber: number; scopa
           key={card.value + card.suit}
           sx={{
             position: 'absolute',
-            zIndex: -1,
+            zIndex: -i - 1,
             top: [
               `calc(-${CARD_HEIGHT_MOBILE / 10}vw - ${i * 10}px)`,
               null,

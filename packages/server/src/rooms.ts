@@ -6,7 +6,7 @@ import { generateRoomName, generateGameState } from './utils';
 
 const MAX_ROOM_SIZE = 2;
 
-export async function createRoom(io: IOServer, socket: Socket, username: string) {
+export async function createRoom(socket: Socket) {
   const roomName = generateRoomName();
 
   const room = await getRoom(roomName);

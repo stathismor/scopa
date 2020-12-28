@@ -47,7 +47,7 @@ export const Lobby = () => {
           <Button
             variant="outline"
             sx={{ display: 'flex', gap: 2, alignItems: 'center', ml: 3 }}
-            onClick={() => gameIO.emit(RoomEvent.Create, username)}
+            onClick={() => gameIO.emit(RoomEvent.Create)}
           >
             Create a new game <FiArrowRightCircle />
           </Button>

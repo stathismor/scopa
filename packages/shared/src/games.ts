@@ -18,6 +18,7 @@ export type GameEvent = typeof GameEvent[keyof typeof GameEvent];
 export const PlayerActionType = {
   PlayOnTable: 'play-on-table',
   Capture: 'capture',
+  Undo: 'undo',
 } as const;
 export type PlayerActionType = typeof PlayerActionType[keyof typeof PlayerActionType];
 
@@ -42,6 +43,7 @@ export type PlayerAction = {
   action: PlayerActionType;
   playerName: string;
   card: string;
+  cardsFromTable?: string[];
 };
 
 type ScoreDetail = {

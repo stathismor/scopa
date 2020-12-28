@@ -1,10 +1,10 @@
 /** @jsx jsx */
 /** @jsxRuntime classic */
 import { useEffect, useMemo, useState } from 'react';
-import { jsx } from 'theme-ui';
+import { Button, Flex, jsx } from 'theme-ui';
 import { useUserData } from 'components/UserContext';
 import { GameTable } from 'components/GameTable';
-import { GameEvent, GameState, GameStatus, Score, Suit, cardKey, fromCardKey, PlayerActionType } from 'shared';
+import { GameEvent, GameState, GameStatus, Score, Suit, fromCardKey, PlayerActionType } from 'shared';
 import { sum } from 'lodash';
 import { Opponent } from '../components/Players/Opponent';
 import { Player } from '../components/Players/Player';
@@ -13,6 +13,7 @@ import { useParams } from 'react-router-dom';
 import { Board } from 'components/Board';
 import { GameScore } from 'components/GameScore';
 import { PlayerName } from 'components/Players/PlayerName';
+import { FiRotateCcw } from 'react-icons/fi';
 
 const SETTEBELLO = {
   value: 7,
@@ -22,51 +23,32 @@ const SETTEBELLO = {
 export const Game = ({ gameState, gameScore }: { gameState: GameState; gameScore?: Score[] }) => {
   const [activePlayerCard, togglePlayerActiveCard] = useState<string | null>(null);
   const [activeCardsOnTable, toggleActiveCardsOnTable] = useState<string[]>([]);
-  const [movingCards, toggleMovingCards] = useState<string[]>([]);
   const { username } = useUserData();
   const { roomName } = useParams<{ roomName: string }>();
 
   const { activePlayer, deck, table, players } = gameState;
 
   // TODO figure out what to do when more than 2 players
-  const [opponent] = useMemo(() => players.filter((player) => player.username !== username), [players, username]);
-  const [player] = useMemo(() => players.filter((player) => player.username === username), [players, username]);
+  const { player, opponent } = useMemo(
+    () => Object.fromEntries(players.map((p) => [p.username === username ? 'player' : 'opponent', p])),
+    [players, username],
+  );
   useEffect(() => {
-    let timer: NodeJS.Timeout;
-
     if (activePlayerCard && activeCardsOnTable) {
       const { value: playerCardNumber } = fromCardKey(activePlayerCard);
       const tableCardsSum = sum(activeCardsOnTable.map((c) => fromCardKey(c).value));
       if (playerCardNumber === tableCardsSum) {
-        toggleMovingCards([activePlayerCard, ...activeCardsOnTable]);
-        timer = setTimeout(() => {
-          console.log('Emit: Cards are going to playerCaptured');
-          gameIO.emit(GameEvent.UpdateState, roomName, {
-            ...gameState,
-            activePlayer: opponent.username,
-            players: [
-              opponent,
-              {
-                ...player,
-                hand: player.hand.filter((c) => cardKey(c) !== activePlayerCard),
-                captured: [
-                  ...player.captured,
-                  fromCardKey(activePlayerCard),
-                  ...activeCardsOnTable.map((c) => fromCardKey(c)),
-                ],
-              },
-            ],
-            table: gameState.table.filter((c) => !activeCardsOnTable.includes(cardKey(c))),
-            latestCaptured: username,
-          });
-          togglePlayerActiveCard(null);
-          toggleActiveCardsOnTable([]);
-          toggleMovingCards([]);
-        }, 600);
+        gameIO.emit(GameEvent.PlayerAction, roomName, {
+          action: PlayerActionType.Capture,
+          playerName: player.username,
+          card: activePlayerCard,
+          cardsFromTable: activeCardsOnTable,
+        });
+        togglePlayerActiveCard(null);
+        toggleActiveCardsOnTable([]);
       }
     }
-    return () => clearTimeout(timer);
-  }, [activeCardsOnTable, activePlayerCard, gameState, opponent, player, roomName, username]);
+  }, [activeCardsOnTable, activePlayerCard, player, roomName]);
 
   const playCardOnTable = () => {
     if (activePlayerCard) {
@@ -87,17 +69,32 @@ export const Game = ({ gameState, gameScore }: { gameState: GameState; gameScore
         table={table}
         deck={gameState.status === GameStatus.Waiting ? [SETTEBELLO] : deck}
         activeCardsOnTable={activeCardsOnTable}
-        movingCards={movingCards}
+        movingCards={[]}
         toggleActiveCardsOnTable={toggleActiveCardsOnTable}
         activePlayerCard={activePlayerCard}
         playCardOnTable={playCardOnTable}
       />
       {gameScore && <GameScore gameScore={gameScore} gameState={gameState} />}
-      {player && <PlayerName playerName={`You (${player.username})`} isActive={activePlayer === player.username} />}
+      {player && (
+        <Flex>
+          <PlayerName playerName={`You (${player.username})`} isActive={activePlayer === player.username} />
+          <Button
+            onClick={() => {
+              gameIO.emit(GameEvent.PlayerAction, roomName, {
+                action: PlayerActionType.Undo,
+              });
+            }}
+            sx={{ ml: 2, lineHeight: 0 }}
+          >
+            <FiRotateCcw />
+          </Button>
+        </Flex>
+      )}
+
       <Player
         player={player}
         isActive={activePlayer === player?.username}
-        movingCards={movingCards}
+        movingCards={[]}
         togglePlayerActiveCard={togglePlayerActiveCard}
         activePlayerCard={activePlayerCard}
       />

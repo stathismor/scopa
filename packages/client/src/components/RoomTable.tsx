@@ -1,13 +1,25 @@
-import { Heading, Box, Flex, Card } from 'theme-ui';
 import { useEffect, useState } from 'react';
-import { Room } from 'shared';
+import { Heading, Box, Flex, Card } from 'theme-ui';
+import { Room, RoomEvent } from 'shared';
+import { gameIO } from '../lib/socket';
 import { getRooms } from '../lib/resources';
 
 export const RoomTable = () => {
   const [rooms, setRooms] = useState<Room[]>([]);
 
   useEffect(() => {
-    getRooms.then((data) => setRooms(data));
+    getRooms().then((data) => {
+      setRooms(data);
+    });
+
+    const handleRoomUpdate = (rooms: Room[]) => {
+      setRooms(rooms);
+    };
+    gameIO.on(RoomEvent.Update, handleRoomUpdate);
+
+    return () => {
+      gameIO.off(RoomEvent.Update, handleRoomUpdate);
+    };
   }, []);
 
   return (

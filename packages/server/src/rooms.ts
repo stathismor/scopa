@@ -3,10 +3,11 @@ import { RoomEvent, GameEvent } from 'shared';
 import { getRoom, addRoom, getRoomState, addPlayer, addGameState } from './controllers/roomController';
 import { Room, Player } from './database/schema';
 import { generateRoomName, generateGameState } from './utils';
+import { emitRoomUpdate } from './emitters/roomEmitter';
 
 const MAX_ROOM_SIZE = 2;
 
-export async function createRoom(socket: Socket) {
+export async function createRoom(io: IOServer, socket: Socket) {
   const roomName = generateRoomName();
 
   const room = await getRoom(roomName);
@@ -20,6 +21,8 @@ export async function createRoom(socket: Socket) {
   await addRoom(newRoom);
   console.info(`[CREATE] Created room ${roomName}`);
   socket.emit(RoomEvent.CreateSuccess, roomName);
+
+  await emitRoomUpdate(io);
 }
 
 export async function joinRoom(io: IOServer, socket: Socket, roomName: string, username: string) {
@@ -65,4 +68,5 @@ async function doJoinRoom(io: IOServer, socket: Socket, roomName: string) {
 
     io.in(room.name).emit(GameEvent.CurrentState, state);
   }
+  await emitRoomUpdate(io);
 }

@@ -3,20 +3,18 @@ import { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { FiArrowRightCircle } from 'react-icons/fi';
 
+import { RoomEvent } from 'shared';
 import { gameIO } from 'lib/socket';
 import { Layout } from 'components/Layout';
 import { useUserData } from 'components/UserContext';
 import { RoomTable } from 'components/RoomTable';
-import { RoomEvent } from 'shared';
 import logo from 'images/logo.svg';
 
 export const Lobby = () => {
   const history = useHistory();
 
   useEffect(() => {
-    // Socket stuff
     const handleCreateRoomSuccess = (roomName: string) => {
-      console.log(RoomEvent.CreateSuccess, roomName);
       history.push(`/game/${roomName}`);
     };
     gameIO.on(RoomEvent.CreateSuccess, handleCreateRoomSuccess);

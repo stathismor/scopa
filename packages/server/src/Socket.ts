@@ -23,7 +23,7 @@ export const createSocket = (server: HTTPServer) => {
     });
 
     socket.on(RoomEvent.Create, async () => {
-      await createRoom(socket);
+      await createRoom(io, socket);
     });
 
     socket.on(RoomEvent.Join, async (roomName: string, username: string) => {

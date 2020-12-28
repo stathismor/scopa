@@ -5,7 +5,7 @@ import { Room, Player, ROOM_PREFIX } from '../database/schema';
 
 const ROOM_MATCH_PREFIX = `${ROOM_PREFIX}-*`;
 
-export async function getRoom(roomName: string) {
+export async function getRoom(roomName: string): Promise<Room> {
   const room = await redisClient.getRoom(roomName);
   return room;
 }

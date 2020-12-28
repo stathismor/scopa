@@ -31,6 +31,11 @@ export async function getRoom(roomName: string): Promise<Room> {
 
 export async function getRooms(prefix: string) {
   const roomNames = await scanAll(prefix);
+
+  if (roomNames.length === 0) {
+    return [];
+  }
+
   const dbRooms = await mgetAsync(roomNames);
 
   const rooms = dbRooms.map((room) => {

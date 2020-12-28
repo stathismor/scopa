@@ -13,20 +13,18 @@ export const RoomTable = () => {
   return (
     <Box>
       <Heading as="h2">Rooms</Heading>
-      <Box>
-        {rooms.map((room) => (
-          <Card key={room.name} as="ul" mt={1}>
-            <Flex sx={{ flexDirection: 'column' }}>
-              <Box>
-                Room: <strong>{room.name}</strong>
-              </Box>
-              <Box>
-                Players: <strong>{room.players.map((player) => player.name).join(', ')}</strong>
-              </Box>
-            </Flex>
-          </Card>
-        ))}
-      </Box>
+      {rooms.map((room) => (
+        <Card key={room.name} mt={1}>
+          <Flex sx={{ flexDirection: 'column' }}>
+            <Box>
+              Room: <strong>{room.name}</strong>
+            </Box>
+            <Box>
+              Players: <strong>{room.players.map((player) => player.name).join(', ')}</strong>
+            </Box>
+          </Flex>
+        </Card>
+      ))}
     </Box>
   );
 };

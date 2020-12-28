@@ -1,3 +1,7 @@
+export type Player = {
+  name: string;
+};
+
 export const UserEvent = {
   UsernameCreated: 'username-created',
   UsernameMissing: 'username-missing',

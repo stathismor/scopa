@@ -1,5 +1,7 @@
 import { GameState } from 'shared';
 
+export const ROOM_PREFIX = 'room';
+
 export type Player = {
   name: string;
 };

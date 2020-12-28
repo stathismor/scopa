@@ -30,7 +30,6 @@ export async function getRoom(roomName: string): Promise<Room> {
 }
 
 export async function getRooms(prefix: string) {
-  console.log('prefix', prefix);
   const roomNames = await scanAll(prefix);
   const dbRooms = await mgetAsync(roomNames);
 

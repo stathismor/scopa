@@ -43,7 +43,7 @@ export type PlayerAction = {
   action: PlayerActionType;
   playerName: string;
   card: string;
-  cardsFromTable?: string[];
+  tableCards?: string[];
 };
 
 type ScoreDetail = {

@@ -42,7 +42,7 @@ export const Game = ({ gameState, gameScore }: { gameState: GameState; gameScore
           action: PlayerActionType.Capture,
           playerName: player.username,
           card: activePlayerCard,
-          cardsFromTable: activeCardsOnTable,
+          tableCards: activeCardsOnTable,
         });
         togglePlayerActiveCard(null);
         toggleActiveCardsOnTable([]);

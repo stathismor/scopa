@@ -95,11 +95,11 @@ function calculatePlayerAction(oldState: GameState, playerAction: PlayerAction) 
         captured: [
           ...activePlayer.captured,
           fromCardKey(playerAction.card),
-          ...(playerAction?.cardsFromTable?.map((c) => fromCardKey(c)) ?? []),
+          ...(playerAction?.tableCards?.map((c) => fromCardKey(c)) ?? []),
         ],
       },
     ];
-    newState.table = newState.table.filter((c) => !playerAction?.cardsFromTable?.includes(cardKey(c)));
+    newState.table = newState.table.filter((c) => !playerAction?.tableCards?.includes(cardKey(c)));
     newState.latestCaptured = activePlayer.username;
   }
   return newState;

@@ -6,6 +6,7 @@ import { FiArrowRightCircle } from 'react-icons/fi';
 import { gameIO } from 'lib/socket';
 import { Layout } from 'components/Layout';
 import { useUserData } from 'components/UserContext';
+import { RoomTable } from 'components/RoomTable';
 import { RoomEvent } from 'shared';
 import logo from 'images/logo.svg';
 
@@ -56,6 +57,7 @@ export const Lobby = () => {
           <Heading as="h3">Briscola 🔜</Heading>
         </Flex>
       </ul>
+      <RoomTable />
     </Layout>
   );
 };

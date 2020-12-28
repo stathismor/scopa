@@ -1,3 +1,10 @@
+import { Player } from './users';
+
+export type Room = {
+  name: string;
+  players: Player[];
+};
+
 export const RoomState = {
   Joined: 'joined',
   Failed: 'failed',

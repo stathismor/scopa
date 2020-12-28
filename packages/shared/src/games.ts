@@ -9,7 +9,6 @@ export type PlayerState = {
 
 export const GameEvent = {
   CurrentState: 'current-game-state',
-  UpdateState: 'update-game-state',
   PlayerAction: 'player-action',
   Scopa: 'scopa-game-state',
 } as const;
@@ -55,4 +54,17 @@ type ScoreDetail = {
 export type Score = {
   details: readonly ScoreDetail[];
   total: number;
+};
+
+export const GameAnimationType = {
+  PlayCard: 'card-on-table',
+  DealCards: 'dealing-cards',
+  CaptureCards: 'captured-cards',
+  FlipCards: 'flip-cards',
+};
+export type GameAnimationType = typeof GameAnimationType[keyof typeof GameAnimationType];
+
+export type GameAnimation = {
+  kind: GameAnimationType;
+  cards: string[];
 };

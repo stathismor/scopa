@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Box, Button } from 'theme-ui';
 import { Link } from 'react-router-dom';
 import { FiArrowLeftCircle } from 'react-icons/fi';
 import { Layout } from 'components/Layout';
 import { gameIO } from 'lib/socket';
-import { RoomState, RoomEvent, GameEvent, GameState, GameStatus, Score } from 'shared';
+import { RoomState, RoomEvent, GameEvent, GameState, GameStatus, Score, GameAnimation } from 'shared';
 import { useUserData } from 'components/UserContext';
 import { Game } from './Game';
 import { theme } from 'theme';
@@ -19,6 +19,8 @@ const INITIAL_STATE = {
   latestCaptured: '',
 };
 
+const ANIMATION_DURATION = 600;
+
 export const Room = () => {
   const [status, setStatus] = useState<RoomState>(RoomState.Pending);
   const [errorMessage, setErrorMessage] = useState('');
@@ -26,6 +28,7 @@ export const Room = () => {
   const { username } = useUserData();
   const [gameState, setGameState] = useState<GameState>(INITIAL_STATE);
   const [gameScore, setGameScore] = useState<Score[]>();
+  const [gameAnimations, setAnimations] = useState<GameAnimation[]>();
 
   useEffect(() => {
     const handleSuccess = () => {
@@ -48,9 +51,15 @@ export const Room = () => {
     };
   }, [roomName, username]);
 
+  const timer = useRef<NodeJS.Timeout>();
+
   useEffect(() => {
-    const handleCurrentGameState = (state: GameState) => {
-      setGameState(state);
+    const handleCurrentGameState = (state: GameState, animations: GameAnimation[]) => {
+      setAnimations(animations);
+      timer.current = setTimeout(() => {
+        setGameState(state);
+        setAnimations(undefined);
+      }, (animations?.length ?? 0) * ANIMATION_DURATION);
     };
     const handleGameEnded = (score: Score[]) => {
       setGameScore(score);
@@ -62,6 +71,7 @@ export const Room = () => {
     return () => {
       gameIO.off(GameEvent.CurrentState, handleCurrentGameState);
       gameIO.off(GameStatus.Ended, handleGameEnded);
+      clearTimeout(timer.current as NodeJS.Timeout);
     };
   }, []);
 
@@ -76,7 +86,7 @@ export const Room = () => {
               <FiArrowLeftCircle title="Back to Lobby" size={24} color={theme.colors.text} />
             </Link>
           </Box>
-          <Game gameState={gameState} gameScore={gameScore} />
+          <Game gameState={gameState} gameScore={gameScore} gameAnimations={gameAnimations} />
         </Layout>
       );
     default:

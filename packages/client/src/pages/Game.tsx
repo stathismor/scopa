@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Button, Flex, jsx } from 'theme-ui';
 import { useUserData } from 'components/UserContext';
 import { GameTable } from 'components/GameTable';
-import { GameEvent, GameState, GameStatus, Score, Suit, fromCardKey, PlayerActionType } from 'shared';
+import { GameEvent, GameState, Score, fromCardKey, PlayerActionType, GameAnimation, GameAnimationType } from 'shared';
 import { sum } from 'lodash';
 import { Opponent } from '../components/Players/Opponent';
 import { Player } from '../components/Players/Player';
@@ -14,13 +14,44 @@ import { Board } from 'components/Board';
 import { GameScore } from 'components/GameScore';
 import { PlayerName } from 'components/Players/PlayerName';
 import { FiRotateCcw } from 'react-icons/fi';
+import { Deck } from 'components/Cards/Deck';
+import { useRef } from 'react';
+import { ReactSpringHook, useChain } from 'react-spring';
 
-const SETTEBELLO = {
-  value: 7,
-  suit: Suit.Golds,
+// @ts-ignore 
+// eslint-disable-next-line
+const useCustomAnimations = (gameAnimations: GameAnimation[]) => {
+  const dealingCardsRef = useRef<ReactSpringHook>(null);
+  const capturingCardsRef = useRef<ReactSpringHook>(null);
+  const playingCardRef = useRef<ReactSpringHook>(null);
+  const flippingCardsRef = useRef<ReactSpringHook>(null);
+
+  const springAnimations = gameAnimations?.map((animation) => {
+    switch (animation.kind) {
+      case GameAnimationType.DealCards:
+        return dealingCardsRef;
+      case GameAnimationType.CaptureCards:
+        return capturingCardsRef;
+      case GameAnimationType.FlipCards:
+        return flippingCardsRef;
+      default:
+      case GameAnimationType.PlayCard:
+        return playingCardRef;
+    }
+  });
+
+  useChain(springAnimations);
+  return {
+    dealingCardsRef,
+    capturingCardsRef,
+    playingCardRef,
+    flippingCardsRef,
+  };
 };
 
-export const Game = ({ gameState, gameScore }: { gameState: GameState; gameScore?: Score[] }) => {
+type Props = { gameState: GameState; gameScore?: Score[]; gameAnimations?: GameAnimation[] };
+
+export const Game = ({ gameState, gameScore, gameAnimations }: Props) => {
   const [activePlayerCard, togglePlayerActiveCard] = useState<string | null>(null);
   const [activeCardsOnTable, toggleActiveCardsOnTable] = useState<string[]>([]);
   const { username } = useUserData();
@@ -61,19 +92,24 @@ export const Game = ({ gameState, gameScore }: { gameState: GameState; gameScore
       togglePlayerActiveCard(null);
     }
   };
+
+  console.log(gameAnimations);
+
+  const deckLength = deck.length > 0 ? deck.length : 40;
   return (
     <GameTable>
       <Opponent player={opponent} sx={{ transform: 'rotate(180deg)' }} />
       {opponent && <PlayerName playerName={opponent.username} isActive={activePlayer === opponent.username} />}
       <Board
         table={table}
-        deck={gameState.status === GameStatus.Waiting ? [SETTEBELLO] : deck}
         activeCardsOnTable={activeCardsOnTable}
         movingCards={[]}
         toggleActiveCardsOnTable={toggleActiveCardsOnTable}
         activePlayerCard={activePlayerCard}
         playCardOnTable={playCardOnTable}
-      />
+      >
+        <Deck cardNumber={deckLength} title={`${deckLength} cards left`} />
+      </Board>
       {gameScore && <GameScore gameScore={gameScore} gameState={gameState} />}
       {player && (
         <Flex>

@@ -1,4 +1,4 @@
-import { Heading, Box, Flex } from 'theme-ui';
+import { Heading, Box, Flex, Card } from 'theme-ui';
 import { useEffect, useState } from 'react';
 import { Room } from 'shared';
 import { getRooms } from '../lib/resources';
@@ -13,16 +13,18 @@ export const RoomTable = () => {
   return (
     <Box>
       <Heading as="h2">Rooms</Heading>
-      <Box as="ul">
+      <Box>
         {rooms.map((room) => (
-          <Flex key={room.name} as="li" bg="primary" sx={{ flexDirection: 'column', mt: 1 }}>
-            <Flex>
-              Room:<strong>{room.name}</strong>
+          <Card key={room.name} as="ul" mt={1}>
+            <Flex sx={{ flexDirection: 'column' }}>
+              <Box>
+                Room: <strong>{room.name}</strong>
+              </Box>
+              <Box>
+                Players: <strong>{room.players.map((player) => player.name).join(', ')}</strong>
+              </Box>
             </Flex>
-            <Flex>
-              Players:<strong>{room.players.map((player) => player.name).join(', ')}</strong>
-            </Flex>
-          </Flex>
+          </Card>
         ))}
       </Box>
     </Box>

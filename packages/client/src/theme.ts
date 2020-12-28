@@ -51,4 +51,18 @@ export const theme = {
       },
     },
   },
+  cards: {
+    primary: {
+      padding: 2,
+      borderRadius: 4,
+      border: '1px solid',
+      borderColor: 'text',
+    },
+    compact: {
+      padding: 1,
+      borderRadius: 2,
+      border: '1px solid',
+      borderColor: 'muted',
+    },
+  },
 };

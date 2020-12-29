@@ -2,6 +2,7 @@ import { Player } from './users';
 
 export type Room = {
   name: string;
+  owner: string;
   players: Player[];
 };
 
@@ -19,5 +20,6 @@ export const RoomEvent = {
   Join: 'join-room',
   JoinSuccess: 'join-room-success',
   JoinError: 'join-room-error',
+  Update: 'room-update',
 } as const;
 export type RoomEvent = typeof RoomEvent[keyof typeof RoomEvent];

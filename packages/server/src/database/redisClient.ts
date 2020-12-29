@@ -5,6 +5,7 @@ import * as util from 'util';
 const client = createClient(process.env.REDIS_URL as ClientOpts);
 const getAsync = util.promisify(client.get).bind(client);
 const setAsync = util.promisify(client.set).bind(client);
+export const delAsync: (key: string) => Promise<number> = util.promisify(client.del).bind(client);
 const mgetAsync: (args: string[]) => Promise<string[]> = util.promisify(client.mget).bind(client);
 const scanAsync: (cursor: string, ...args: string[]) => Promise<[string, string[]]> = util
   .promisify(client.scan)
@@ -31,12 +32,17 @@ export async function getRoom(roomName: string): Promise<Room> {
 
 export async function getRooms(prefix: string) {
   const roomNames = await scanAll(prefix);
+
+  if (roomNames.length === 0) {
+    return [];
+  }
+
   const dbRooms = await mgetAsync(roomNames);
 
   const rooms = dbRooms.map((room) => {
     const value = JSON.parse(room);
-    const { name, players } = value;
-    return { name, players };
+    const { name, owner, players } = value;
+    return { name, owner, players };
   });
 
   return rooms;

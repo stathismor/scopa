@@ -55,7 +55,7 @@ export const Lobby = () => {
           <Heading as="h3">Briscola 🔜</Heading>
         </Flex>
       </ul>
-      <RoomTable />
+      <RoomTable username={username} />
     </Layout>
   );
 };

@@ -8,6 +8,7 @@ export type Player = {
 
 export type Room = {
   name: string;
+  owner: string;
   players: Player[];
   states: GameState[];
 };

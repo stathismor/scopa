@@ -2,6 +2,7 @@ import { Player } from './users';
 
 export type Room = {
   name: string;
+  owner: string;
   players: Player[];
 };
 

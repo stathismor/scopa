@@ -4,8 +4,9 @@ import { Heading, Box, Flex, Card, Button } from 'theme-ui';
 import { Room, RoomEvent } from 'shared';
 import { gameIO } from '../lib/socket';
 import { getRooms } from '../lib/resources';
+import { post } from '../utils/rest';
 
-export const RoomTable = () => {
+export const RoomTable = ({ username }: { username: string }) => {
   const [rooms, setRooms] = useState<Room[]>([]);
   const history = useHistory();
 
@@ -28,6 +29,14 @@ export const RoomTable = () => {
     history.push(`/game/${roomName}`);
   };
 
+  const deleteRoom = (roomName: string, username: string) => {
+    post(`/rooms/${roomName}`, { socketId: gameIO.id, username });
+  };
+
+  const canDelete = (room: Room) => {
+    return room.owner === username;
+  };
+
   return (
     <Box>
       <Heading as="h2">Rooms</Heading>
@@ -42,7 +51,14 @@ export const RoomTable = () => {
                 Players: <strong>{room.players.map((player) => player.name).join(', ')}</strong>
               </Box>
             </Flex>
-            <Button onClick={() => joinRoom(room.name)}>Join</Button>
+            <Box>
+              <Button variant="outline" onClick={() => joinRoom(room.name)}>
+                Join
+              </Button>
+              <Button variant="outline" disabled={!canDelete(room)} onClick={() => deleteRoom(room.name, username)}>
+                Delete
+              </Button>
+            </Box>
           </Flex>
         </Card>
       ))}

@@ -55,16 +55,3 @@ export type Score = {
   details: readonly ScoreDetail[];
   total: number;
 };
-
-export const GameAnimationType = {
-  PlayCard: 'card-on-table',
-  DealCards: 'dealing-cards',
-  CaptureCards: 'captured-cards',
-  FlipCards: 'flip-cards',
-};
-export type GameAnimationType = typeof GameAnimationType[keyof typeof GameAnimationType];
-
-export type GameAnimation = {
-  kind: GameAnimationType;
-  cards: string[];
-};

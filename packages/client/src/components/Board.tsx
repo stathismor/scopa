@@ -5,14 +5,16 @@ import { CardWrapper } from 'components/Cards/CardWrapper';
 import { Box, Flex, Grid } from 'theme-ui';
 import { Card } from './Cards/Card';
 import { Deck as DeckType, cardKey } from 'shared';
+import { MOVE_TO } from './Players/constants';
 
 type Props = {
   table: DeckType;
   activeCardsOnTable: string[];
-  movingCards: string[];
+  movingCards?: string[];
   toggleActiveCardsOnTable: Dispatch<SetStateAction<string[]>>;
   activePlayerCard: string | null;
   playCardOnTable: () => void;
+  moveTo: typeof MOVE_TO['player']
   children: ReactNode;
 };
 
@@ -23,6 +25,7 @@ export const Board = ({
   toggleActiveCardsOnTable,
   activePlayerCard,
   playCardOnTable,
+  moveTo,
   children,
 }: Props) => {
   return (
@@ -33,11 +36,12 @@ export const Board = ({
         {table.map((c) => {
           const key = cardKey(c);
           const isActive = activeCardsOnTable.includes(key);
-          const needsToMove = movingCards.includes(key);
+          const needsToMove = movingCards?.includes(key) ?? false;
           return (
             <CardWrapper
               key={key}
               isMoving={needsToMove}
+              moveTo={moveTo}
               sx={cardWrapper(isActive)}
               onClick={() => {
                 toggleActiveCardsOnTable(

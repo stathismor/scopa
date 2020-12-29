@@ -9,8 +9,6 @@ import {
   cardKey,
   fromCardKey,
   PlayerActionType,
-  GameAnimationType,
-  GameAnimation,
 } from 'shared';
 import { finalScore } from './scores';
 import { getRoomState, addGameState, removeGameState } from './controllers/roomController';
@@ -42,10 +40,6 @@ function calculatePlayerAction(oldState: GameState, playerAction: PlayerAction) 
       },
     ];
     newState.table.push(fromCardKey(playerAction.card));
-    animations.push({
-      kind: GameAnimationType.PlayCard,
-      cards: [playerAction.card],
-    });
   } else if (playerAction.action === PlayerActionType.Capture && playerAction?.tableCards !== undefined) {
     const { card, tableCards } = playerAction;
     newState.players = [
@@ -58,22 +52,14 @@ function calculatePlayerAction(oldState: GameState, playerAction: PlayerAction) 
     ];
     newState.table = newState.table.filter((c) => !tableCards.includes(cardKey(c)));
     newState.latestCaptured = activePlayer.username;
-    animations.push({
-      kind: GameAnimationType.PlayCard,
-      cards: [card],
-    });
-    animations.push({
-      kind: GameAnimationType.CaptureCards,
-      cards: [card, ...tableCards],
-    });
   }
-  return [newState, animations] as const;
+  return newState;
 }
 
 /**
  * Calculate the new game state, as it should be at the end of a player's turn.
  */
-function calculatePlayerTurn(oldState: GameState, animations: GameAnimation[]) {
+function calculatePlayerTurn(oldState: GameState) {
   const newState = cloneDeep(oldState);
 
   const { players, deck, table, latestCaptured } = newState;
@@ -90,10 +76,6 @@ function calculatePlayerTurn(oldState: GameState, animations: GameAnimation[]) {
         }
       });
       newState.table = [];
-      animations.push({
-        kind: GameAnimationType.CaptureCards,
-        cards: table.map((c) => cardKey(c)),
-      });
     }
     newState.status = GameStatus.Ended;
   } else {
@@ -103,10 +85,6 @@ function calculatePlayerTurn(oldState: GameState, animations: GameAnimation[]) {
         if (player.username === latestCaptured) {
           const lastCard = last(player.captured) as Card;
           player.scopa.push(lastCard);
-          animations.push({
-            kind: GameAnimationType.FlipCards,
-            cards: [cardKey(lastCard)],
-          });
         }
       });
     }
@@ -114,16 +92,12 @@ function calculatePlayerTurn(oldState: GameState, animations: GameAnimation[]) {
       players.forEach((player) => {
         player.hand = deck.splice(0, 3);
       });
-      animations.push({
-        kind: GameAnimationType.DealCards,
-        cards: players.map((p) => p.hand.map((c) => cardKey(c))).flat(),
-      });
     }
   }
   newState.players = players;
   newState.deck = deck;
 
-  return [newState, animations, isMatchFinished] as const;
+  return [newState, isMatchFinished] as const;
 }
 
 export async function updateGameState(io: IOServer, roomName: string, playerAction: PlayerAction) {
@@ -142,11 +116,11 @@ export async function updateGameState(io: IOServer, roomName: string, playerActi
     return;
   }
 
-  const [tempState, tempAnimations] = calculatePlayerAction(oldState, playerAction);
-  const [finalState, animations, isMatchFinished] = calculatePlayerTurn(tempState, tempAnimations);
+  const tempState = calculatePlayerAction(oldState, playerAction);
+  const [finalState, isMatchFinished] = calculatePlayerTurn(tempState);
 
   addGameState(roomName, finalState);
-  io.in(roomName).emit(GameEvent.CurrentState, finalState, animations);
+  io.in(roomName).emit(GameEvent.CurrentState, finalState, playerAction);
   if (isMatchFinished) {
     io.in(roomName).emit(GameStatus.Ended, finalScore(finalState.players));
   }

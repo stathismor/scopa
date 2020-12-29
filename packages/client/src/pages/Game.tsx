@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Button, Flex, jsx } from 'theme-ui';
 import { useUserData } from 'components/UserContext';
 import { GameTable } from 'components/GameTable';
-import { GameEvent, GameState, Score, fromCardKey, PlayerActionType, GameAnimation, GameAnimationType } from 'shared';
+import { GameEvent, GameState, Score, fromCardKey, PlayerActionType, PlayerAction } from 'shared';
 import { sum } from 'lodash';
 import { Opponent } from '../components/Players/Opponent';
 import { Player } from '../components/Players/Player';
@@ -15,43 +15,32 @@ import { GameScore } from 'components/GameScore';
 import { PlayerName } from 'components/Players/PlayerName';
 import { FiRotateCcw } from 'react-icons/fi';
 import { Deck } from 'components/Cards/Deck';
-import { useRef } from 'react';
-import { ReactSpringHook, useChain } from 'react-spring';
+import { MOVE_TO } from 'components/Players/constants';
+// import { useRef } from 'react';
+// import { ReactSpringHook } from 'react-spring';
 
-// @ts-ignore 
+// @ts-ignore
 // eslint-disable-next-line
-const useCustomAnimations = (gameAnimations: GameAnimation[]) => {
-  const dealingCardsRef = useRef<ReactSpringHook>(null);
-  const capturingCardsRef = useRef<ReactSpringHook>(null);
-  const playingCardRef = useRef<ReactSpringHook>(null);
-  const flippingCardsRef = useRef<ReactSpringHook>(null);
+// const useStateMachine = (player: PlayerState, opponent: PlayerState, latestAction?: PlayerAction) => {
+//   const capturingCardsRef = useRef<ReactSpringHook>(null);
+//   const playingCardRef = useRef<ReactSpringHook>(null);
+//   const [playerAnimations, setPlayerAnimations] = useState({
+//     player: null,
+//     opponent: null,
+//   });
+//   switch (latestAction?.action) {
+//     case PlayerActionType.PlayOnTable:
+//       return playingCardRef;
+//     case PlayerActionType.Capture:
+//       return capturingCardsRef;
+//     default:
+//       return;
+//   }
+// };
 
-  const springAnimations = gameAnimations?.map((animation) => {
-    switch (animation.kind) {
-      case GameAnimationType.DealCards:
-        return dealingCardsRef;
-      case GameAnimationType.CaptureCards:
-        return capturingCardsRef;
-      case GameAnimationType.FlipCards:
-        return flippingCardsRef;
-      default:
-      case GameAnimationType.PlayCard:
-        return playingCardRef;
-    }
-  });
+type Props = { gameState: GameState; gameScore?: Score[]; latestAction?: PlayerAction };
 
-  useChain(springAnimations);
-  return {
-    dealingCardsRef,
-    capturingCardsRef,
-    playingCardRef,
-    flippingCardsRef,
-  };
-};
-
-type Props = { gameState: GameState; gameScore?: Score[]; gameAnimations?: GameAnimation[] };
-
-export const Game = ({ gameState, gameScore, gameAnimations }: Props) => {
+export const Game = ({ gameState, gameScore, latestAction }: Props) => {
   const [activePlayerCard, togglePlayerActiveCard] = useState<string | null>(null);
   const [activeCardsOnTable, toggleActiveCardsOnTable] = useState<string[]>([]);
   const { username } = useUserData();
@@ -93,17 +82,20 @@ export const Game = ({ gameState, gameScore, gameAnimations }: Props) => {
     }
   };
 
-  console.log(gameAnimations);
+  const playerAction = useMemo(() => (latestAction ? { [latestAction?.playerName]: latestAction } : {}), [
+    latestAction,
+  ]);
 
   const deckLength = deck.length > 0 ? deck.length : 40;
   return (
     <GameTable>
-      <Opponent player={opponent} sx={{ transform: 'rotate(180deg)' }} />
+      <Opponent player={opponent} sx={{ transform: 'rotate(180deg)' }} action={playerAction[opponent?.username]} />
       {opponent && <PlayerName playerName={opponent.username} isActive={activePlayer === opponent.username} />}
       <Board
         table={table}
         activeCardsOnTable={activeCardsOnTable}
-        movingCards={[]}
+        movingCards={latestAction?.tableCards}
+        moveTo={MOVE_TO[latestAction?.playerName === player?.username ? 'player' : 'opponent']}
         toggleActiveCardsOnTable={toggleActiveCardsOnTable}
         activePlayerCard={activePlayerCard}
         playCardOnTable={playCardOnTable}
@@ -130,9 +122,9 @@ export const Game = ({ gameState, gameScore, gameAnimations }: Props) => {
       <Player
         player={player}
         isActive={activePlayer === player?.username}
-        movingCards={[]}
         togglePlayerActiveCard={togglePlayerActiveCard}
         activePlayerCard={activePlayerCard}
+        action={playerAction[player?.username]}
       />
     </GameTable>
   );

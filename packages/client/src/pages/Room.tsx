@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { FiArrowLeftCircle } from 'react-icons/fi';
 import { Layout } from 'components/Layout';
 import { gameIO } from 'lib/socket';
-import { RoomState, RoomEvent, GameEvent, GameState, GameStatus, Score, GameAnimation } from 'shared';
+import { RoomState, RoomEvent, GameEvent, GameState, GameStatus, Score, PlayerAction } from 'shared';
 import { useUserData } from 'components/UserContext';
 import { Game } from './Game';
 import { theme } from 'theme';
@@ -28,7 +28,7 @@ export const Room = () => {
   const { username } = useUserData();
   const [gameState, setGameState] = useState<GameState>(INITIAL_STATE);
   const [gameScore, setGameScore] = useState<Score[]>();
-  const [gameAnimations, setAnimations] = useState<GameAnimation[]>();
+  const [latestAction, setLastAction] = useState<PlayerAction>();
 
   useEffect(() => {
     const handleSuccess = () => {
@@ -54,12 +54,12 @@ export const Room = () => {
   const timer = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
-    const handleCurrentGameState = (state: GameState, animations: GameAnimation[]) => {
-      setAnimations(animations);
+    const handleCurrentGameState = (state: GameState, playerAction: PlayerAction) => {
+      setLastAction(playerAction);
       timer.current = setTimeout(() => {
         setGameState(state);
-        setAnimations(undefined);
-      }, (animations?.length ?? 0) * ANIMATION_DURATION);
+        setLastAction(undefined);
+      }, ANIMATION_DURATION);
     };
     const handleGameEnded = (score: Score[]) => {
       setGameScore(score);
@@ -86,7 +86,7 @@ export const Room = () => {
               <FiArrowLeftCircle title="Back to Lobby" size={24} color={theme.colors.text} />
             </Link>
           </Box>
-          <Game gameState={gameState} gameScore={gameScore} gameAnimations={gameAnimations} />
+          <Game gameState={gameState} gameScore={gameScore} latestAction={latestAction} />
         </Layout>
       );
     default:

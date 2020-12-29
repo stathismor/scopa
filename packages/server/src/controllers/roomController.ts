@@ -36,7 +36,9 @@ export async function addGameState(roomName: string, state: GameState) {
 
 export async function removeGameState(roomName: string) {
   const room = await getRoom(roomName);
-  room.states.pop();
+  if (room.states.length > 1) {
+    room.states.pop();
+  }
   await redisClient.setRoom(roomName, room);
 }
 

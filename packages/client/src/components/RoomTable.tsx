@@ -1,13 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import { Heading, Box, Flex, Card, Button } from 'theme-ui';
+import { Link, Heading, Box, Flex, Card, Button } from 'theme-ui';
 import { Room, RoomEvent } from 'shared';
 import { gameIO } from '../lib/socket';
 import { getRooms } from '../lib/resources';
 
 export const RoomTable = () => {
   const [rooms, setRooms] = useState<Room[]>([]);
-  const history = useHistory();
 
   useEffect(() => {
     getRooms().then((data) => {
@@ -22,11 +20,7 @@ export const RoomTable = () => {
     return () => {
       gameIO.off(RoomEvent.Update, handleRoomUpdate);
     };
-  }, [history]);
-
-  const joinRoom = (roomName: string) => {
-    history.push(`/game/${roomName}`);
-  };
+  }, []);
 
   return (
     <Box>
@@ -42,7 +36,9 @@ export const RoomTable = () => {
                 Players: <strong>{room.players.map((player) => player.name).join(', ')}</strong>
               </Box>
             </Flex>
-            <Button onClick={() => joinRoom(room.name)}>Join</Button>
+            <Link href={`/game/${room.name}`}>
+              <Button>Join</Button>
+            </Link>
           </Flex>
         </Card>
       ))}

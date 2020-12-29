@@ -26,8 +26,6 @@ export const RoomTable = ({ username }: { username: string }) => {
   }, [history]);
 
   const joinRoom = (roomName: string) => {
-    console.log('joinRoom', gameIO.id);
-
     post('/join', { socketId: gameIO.id, roomName, username }).then(() => {
       history.push(`/game/${roomName}`);
     });

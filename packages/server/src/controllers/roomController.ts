@@ -19,6 +19,23 @@ export async function addRoom(room: Room) {
   await redisClient.setRoom(room.name, room);
 }
 
+export async function setOwner(roomName: string, owner: string) {
+  const room = await getRoom(roomName);
+
+  room.owner = owner;
+
+  await redisClient.setRoom(roomName, room);
+}
+
+export async function deleteRoom(roomName: string, username: string) {
+  const room = await getRoom(roomName);
+  if (room.owner !== username) {
+    // TODO: Raise/emit something here the client can get
+    return;
+  }
+  redisClient.delAsync(roomName);
+}
+
 export async function addPlayer(roomName: string, player: Player) {
   const room = await getRoom(roomName);
 
@@ -29,6 +46,7 @@ export async function addPlayer(roomName: string, player: Player) {
 
 export async function addGameState(roomName: string, state: GameState) {
   const room = await getRoom(roomName);
+
   room.states.push(state);
 
   await redisClient.setRoom(roomName, room);

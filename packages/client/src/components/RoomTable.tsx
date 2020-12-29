@@ -3,8 +3,9 @@ import { Link, Heading, Box, Flex, Card, Button } from 'theme-ui';
 import { Room, RoomEvent } from 'shared';
 import { gameIO } from '../lib/socket';
 import { getRooms } from '../lib/resources';
+import { post } from '../utils/rest';
 
-export const RoomTable = () => {
+export const RoomTable = ({ username }: { username: string }) => {
   const [rooms, setRooms] = useState<Room[]>([]);
 
   useEffect(() => {
@@ -22,6 +23,14 @@ export const RoomTable = () => {
     };
   }, []);
 
+  const deleteRoom = (roomName: string, username: string) => {
+    post(`/rooms/${roomName}`, { username });
+  };
+
+  const canDelete = (room: Room) => {
+    return room.owner === username;
+  };
+
   return (
     <Box>
       <Heading as="h2">Rooms</Heading>
@@ -36,9 +45,14 @@ export const RoomTable = () => {
                 Players: <strong>{room.players.map((player) => player.name).join(', ')}</strong>
               </Box>
             </Flex>
-            <Link href={`/game/${room.name}`}>
-              <Button>Join</Button>
-            </Link>
+            <Box>
+              <Link href={`/game/${room.name}`}>
+                <Button>Join</Button>
+              </Link>
+              <Button variant="outline" disabled={!canDelete(room)} onClick={() => deleteRoom(room.name, username)}>
+                Delete
+              </Button>
+            </Box>
           </Flex>
         </Card>
       ))}

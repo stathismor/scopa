@@ -4,9 +4,8 @@ import { Heading, Box, Flex, Card, Button } from 'theme-ui';
 import { Room, RoomEvent } from 'shared';
 import { gameIO } from '../lib/socket';
 import { getRooms } from '../lib/resources';
-import { post } from '../utils/rest';
 
-export const RoomTable = ({ username }: { username: string }) => {
+export const RoomTable = () => {
   const [rooms, setRooms] = useState<Room[]>([]);
   const history = useHistory();
 
@@ -26,9 +25,7 @@ export const RoomTable = ({ username }: { username: string }) => {
   }, [history]);
 
   const joinRoom = (roomName: string) => {
-    post('/join', { socketId: gameIO.id, roomName, username }).then(() => {
-      history.push(`/game/${roomName}`);
-    });
+    history.push(`/game/${roomName}`);
   };
 
   return (

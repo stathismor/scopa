@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import { Heading, Box, Flex, Card, Button } from 'theme-ui';
+import { Link, Heading, Box, Flex, Card, Button } from 'theme-ui';
 import { Room, RoomEvent } from 'shared';
 import { gameIO } from '../lib/socket';
 import { getRooms } from '../lib/resources';
@@ -8,7 +7,6 @@ import { post } from '../utils/rest';
 
 export const RoomTable = ({ username }: { username: string }) => {
   const [rooms, setRooms] = useState<Room[]>([]);
-  const history = useHistory();
 
   useEffect(() => {
     getRooms().then((data) => {
@@ -23,11 +21,7 @@ export const RoomTable = ({ username }: { username: string }) => {
     return () => {
       gameIO.off(RoomEvent.Update, handleRoomUpdate);
     };
-  }, [history]);
-
-  const joinRoom = (roomName: string) => {
-    history.push(`/game/${roomName}`);
-  };
+  }, []);
 
   const deleteRoom = (roomName: string, username: string) => {
     post(`/rooms/${roomName}`, { username });
@@ -52,9 +46,9 @@ export const RoomTable = ({ username }: { username: string }) => {
               </Box>
             </Flex>
             <Box>
-              <Button variant="outline" onClick={() => joinRoom(room.name)}>
-                Join
-              </Button>
+              <Link href={`/game/${room.name}`}>
+                <Button>Join</Button>
+              </Link>
               <Button variant="outline" disabled={!canDelete(room)} onClick={() => deleteRoom(room.name, username)}>
                 Delete
               </Button>

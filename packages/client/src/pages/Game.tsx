@@ -15,7 +15,7 @@ import { GameScore } from 'components/GameScore';
 import { PlayerName } from 'components/Players/PlayerName';
 import { FiRotateCcw } from 'react-icons/fi';
 import { Deck } from 'components/Cards/Deck';
-import { MOVE_TO } from 'components/Players/constants';
+import { CAPTURE_CARDS_TARGET } from 'components/Players/constants';
 // import { useRef } from 'react';
 // import { ReactSpringHook } from 'react-spring';
 
@@ -95,7 +95,7 @@ export const Game = ({ gameState, gameScore, latestAction }: Props) => {
         table={table}
         activeCardsOnTable={activeCardsOnTable}
         movingCards={latestAction?.tableCards}
-        moveTo={MOVE_TO[latestAction?.playerName === player?.username ? 'player' : 'opponent']}
+        moveTo={CAPTURE_CARDS_TARGET[latestAction?.playerName === player?.username ? 'player' : 'opponent']}
         toggleActiveCardsOnTable={toggleActiveCardsOnTable}
         activePlayerCard={activePlayerCard}
         playCardOnTable={playCardOnTable}

@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { FiArrowLeftCircle } from 'react-icons/fi';
 import { Layout } from 'components/Layout';
 import { gameIO } from 'lib/socket';
-import { RoomState, RoomEvent, GameEvent, GameState, GameStatus, Score, PlayerAction } from 'shared';
+import { RoomState, RoomEvent, GameEvent, GameState, GameStatus, Score, PlayerAction, PlayerActionType } from 'shared';
 import { useUserData } from 'components/UserContext';
 import { Game } from './Game';
 import { theme } from 'theme';
@@ -19,7 +19,10 @@ const INITIAL_STATE = {
   latestCaptured: '',
 };
 
-const ANIMATION_DURATION = 600;
+const ANIMATION_DURATION = {
+  [PlayerActionType.Capture]: 1200,
+  [PlayerActionType.PlayOnTable]: 600,
+};
 
 export const Room = () => {
   const [status, setStatus] = useState<RoomState>(RoomState.Pending);
@@ -59,7 +62,7 @@ export const Room = () => {
       timer.current = setTimeout(() => {
         setGameState(state);
         setLastAction(undefined);
-      }, ANIMATION_DURATION);
+      }, ANIMATION_DURATION[playerAction?.action] ?? 0);
     };
     const handleGameEnded = (score: Score[]) => {
       setGameScore(score);

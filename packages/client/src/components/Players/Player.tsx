@@ -4,9 +4,11 @@ import { Deck } from 'components/Cards/Deck';
 import { playerCardWrapper } from 'components/Cards/style';
 import { InvitePlayer } from 'components/InvitePlayer';
 import { noop } from 'lodash';
+import { useEffect } from 'react';
+import { useState } from 'react';
 import { PlayerState, cardKey, PlayerAction, PlayerActionType } from 'shared';
 import { Box, BoxProps, Grid } from 'theme-ui';
-import { MOVE_TO } from './constants';
+import { CAPTURE_CARDS_TARGET } from './constants';
 
 type Props = {
   player: PlayerState;
@@ -24,14 +26,15 @@ export const Player = ({
   action,
   ...rest
 }: Props & BoxProps) => {
+  const [moveTo, setMoveTo] = useState<typeof CAPTURE_CARDS_TARGET['player'] | null>(null);
+  useEffect(() => {
+    setMoveTo({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+  }, [action]);
   if (!player) {
     return <InvitePlayer />;
   }
   const { captured, hand } = player;
-  const moveTo =
-    action?.action === PlayerActionType.Capture
-      ? MOVE_TO.player
-      : { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+
   return (
     <Box {...rest}>
       <Grid sx={{ m: 3 }} columns="1.5fr 1fr 1fr 1fr">
@@ -41,8 +44,12 @@ export const Player = ({
           return (
             <CardWrapper
               key={key}
-              isMoving={action?.card === key}
-              moveTo={moveTo}
+              moveTo={action?.card === key ? moveTo : null}
+              onRest={() => {
+                setTimeout(() => {
+                  action?.action === PlayerActionType.Capture && setMoveTo(CAPTURE_CARDS_TARGET.player);
+                }, 600);
+              }}
               sx={playerCardWrapper(activePlayerCard === key)}
               onClick={isActive ? () => togglePlayerActiveCard((state) => (state === key ? null : key)) : noop}
             >

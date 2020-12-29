@@ -4,25 +4,26 @@ import { useSpring, animated, config } from 'react-spring';
 
 type CardWrapperProps = PropsWithChildren<{
   onClick?: (e: MouseEvent<HTMLElement>) => void;
-  isMoving: boolean;
   moveTo: {
     x: number;
     y: number;
-  };
+  } | null;
+  onRest: () => void;
+  delay?: number
 }>;
 
 const INITIAL_POSITION = { y: 0, x: 0 };
 
-export const CardWrapper = ({ isMoving, moveTo, ...rest }: CardWrapperProps) => {
+export const CardWrapper = ({ moveTo, onRest, delay, ...rest }: CardWrapperProps) => {
   const ref = useRef<HTMLDivElement | null>(null);
-
+  console.count('render');
   const { x, y } = ref.current?.getBoundingClientRect() ?? INITIAL_POSITION;
   const { xys } = useSpring({
     config: config.slow,
-    xys: isMoving ? [moveTo.x - x, moveTo.y - y, 0.9] : [0, 0, 1],
+    xys: moveTo ? [moveTo.x - x, moveTo.y - y, 0.9] : [0, 0, 1],
+    onRest,
+    delay
   });
-
-  console.log(isMoving, { x, y, moveTo }, moveTo.x - x, moveTo.y - y);
   return (
     <animated.div
       style={{

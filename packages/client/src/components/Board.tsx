@@ -5,7 +5,7 @@ import { CardWrapper } from 'components/Cards/CardWrapper';
 import { Box, Flex, Grid } from 'theme-ui';
 import { Card } from './Cards/Card';
 import { Deck as DeckType, cardKey } from 'shared';
-import { MOVE_TO } from './Players/constants';
+import { CAPTURE_CARDS_TARGET } from './Players/constants';
 
 type Props = {
   table: DeckType;
@@ -14,7 +14,7 @@ type Props = {
   toggleActiveCardsOnTable: Dispatch<SetStateAction<string[]>>;
   activePlayerCard: string | null;
   playCardOnTable: () => void;
-  moveTo: typeof MOVE_TO['player']
+  moveTo: typeof CAPTURE_CARDS_TARGET['player'];
   children: ReactNode;
 };
 
@@ -40,14 +40,15 @@ export const Board = ({
           return (
             <CardWrapper
               key={key}
-              isMoving={needsToMove}
-              moveTo={moveTo}
+              moveTo={needsToMove ? moveTo : null}
+              delay={needsToMove ? 600 : undefined}
               sx={cardWrapper(isActive)}
               onClick={() => {
                 toggleActiveCardsOnTable(
                   isActive ? activeCardsOnTable.filter((c) => c !== key) : [...activeCardsOnTable, key],
                 );
               }}
+              onRest={() => {}}
             >
               <Card card={c} />
             </CardWrapper>

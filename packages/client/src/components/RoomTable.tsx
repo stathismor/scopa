@@ -30,7 +30,7 @@ export const RoomTable = ({ username }: { username: string }) => {
   };
 
   const deleteRoom = (roomName: string, username: string) => {
-    post(`/rooms/${roomName}`, { socketId: gameIO.id, username });
+    post(`/rooms/${roomName}`, { username });
   };
 
   const canDelete = (room: Room) => {

@@ -23,14 +23,7 @@ export const createServer = () => {
 
   app.delete('/rooms/:roomName', async (req: Request, res: Response, next: NextFunction) => {
     const { roomName } = req.params;
-    const { socketId, username } = req.body;
-    const socket = io.of('/').sockets.get(socketId);
-
-    if (!socket) {
-      // TODO: Raise and handle several errors
-      res.status(401).send({});
-      return;
-    }
+    const { username } = req.body;
 
     await deleteRoom(roomName, username);
     res.status(200).send({});

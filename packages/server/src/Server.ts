@@ -5,15 +5,22 @@ import { getRooms } from './controllers/roomController';
 
 export const createServer = () => {
   const app: Application = express();
-  const server: HTTPServer = CreateHTTPServer(app);
 
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
   // Allow same origin requests. for local development
   app.use(cors({ origin: process.env.HTTP_ORIGIN }));
+
+  const server: HTTPServer = CreateHTTPServer(app);
 
   // Application routing
   app.get('/rooms', async (req: Request, res: Response, next: NextFunction) => {
     const rooms = await getRooms();
     res.status(200).send(rooms);
+  });
+
+  app.post('/join', (req: Request, res: Response, next: NextFunction) => {
+    res.status(200).send({});
   });
 
   return app.listen(process.env.PORT, () => {

@@ -30,9 +30,16 @@ function imgUrl({ value, suit }: CardType) {
 interface CardProps {
   faceDown?: boolean;
   card: CardType;
+  callback?: () => void | undefined;
 }
 
-export const Card = ({ faceDown = false, card }: CardProps) => {
+export const Card = ({ faceDown = false, card, callback }: CardProps) => {
+  if (callback) {
+    console.log('Will animate card', card);
+    setTimeout(() => {
+      callback();
+    }, 1000);
+  }
   return (
     <Box
       sx={{

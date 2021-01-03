@@ -5,27 +5,16 @@ import { Link } from 'react-router-dom';
 import { FiArrowLeftCircle } from 'react-icons/fi';
 import { Layout } from 'components/Layout';
 import { gameIO } from 'lib/socket';
-import { RoomState, RoomEvent, GameEvent, GameState, GameStatus, Score } from 'shared';
+import { RoomState, RoomEvent } from 'shared';
 import { useUserData } from 'components/UserContext';
 import { Game } from './Game';
 import { theme } from 'theme';
-
-const INITIAL_STATE = {
-  status: GameStatus.Waiting,
-  activePlayer: '',
-  deck: [],
-  table: [],
-  players: [],
-  latestCaptured: '',
-};
 
 export const Room = () => {
   const [status, setStatus] = useState<RoomState>(RoomState.Pending);
   const [errorMessage, setErrorMessage] = useState('');
   const { roomName } = useParams<{ roomName: string }>();
   const { username } = useUserData();
-  const [gameState, setGameState] = useState<GameState>(INITIAL_STATE);
-  const [gameScore, setGameScore] = useState<Score[]>();
 
   useEffect(() => {
     const handleSuccess = () => {
@@ -48,23 +37,6 @@ export const Room = () => {
     };
   }, [roomName, username]);
 
-  useEffect(() => {
-    const handleCurrentGameState = (state: GameState) => {
-      setGameState(state);
-    };
-    const handleGameEnded = (score: Score[]) => {
-      setGameScore(score);
-    };
-
-    gameIO.on(GameEvent.CurrentState, handleCurrentGameState);
-    gameIO.on(GameStatus.Ended, handleGameEnded);
-
-    return () => {
-      gameIO.off(GameEvent.CurrentState, handleCurrentGameState);
-      gameIO.off(GameStatus.Ended, handleGameEnded);
-    };
-  }, []);
-
   switch (status) {
     case RoomState.Pending:
       return <Box>Pending</Box>;
@@ -76,7 +48,7 @@ export const Room = () => {
               <FiArrowLeftCircle title="Back to Lobby" size={24} color={theme.colors.text} />
             </Link>
           </Box>
-          <Game gameState={gameState} gameScore={gameScore} />
+          <Game username={username} />
         </Layout>
       );
     default:

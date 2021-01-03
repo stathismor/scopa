@@ -1,19 +1,19 @@
-import { useState, useEffect } from 'react';
 import { Card } from 'components/Cards/Card';
 import { CardWrapper } from 'components/Cards/CardWrapper';
 import { Deck } from 'components/Cards/Deck';
 import { playerCardWrapper } from 'components/Cards/style';
-// import { InvitePlayer } from 'components/InvitePlayer';
+import { InvitePlayer } from 'components/InvitePlayer';
 import { noop } from 'lodash';
 import { PlayerState, cardKey } from 'shared';
 import { Box, BoxProps, Grid } from 'theme-ui';
-import { processAnimations, AnimationGroup } from '../../lib/animations';
+import { AnimationGroup } from '../../lib/animations';
 type Props = {
   player: PlayerState;
   isActive: boolean;
   movingCards: string[];
   togglePlayerActiveCard: React.Dispatch<React.SetStateAction<string | null>>;
   activePlayerCard: string | null;
+  animationGroup: AnimationGroup | null;
 };
 
 export const Player = ({
@@ -22,17 +22,11 @@ export const Player = ({
   movingCards,
   togglePlayerActiveCard,
   activePlayerCard,
+  animationGroup,
   ...rest
 }: Props & BoxProps) => {
-  const [animations, setAnimations] = useState<AnimationGroup | null>(null);
-
-  useEffect(() => {
-    processAnimations(setAnimations);
-  }, []);
-
   if (!player) {
-    return <div />;
-    // return <InvitePlayer />;
+    return <InvitePlayer />;
   }
 
   const { captured, hand } = player;
@@ -44,7 +38,9 @@ export const Player = ({
         {hand?.map((c) => {
           const key = cardKey(c);
 
-          const cardAnimation = animations?.cards.filter((card) => card.name === key)[0];
+          const cardAnimation = animationGroup
+            ? animationGroup.filter((animation) => animation.cards.filter((card) => card === key)[0])[0]
+            : null;
 
           return (
             <CardWrapper
@@ -53,7 +49,7 @@ export const Player = ({
               sx={playerCardWrapper(activePlayerCard === key)}
               onClick={isActive ? () => togglePlayerActiveCard((state) => (state === key ? null : key)) : noop}
             >
-              <Card card={c} callback={cardAnimation?.callback} />
+              <Card card={c} animation={cardAnimation?.config} callback={cardAnimation?.callback} />
             </CardWrapper>
           );
         })}

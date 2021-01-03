@@ -1,78 +1,84 @@
 import { Dispatch, SetStateAction } from 'react';
 
+import { GameState, PlayerAction, PlayerActionType } from 'shared';
+
 interface AnimationCard {
-  name: string;
-  options: object;
+  cards: string[];
+  config: object;
   completed: boolean;
   callback?: () => void;
 }
 
-export interface AnimationGroup {
-  name: string;
-  cards: AnimationCard[];
-}
+export type AnimationGroup = AnimationCard[];
 
-export function getAnimations() {
-  // Dummy test animations
-  const animations = [
-    {
-      name: 'move',
-      cards: [
-        {
-          name: '3__Golds',
-          options: {},
-          completed: false,
-        },
-        {
-          name: '6__Cups',
-          options: {},
-          completed: false,
-        },
-      ],
-    },
-    {
-      name: 'move',
-      cards: [
-        {
-          name: '3__Golds',
-          options: {},
-          completed: false,
-        },
-        {
-          name: '6__Cups',
-          options: {},
-          completed: false,
-        },
-      ],
-    },
-  ];
+export type Animations = AnimationGroup[];
+
+export function getAnimations(playerAction: PlayerAction, gameState: GameState) {
+  const animations = [];
+  console.log('getAnimations:gameState', gameState);
+
+  if (playerAction.action === PlayerActionType.PlayOnTable) {
+    const animationGroup = [
+      {
+        cards: [playerAction.card],
+        // TODO: Need to figure out proper config/position here
+        config: { y: -250 },
+        completed: false,
+      },
+    ];
+    animations.push(animationGroup);
+  }
 
   return animations;
 }
 
-export function processAnimations(setAnimations: Dispatch<SetStateAction<any>>) {
-  const animations = getAnimations();
+export function processAnimations(
+  playerAction: PlayerAction,
+  gameState: GameState,
+  setAnimations: Dispatch<SetStateAction<any>>,
+  setGameState: Dispatch<SetStateAction<any>>,
+) {
+  const animations = getAnimations(playerAction, gameState);
 
   // Attach callback
-  animations.map((animation, index) =>
-    animation.cards.map((card) => (card['callback'] = () => updateAnimations(animations, index, setAnimations, card))),
+  animations.map((animationGroup, index) =>
+    animationGroup.map(
+      (card) =>
+        (card['callback'] = () => updateAnimations(animations, index, gameState, setAnimations, setGameState, card)),
+    ),
   );
 
-  updateAnimations(animations, 0, setAnimations);
+  processAnimationGroup(animations, gameState, 0, setAnimations, setGameState);
 }
 
-/**
- * It updates the card object to be completed. It if all animations for the group of that index have completed.
- * If yes, it moves on to the next group and sets that on the caller's state. Otherwise
- */
+function processAnimationGroup(
+  animations: AnimationGroup[],
+  gameState: GameState,
+  index: number,
+  setAnimations: Dispatch<SetStateAction<any>>,
+  setGameState: Dispatch<SetStateAction<any>>,
+) {
+  const animationGroup = animations[0];
+  const groupCompleted = animationGroup.every((card: AnimationCard) => card.completed);
+  if (groupCompleted) {
+    updateAnimations(animations, index + 1, gameState, setAnimations, setGameState);
+    return;
+  }
+
+  setAnimations(animationGroup);
+}
+
 function updateAnimations(
   animations: AnimationGroup[],
   index: number,
+  gameState: GameState,
   setAnimations: Dispatch<SetStateAction<any>>,
+  setGameState: Dispatch<SetStateAction<any>>,
   card?: AnimationCard,
 ) {
   // Exit condition for recursion, we have run all animations.
   if (index === animations.length) {
+    setGameState(gameState);
     return;
   }
 
@@ -80,12 +86,5 @@ function updateAnimations(
     card.completed = true;
   }
 
-  const animationGroup = animations[index];
-  const groupCompleted = animationGroup.cards.every((card: AnimationCard) => card.completed);
-  if (groupCompleted) {
-    updateAnimations(animations, index + 1, setAnimations);
-    return;
-  }
-
-  setAnimations(animationGroup);
+  processAnimationGroup(animations, gameState, index, setAnimations, setGameState);
 }

@@ -2,9 +2,9 @@
 /** @jsxRuntime classic */
 import { useEffect, useMemo, useState } from 'react';
 import { Button, Flex, jsx } from 'theme-ui';
-import { useUserData } from 'components/UserContext';
+// import { useUserData } from 'components/UserContext';
 import { GameTable } from 'components/GameTable';
-import { GameEvent, GameState, GameStatus, Score, Suit, fromCardKey, PlayerActionType } from 'shared';
+import { GameEvent, GameState, GameStatus, Score, Suit, fromCardKey, PlayerAction, PlayerActionType } from 'shared';
 import { sum } from 'lodash';
 import { Opponent } from '../components/Players/Opponent';
 import { Player } from '../components/Players/Player';
@@ -14,17 +14,51 @@ import { Board } from 'components/Board';
 import { GameScore } from 'components/GameScore';
 import { PlayerName } from 'components/Players/PlayerName';
 import { FiRotateCcw } from 'react-icons/fi';
+import { processAnimations, AnimationGroup } from '../lib/animations';
 
 const SETTEBELLO = {
   value: 7,
   suit: Suit.Golds,
 };
 
-export const Game = ({ gameState, gameScore }: { gameState: GameState; gameScore?: Score[] }) => {
+const INITIAL_STATE = {
+  status: GameStatus.Waiting,
+  activePlayer: '',
+  deck: [],
+  table: [],
+  players: [],
+  latestCaptured: '',
+};
+
+export const Game = ({ username }: { username: string }) => {
   const [activePlayerCard, togglePlayerActiveCard] = useState<string | null>(null);
   const [activeCardsOnTable, toggleActiveCardsOnTable] = useState<string[]>([]);
-  const { username } = useUserData();
+  // const { username } = useUserData();
   const { roomName } = useParams<{ roomName: string }>();
+  const [animationGroup, setAnimations] = useState<AnimationGroup | null>(null);
+  const [gameState, setGameState] = useState<GameState>(INITIAL_STATE);
+  const [gameScore, setGameScore] = useState<Score[]>();
+
+  useEffect(() => {
+    const handleCurrentGameState = (state: GameState, playerAction?: PlayerAction) => {
+      if (playerAction) {
+        processAnimations(playerAction, state, setAnimations, setGameState);
+      } else {
+        setGameState(state);
+      }
+    };
+    const handleGameEnded = (score: Score[]) => {
+      setGameScore(score);
+    };
+
+    gameIO.on(GameEvent.CurrentState, handleCurrentGameState);
+    gameIO.on(GameStatus.Ended, handleGameEnded);
+
+    return () => {
+      gameIO.off(GameEvent.CurrentState, handleCurrentGameState);
+      gameIO.off(GameStatus.Ended, handleGameEnded);
+    };
+  }, []);
 
   const { activePlayer, deck, table, players } = gameState;
 
@@ -33,6 +67,7 @@ export const Game = ({ gameState, gameScore }: { gameState: GameState; gameScore
     () => Object.fromEntries(players.map((p) => [p.username === username ? 'player' : 'opponent', p])),
     [players, username],
   );
+
   useEffect(() => {
     if (activePlayerCard && activeCardsOnTable) {
       const { value: playerCardNumber } = fromCardKey(activePlayerCard);
@@ -61,6 +96,7 @@ export const Game = ({ gameState, gameScore }: { gameState: GameState; gameScore
       togglePlayerActiveCard(null);
     }
   };
+
   return (
     <GameTable>
       <Opponent player={opponent} sx={{ transform: 'rotate(180deg)' }} />
@@ -97,6 +133,7 @@ export const Game = ({ gameState, gameScore }: { gameState: GameState; gameScore
         movingCards={[]}
         togglePlayerActiveCard={togglePlayerActiveCard}
         activePlayerCard={activePlayerCard}
+        animationGroup={animationGroup}
       />
     </GameTable>
   );

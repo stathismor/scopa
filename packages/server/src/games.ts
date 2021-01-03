@@ -166,7 +166,7 @@ export async function updateGameStateNew(io: IOServer, roomName: string, playerA
   const [finalState, isMatchFinished] = calculatePlayerTurn(tempState);
 
   addGameState(roomName, finalState);
-  io.in(roomName).emit(GameEvent.CurrentState, finalState);
+  io.in(roomName).emit(GameEvent.CurrentState, finalState, playerAction);
   if (isMatchFinished) {
     io.in(roomName).emit(GameStatus.Ended, finalScore(finalState.players));
   }

@@ -5,6 +5,7 @@ import { startCase } from 'lodash';
 import { Suit, Card as CardType } from 'shared';
 import back from 'images/back.jpg';
 import { baseCard } from './style';
+import { motion } from 'framer-motion';
 
 const VALUES: { [key: number]: string } = {
   1: 'Ace',
@@ -30,23 +31,20 @@ function imgUrl({ value, suit }: CardType) {
 interface CardProps {
   faceDown?: boolean;
   card: CardType;
+  animation?: object;
   callback?: () => void | undefined;
 }
 
-export const Card = ({ faceDown = false, card, callback }: CardProps) => {
-  if (callback) {
-    console.log('Will animate card', card);
-    setTimeout(() => {
-      callback();
-    }, 1000);
-  }
+export const Card = ({ faceDown = false, card, animation, callback }: CardProps) => {
   return (
-    <Box
-      sx={{
-        ...baseCard,
-        backgroundImage: `url(${faceDown ? back : imgUrl(card)})`,
-      }}
-      title={faceDown ? 'card' : name(card)}
-    />
+    <motion.div animate={animation} onAnimationComplete={callback}>
+      <Box
+        sx={{
+          ...baseCard,
+          backgroundImage: `url(${faceDown ? back : imgUrl(card)})`,
+        }}
+        title={faceDown ? 'card' : name(card)}
+      />
+    </motion.div>
   );
 };

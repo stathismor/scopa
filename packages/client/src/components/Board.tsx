@@ -10,7 +10,6 @@ type Props = {
   table: DeckType;
   deck: DeckType;
   activeCardsOnTable: string[];
-  movingCards: string[];
   toggleActiveCardsOnTable: Dispatch<SetStateAction<string[]>>;
   activePlayerCard: string | null;
   playCardOnTable: () => void;
@@ -20,7 +19,6 @@ export const Board = ({
   table,
   deck,
   activeCardsOnTable,
-  movingCards,
   toggleActiveCardsOnTable,
   activePlayerCard,
   playCardOnTable,
@@ -33,11 +31,10 @@ export const Board = ({
         {table.map((c) => {
           const key = cardKey(c);
           const isActive = activeCardsOnTable.includes(key);
-          const needsToMove = movingCards.includes(key);
           return (
             <CardWrapper
               key={key}
-              isMoving={needsToMove}
+              id={key}
               sx={cardWrapper(isActive)}
               onClick={() => {
                 toggleActiveCardsOnTable(
@@ -49,7 +46,11 @@ export const Board = ({
             </CardWrapper>
           );
         })}
-        {activePlayerCard && <Box role="button" sx={cardDrop} onClick={playCardOnTable} />}
+        {activePlayerCard && (
+          <Box role="button" onClick={playCardOnTable} id="drop-container">
+            <Box sx={cardDrop} />
+          </Box>
+        )}
       </Grid>
     </Flex>
   );

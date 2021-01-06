@@ -14,10 +14,50 @@ import { Board } from 'components/Board';
 import { GameScore } from 'components/GameScore';
 import { PlayerName } from 'components/Players/PlayerName';
 import { FiRotateCcw } from 'react-icons/fi';
+import { flip } from 'utils/animations';
 
 const SETTEBELLO = {
   value: 7,
   suit: Suit.Golds,
+};
+
+const animateCardOnTable = (activePlayerCard: string, options: Record<string, unknown> = {}) => {
+  const cardWrap = document.querySelector(`#card_${activePlayerCard}`)?.firstChild;
+  const dropElement = document.querySelector('#drop-container');
+  console.log(cardWrap, dropElement);
+  console.log('Emit: Card is going to the table');
+  function moveCard() {
+    dropElement?.removeChild(dropElement.firstChild!);
+    dropElement?.appendChild(cardWrap!);
+  }
+  flip([cardWrap], moveCard, options);
+  return cardWrap;
+};
+const animateCapture = (animatedCard: ChildNode, caputeredCards: string[], options: Record<string, unknown> = {}) => {
+  const cardWraps = caputeredCards
+    .map((cardKey) => document.querySelector(`#card_${cardKey}`)?.firstChild)
+    .concat([animatedCard]) as ChildNode[];
+  const dropElement = document.querySelector(`#player-deck`);
+  console.log(cardWraps, dropElement);
+  function moveCards() {
+    cardWraps.forEach((el) => {
+      // @ts-ignore
+      el.style.position = 'absolute';
+      // @ts-ignore
+      el.style.top = 0;
+      dropElement?.appendChild(el);
+    });
+  }
+  flip(cardWraps, moveCards, {
+    ...options,
+    onComplete: () => {
+      // @ts-ignore
+      options.onComplete();
+      cardWraps.forEach((el) => {
+        dropElement?.removeChild(el);
+      });
+    },
+  });
 };
 
 export const Game = ({ gameState, gameScore }: { gameState: GameState; gameScore?: Score[] }) => {
@@ -38,27 +78,41 @@ export const Game = ({ gameState, gameScore }: { gameState: GameState; gameScore
       const { value: playerCardNumber } = fromCardKey(activePlayerCard);
       const tableCardsSum = sum(activeCardsOnTable.map((c) => fromCardKey(c).value));
       if (playerCardNumber === tableCardsSum) {
-        gameIO.emit(GameEvent.PlayerAction, roomName, {
-          action: PlayerActionType.Capture,
-          playerName: player.username,
-          card: activePlayerCard,
-          tableCards: activeCardsOnTable,
-        });
-        togglePlayerActiveCard(null);
-        toggleActiveCardsOnTable([]);
+        const options = {
+          onComplete: runNext,
+        };
+        const animatedCard = animateCardOnTable(activePlayerCard, options);
+        function runNext() {
+          animateCapture(animatedCard as ChildNode, activeCardsOnTable, {
+            onComplete: () => {
+              gameIO.emit(GameEvent.PlayerAction, roomName, {
+                action: PlayerActionType.Capture,
+                playerName: player.username,
+                card: activePlayerCard,
+                tableCards: activeCardsOnTable,
+              });
+              togglePlayerActiveCard(null);
+              toggleActiveCardsOnTable([]);
+            },
+          });
+        }
       }
     }
   }, [activeCardsOnTable, activePlayerCard, player, roomName]);
 
   const playCardOnTable = () => {
     if (activePlayerCard) {
-      console.log('Emit: Card is going to the table');
-      gameIO.emit(GameEvent.PlayerAction, roomName, {
-        action: PlayerActionType.PlayOnTable,
-        playerName: player.username,
-        card: activePlayerCard,
+      animateCardOnTable(activePlayerCard, {
+        onComplete: () => {
+          console.log('tx complete', activePlayerCard);
+          gameIO.emit(GameEvent.PlayerAction, roomName, {
+            action: PlayerActionType.PlayOnTable,
+            playerName: player.username,
+            card: activePlayerCard,
+          });
+          togglePlayerActiveCard(null);
+        },
       });
-      togglePlayerActiveCard(null);
     }
   };
   return (
@@ -69,7 +123,6 @@ export const Game = ({ gameState, gameScore }: { gameState: GameState; gameScore
         table={table}
         deck={gameState.status === GameStatus.Waiting ? [SETTEBELLO] : deck}
         activeCardsOnTable={activeCardsOnTable}
-        movingCards={[]}
         toggleActiveCardsOnTable={toggleActiveCardsOnTable}
         activePlayerCard={activePlayerCard}
         playCardOnTable={playCardOnTable}
@@ -94,7 +147,6 @@ export const Game = ({ gameState, gameScore }: { gameState: GameState; gameScore
       <Player
         player={player}
         isActive={activePlayer === player?.username}
-        movingCards={[]}
         togglePlayerActiveCard={togglePlayerActiveCard}
         activePlayerCard={activePlayerCard}
       />

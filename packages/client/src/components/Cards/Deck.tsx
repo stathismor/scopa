@@ -5,10 +5,10 @@ import { baseCard, CARD_HEIGHT_DESKTOP, CARD_HEIGHT_MOBILE } from './style';
 import { Card as CardType } from 'shared';
 import { Card } from './Card';
 
-export const Deck = ({ cardNumber, scopa, ...rest }: { cardNumber: number; scopa?: CardType[] } & BoxProps) => {
+export const Deck = ({ cardNumber, scopa, id, ...rest }: { cardNumber: number; scopa?: CardType[] } & BoxProps) => {
   const deckElevation = Math.floor(cardNumber / 5);
   return (
-    <Box sx={{ position: 'relative' }}>
+    <Box sx={{ position: 'relative' }} id={id}>
       {scopa?.map((card, i) => (
         <Box
           key={card.value + card.suit}

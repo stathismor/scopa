@@ -43,11 +43,11 @@ export const cardWrapper = (isActive: boolean): SxStyleProp => ({
 
 export const playerCardWrapper = (isActive: boolean): SxStyleProp => ({
   ...cardWrapper(isActive),
-  transition: 'transform 0.3s ease-in-out',
-  transform: isActive ? 'translateY(-3.5vw)' : undefined,
-  '&:hover': {
-    transform: 'translateY(-3.5vw)',
-  },
+  // transition: 'transform 0.3s ease-in-out',
+  // transform: isActive ? 'translateY(-3.5vw)' : undefined,
+  // '&:hover': {
+  //   transform: 'translateY(-3.5vw)',
+  // },
 });
 
 export const cardDrop = {

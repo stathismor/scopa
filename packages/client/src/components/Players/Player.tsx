@@ -10,19 +10,11 @@ import { Box, BoxProps, Grid } from 'theme-ui';
 type Props = {
   player: PlayerState;
   isActive: boolean;
-  movingCards: string[];
   togglePlayerActiveCard: React.Dispatch<React.SetStateAction<string | null>>;
   activePlayerCard: string | null;
 };
 
-export const Player = ({
-  player,
-  isActive,
-  movingCards,
-  togglePlayerActiveCard,
-  activePlayerCard,
-  ...rest
-}: Props & BoxProps) => {
+export const Player = ({ player, isActive, togglePlayerActiveCard, activePlayerCard, ...rest }: Props & BoxProps) => {
   if (!player) {
     return <InvitePlayer />;
   }
@@ -30,13 +22,13 @@ export const Player = ({
   return (
     <Box {...rest}>
       <Grid sx={{ m: 3 }} columns="1.5fr 1fr 1fr 1fr">
-        <Deck cardNumber={captured.length} scopa={player.scopa} />
+        <Deck cardNumber={captured.length} scopa={player.scopa} id="player-deck" />
         {hand?.map((c) => {
           const key = cardKey(c);
           return (
             <CardWrapper
               key={key}
-              isMoving={movingCards.includes(key)}
+              id={key}
               sx={playerCardWrapper(activePlayerCard === key)}
               onClick={isActive ? () => togglePlayerActiveCard((state) => (state === key ? null : key)) : noop}
             >

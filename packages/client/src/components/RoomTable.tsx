@@ -6,16 +6,12 @@ import { getRooms, deleteRoom } from '../lib/resources';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 
 export const RoomTable = ({ username }: { username: string }) => {
-  // Access the client
   const queryClient = useQueryClient();
 
-  // Queries
   const { data, isLoading } = useQuery<Room[]>('rooms', getRooms);
 
-  // Mutations
   const { mutate } = useMutation(deleteRoom, {
     onSuccess: () => {
-      // Invalidate and refetch
       queryClient.invalidateQueries('rooms');
     },
   });
@@ -25,7 +21,6 @@ export const RoomTable = ({ username }: { username: string }) => {
       queryClient.setQueryData('rooms', rooms);
     };
     gameIO.on(RoomEvent.Update, handleRoomUpdate);
-    console.count('effect');
     return () => {
       gameIO.off(RoomEvent.Update, handleRoomUpdate);
     };

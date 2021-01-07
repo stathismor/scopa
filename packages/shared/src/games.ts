@@ -9,7 +9,6 @@ export type PlayerState = {
 
 export const GameEvent = {
   CurrentState: 'current-game-state',
-  UpdateState: 'update-game-state',
   PlayerAction: 'player-action',
   Scopa: 'scopa-game-state',
 } as const;

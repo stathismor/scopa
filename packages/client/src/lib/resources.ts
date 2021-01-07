@@ -1,3 +1,6 @@
-export const HTTP_URL = process.env.REACT_APP_HTTP_URL;
+import { http } from 'utils/rest';
 
-export const getRooms = () => fetch(`${HTTP_URL}/rooms`).then((response) => response.json());
+export const getRooms = () => http.get('/rooms');
+
+export const deleteRoom = ({ roomName, username }: { roomName: string; username: string }) =>
+  http.delete(`/rooms/${roomName}`, { username });

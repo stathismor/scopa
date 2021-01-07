@@ -1,31 +1,30 @@
-import { useEffect, useState } from 'react';
-import { Link, Heading, Box, Flex, Card, Button } from 'theme-ui';
+import { useEffect } from 'react';
+import { Link, Heading, Box, Flex, Card, Button, Grid } from 'theme-ui';
 import { Room, RoomEvent } from 'shared';
 import { gameIO } from '../lib/socket';
-import { getRooms } from '../lib/resources';
-import { post } from '../utils/rest';
+import { getRooms, deleteRoom } from '../lib/resources';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 
 export const RoomTable = ({ username }: { username: string }) => {
-  const [rooms, setRooms] = useState<Room[]>([]);
+  const queryClient = useQueryClient();
+
+  const { data, isLoading } = useQuery<Room[]>('rooms', getRooms);
+
+  const { mutate } = useMutation(deleteRoom, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('rooms');
+    },
+  });
 
   useEffect(() => {
-    getRooms().then((data) => {
-      setRooms(data);
-    });
-
     const handleRoomUpdate = (rooms: Room[]) => {
-      setRooms(rooms);
+      queryClient.setQueryData('rooms', rooms);
     };
     gameIO.on(RoomEvent.Update, handleRoomUpdate);
-
     return () => {
       gameIO.off(RoomEvent.Update, handleRoomUpdate);
     };
-  }, []);
-
-  const deleteRoom = (roomName: string, username: string) => {
-    post(`/rooms/${roomName}`, { username });
-  };
+  }, [queryClient]);
 
   const canDelete = (room: Room) => {
     return room.owner === username;
@@ -34,28 +33,36 @@ export const RoomTable = ({ username }: { username: string }) => {
   return (
     <Box>
       <Heading as="h2">Rooms</Heading>
-      {rooms.map((room) => (
-        <Card key={room.name} mt={1}>
-          <Flex sx={{ justifyContent: 'space-between' }}>
-            <Flex sx={{ flexDirection: 'column' }}>
-              <Box>
-                Room: <strong>{room.name}</strong>
-              </Box>
-              <Box>
-                Players: <strong>{room.players.map((player) => player.name).join(', ')}</strong>
-              </Box>
+      {isLoading && 'Loading ...'}
+      <Grid columns={['auto', null, '1fr 1fr 1fr']}>
+        {data?.map((room) => (
+          <Card key={room.name} mt={1}>
+            <Flex sx={{ flexFlow: 'column', justifyContent: 'space-between' }}>
+              <Flex sx={{ flexDirection: 'column' }}>
+                <Box>
+                  Room: <strong>{room.name}</strong>
+                </Box>
+                <Box>
+                  Players: <strong>{room.players.map((player) => player.name).join(', ')}</strong>
+                </Box>
+              </Flex>
+              <Flex sx={{ alignItems: 'center', mt: 1 }}>
+                <Link href={`/game/${room.name}`}>
+                  <Button>Join</Button>
+                </Link>
+                <Box sx={{ mx: 1 }} />
+                <Button
+                  variant="outline"
+                  disabled={!canDelete(room)}
+                  onClick={() => mutate({ roomName: room.name, username })}
+                >
+                  Delete
+                </Button>
+              </Flex>
             </Flex>
-            <Box>
-              <Link href={`/game/${room.name}`}>
-                <Button>Join</Button>
-              </Link>
-              <Button variant="outline" disabled={!canDelete(room)} onClick={() => deleteRoom(room.name, username)}>
-                Delete
-              </Button>
-            </Box>
-          </Flex>
-        </Card>
-      ))}
+          </Card>
+        ))}
+      </Grid>
     </Box>
   );
 };

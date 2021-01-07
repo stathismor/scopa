@@ -25,8 +25,13 @@ export const createServer = () => {
     const { roomName } = req.params;
     const { username } = req.body;
 
-    await deleteRoom(roomName, username);
-    res.status(200).send({});
+    try {
+      await deleteRoom(roomName, username);
+      res.status(200).send({});
+    } catch (e) {
+      console.error(e.name + ': ' + e.message);
+      res.status(400).send(e);
+    }
     await emitRoomUpdate(io);
   });
 

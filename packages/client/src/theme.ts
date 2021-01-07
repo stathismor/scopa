@@ -30,7 +30,6 @@ export const theme = {
       fontFamily: 'body',
       lineHeight: 'body',
       fontWeight: 'body',
-      overflow: 'hidden',
     },
   },
   buttons: {

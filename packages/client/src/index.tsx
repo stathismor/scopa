@@ -7,15 +7,31 @@ import { UserProvider } from 'components/UserContext';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { GlobalStyle } from 'GlobalStyle';
+import { QueryClient, QueryClientProvider } from 'react-query';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+    mutations: {
+      onError: (e) => {
+        console.error(e);
+      },
+    },
+  },
+});
 
 ReactDOM.render(
   <StrictMode>
     <ThemeProvider theme={theme}>
       <BrowserRouter>
-        <UserProvider>
-          <GlobalStyle />
-          <App />
-        </UserProvider>
+        <QueryClientProvider client={queryClient}>
+          <UserProvider>
+            <GlobalStyle />
+            <App />
+          </UserProvider>
+        </QueryClientProvider>
       </BrowserRouter>
     </ThemeProvider>
   </StrictMode>,

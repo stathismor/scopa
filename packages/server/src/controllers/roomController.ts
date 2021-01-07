@@ -31,7 +31,7 @@ export async function deleteRoom(roomName: string, username: string) {
   const room = await getRoom(roomName);
   if (room.owner !== username) {
     // TODO: Raise/emit something here the client can get
-    throw new Error('Room can be deleted only from room owner')
+    throw new Error('Room can only be deleted by room owner');
   }
   redisClient.delAsync(roomName);
 }

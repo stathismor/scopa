@@ -3,7 +3,7 @@ export const HTTP_URL = process.env.REACT_APP_HTTP_URL;
 export const http = {
   get: async (path: string, queryParams: Record<string, any> = {}) => {
     const queryString = Object.keys(queryParams)
-      .map((key) => key + '=' + queryParams[key])
+      .map((key) => `${key}=${queryParams[key]}`)
       .join('&');
     const response = await fetch(`${HTTP_URL}${path}${queryString}`);
     return response.json();

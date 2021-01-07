@@ -28,11 +28,11 @@ export const createServer = () => {
     try {
       await deleteRoom(roomName, username);
       res.status(200).send({});
-      await emitRoomUpdate(io);
     } catch (e) {
       console.error(e.name + ': ' + e.message);
       res.status(400).send(e);
     }
+    await emitRoomUpdate(io);
   });
 
   return app.listen(process.env.PORT, () => {

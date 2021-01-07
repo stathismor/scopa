@@ -17,23 +17,32 @@ This function will return a Timeline containing all the animations.
 */
 
 type Element = any;
+export type FlipOptions = {
+  duration?: number;
+  stagger?: number;
+  ease?: number;
+  onComplete?: gsap.Callback;
+  delay?: number;
+};
 
-export function flip(elements: Element[], changeFunc: Function, vars: any = {}) {
+export function flip(
+  elements: Element[],
+  changeFunc: () => void,
+  { onComplete, delay = 0, ...vars }: FlipOptions = {},
+) {
   const gsapElements = gsap.utils.toArray(elements);
-  const tl = gsap.timeline({ onComplete: vars.onComplete, delay: vars.delay || 0 });
+  const tl = gsap.timeline({ onComplete, delay });
   const bounds = gsapElements.map((el: Element) => el.getBoundingClientRect());
   const copy: any = {};
-  let p;
   gsapElements.forEach((el: Element) => {
     el._flip && el._flip.progress(1);
     el._flip = tl;
   });
   changeFunc();
-  for (p in vars) {
-    p !== 'onComplete' && p !== 'delay' && (copy[p] = vars[p]);
+  for (let p in vars) {
+    copy[p] = vars[p];
   }
   copy.x = (i: number, element: Element) => '+=' + (bounds[i].left - element.getBoundingClientRect().left);
   copy.y = (i: number, element: Element) => '+=' + (bounds[i].top - element.getBoundingClientRect().top);
-  console.log(copy, bounds)
   return tl.from(gsapElements, copy);
 }

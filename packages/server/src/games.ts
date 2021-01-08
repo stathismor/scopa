@@ -19,7 +19,6 @@ import { getRoomState, addGameState, removeGameState } from './controllers/roomC
  */
 function calculatePlayerAction(oldState: GameState, playerAction: PlayerAction) {
   const newState = cloneDeep(oldState);
-  const animations = [];
   // TODO: Later on we will need to add order of players, built into the model
   const { activePlayer, opponent } = Object.fromEntries(
     oldState?.players?.map((player) => [

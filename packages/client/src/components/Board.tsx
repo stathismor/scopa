@@ -1,10 +1,11 @@
 import { Dispatch, SetStateAction } from 'react';
-import { cardDrop, cardWrapper, BOARD_MIN_WIDTH } from 'components/Cards/style';
-import { CardWrapper } from 'components/Cards/CardWrapper';
 import { Box, Flex, Grid } from 'theme-ui';
-import { Card } from './Cards/Card';
 import { Deck as DeckType, cardKey } from 'shared';
+import { CardWrapper } from 'components/Cards/CardWrapper';
+import { cardDrop, cardWrapper, BOARD_MIN_WIDTH } from 'components/Cards/style';
+import { Card } from './Cards/Card';
 import { Deck } from './Cards/Deck';
+import { DROP_CONTAINER_ID } from 'utils/dom';
 
 type Props = {
   table: DeckType;
@@ -47,7 +48,7 @@ export const Board = ({
           );
         })}
         {activePlayerCard && (
-          <Box role="button" onClick={playCardOnTable} id="drop-container">
+          <Box role="button" onClick={playCardOnTable} id={DROP_CONTAINER_ID}>
             <Box sx={cardDrop} />
           </Box>
         )}

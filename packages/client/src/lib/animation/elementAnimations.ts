@@ -17,7 +17,7 @@ This function will return a Timeline containing all the animations.
 */
 
 type Element = any;
-export type FlipOptions = {
+export type MoveOptions = {
   duration?: number;
   stagger?: number;
   ease?: number;
@@ -25,20 +25,19 @@ export type FlipOptions = {
   delay?: number;
 };
 
-export function flip(
+export function move(
   elements: Element[],
-  changeFunc: () => void,
-  { onComplete, delay = 0, ...vars }: FlipOptions = {},
+  updateFunc: () => void,
+  { onComplete, delay = 0, ...vars }: MoveOptions = {},
 ) {
   const gsapElements = gsap.utils.toArray(elements);
   const tl = gsap.timeline({ onComplete, delay });
   const bounds = gsapElements.map((el: Element) => el.getBoundingClientRect());
   const copy: any = {};
-  gsapElements.forEach((el: Element) => {
-    el._flip && el._flip.progress(1);
-    el._flip = tl;
-  });
-  changeFunc();
+
+  // Temporarily move the elements to their new position. gsap will animate them just after that.
+  updateFunc();
+
   for (let p in vars) {
     copy[p] = vars[p];
   }

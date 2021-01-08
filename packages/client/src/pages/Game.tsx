@@ -1,59 +1,26 @@
 /** @jsx jsx */
 /** @jsxRuntime classic */
+import { useRef } from 'react';
+import { sum } from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { FiRotateCcw } from 'react-icons/fi';
+import { gameIO } from 'lib/socket';
 import { Button, Flex, jsx } from 'theme-ui';
 import { useUserData } from 'components/UserContext';
 import { GameTable } from 'components/GameTable';
 import { GameEvent, GameState, GameStatus, Score, Suit, fromCardKey, PlayerActionType } from 'shared';
-import { sum } from 'lodash';
 import { Opponent } from '../components/Players/Opponent';
 import { Player } from '../components/Players/Player';
-import { gameIO } from 'lib/socket';
-import { useParams } from 'react-router-dom';
 import { Board } from 'components/Board';
 import { GameScore } from 'components/GameScore';
 import { PlayerName } from 'components/Players/PlayerName';
-import { FiRotateCcw } from 'react-icons/fi';
-import { flip, FlipOptions } from 'utils/animations';
-import { useRef } from 'react';
+import { animatePlace, animateCapture } from 'lib/animation/cardAnimations';
+import { getCardElement } from 'utils/dom';
 
 const SETTEBELLO = {
   value: 7,
   suit: Suit.Golds,
-};
-
-const animateCardOnTable = (activePlayerCard: string, options: FlipOptions = {}) => {
-  const cardWrap = document.querySelector(`#card_${activePlayerCard}`)?.firstChild;
-  const dropElement = document.querySelector('#drop-container');
-  console.log('Emit: Card is going to the table');
-  function moveCard() {
-    dropElement?.removeChild(dropElement.firstChild!);
-    dropElement?.appendChild(cardWrap!);
-  }
-  flip([cardWrap], moveCard, options);
-  return cardWrap;
-};
-const animateCapture = (animatedCard: HTMLDivElement, caputeredCards: string[], options: FlipOptions = {}) => {
-  const cardWraps = caputeredCards
-    .map((cardKey) => document.querySelector(`#card_${cardKey}`)?.firstChild)
-    .concat([animatedCard]) as HTMLDivElement[];
-  const dropElement = document.querySelector(`#player-deck`);
-  function moveCards() {
-    cardWraps.forEach((el: HTMLDivElement) => {
-      el.style.position = 'absolute';
-      el.style.top = '0';
-      dropElement?.appendChild(el);
-    });
-  }
-  flip(cardWraps, moveCards, {
-    ...options,
-    onComplete: () => {
-      options?.onComplete?.();
-      cardWraps.forEach((el) => {
-        dropElement?.removeChild(el);
-      });
-    },
-  });
 };
 
 export const Game = ({ gameState, gameScore }: { gameState: GameState; gameScore?: Score[] }) => {
@@ -69,7 +36,7 @@ export const Game = ({ gameState, gameScore }: { gameState: GameState; gameScore
     toggleActiveCardsOnTable([]);
     prevCard.current = activePlayerCard;
     /**
-     * This needs to update only when gamestate change
+     * This needs to update only when gameState changes
      */
     // eslint-disable-next-line
   }, [gameState]);
@@ -85,12 +52,9 @@ export const Game = ({ gameState, gameScore }: { gameState: GameState; gameScore
       const { value: playerCardNumber } = fromCardKey(activePlayerCard);
       const tableCardsSum = sum(activeCardsOnTable.map((c) => fromCardKey(c).value));
       if (playerCardNumber === tableCardsSum && prevCard.current !== activePlayerCard) {
-        const options = {
-          onComplete: runNext,
-        };
-        const animatedCard = animateCardOnTable(activePlayerCard, options);
-        function runNext() {
-          animateCapture(animatedCard as HTMLDivElement, activeCardsOnTable, {
+        const activeCard = getCardElement(activePlayerCard);
+        const onPlaceComplete = () => {
+          animateCapture(activeCard as HTMLDivElement, activeCardsOnTable, {
             onComplete: () => {
               gameIO.emit(GameEvent.PlayerAction, roomName, {
                 action: PlayerActionType.Capture,
@@ -100,16 +64,20 @@ export const Game = ({ gameState, gameScore }: { gameState: GameState; gameScore
               });
             },
           });
-        }
+        };
+        const options = {
+          onComplete: onPlaceComplete,
+        };
+        animatePlace(activeCard, options);
       }
     }
   }, [activeCardsOnTable, activePlayerCard, player, roomName]);
 
   const playCardOnTable = () => {
+    const activeCard = getCardElement(activePlayerCard);
     if (activePlayerCard) {
-      animateCardOnTable(activePlayerCard, {
+      animatePlace(activeCard, {
         onComplete: () => {
-          console.log('tx complete', activePlayerCard);
           gameIO.emit(GameEvent.PlayerAction, roomName, {
             action: PlayerActionType.PlayOnTable,
             playerName: player.username,

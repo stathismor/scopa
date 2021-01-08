@@ -9,6 +9,8 @@ import {
   cardKey,
   fromCardKey,
   PlayerActionType,
+  PlayerActionPlayOnTable,
+  PlayerActionCaptuerd,
 } from 'shared';
 import { finalScore } from './scores';
 import { getRoomState, addGameState, removeGameState } from './controllers/roomController';
@@ -17,7 +19,7 @@ import { getRoomState, addGameState, removeGameState } from './controllers/roomC
  * Calculate the immediate new game state, as a result of a player's action. This is not necessarily the final state
  * but an intermediate one to help the following calculations.
  */
-function calculatePlayerAction(oldState: GameState, playerAction: PlayerAction) {
+function calculatePlayerAction(oldState: GameState, playerAction: PlayerActionPlayOnTable | PlayerActionCaptuerd) {
   const newState = cloneDeep(oldState);
   // TODO: Later on we will need to add order of players, built into the model
   const { activePlayer, opponent } = Object.fromEntries(
@@ -39,7 +41,7 @@ function calculatePlayerAction(oldState: GameState, playerAction: PlayerAction) 
       },
     ];
     newState.table.push(fromCardKey(playerAction.card));
-  } else if (playerAction.action === PlayerActionType.Capture && playerAction?.tableCards !== undefined) {
+  } else if (playerAction.action === PlayerActionType.Capture) {
     const { card, tableCards } = playerAction;
     newState.players = [
       opponent,

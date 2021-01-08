@@ -38,13 +38,21 @@ export type GameState = {
   latestCaptured: string;
 };
 
-export type PlayerAction = {
-  action: PlayerActionType;
+export type PlayerActionUndo = {
+  action: typeof PlayerActionType.Undo;
+};
+export type PlayerActionPlayOnTable = {
+  action: typeof PlayerActionType.PlayOnTable;
   playerName: string;
   card: string;
-  tableCards?: string[];
 };
-
+export type PlayerActionCaptuerd = {
+  action: typeof PlayerActionType.Capture;
+  playerName: string;
+  card: string;
+  tableCards: string[];
+};
+export type PlayerAction = PlayerActionUndo | PlayerActionPlayOnTable | PlayerActionCaptuerd;
 type ScoreDetail = {
   label: string;
   value?: string | number;

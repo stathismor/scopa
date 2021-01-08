@@ -2,7 +2,7 @@ import { Server as IOServer, Socket } from 'socket.io';
 import { UserEvent, RoomEvent, GameEvent, GameState, PlayerAction } from 'shared';
 import { createUsername } from './users';
 import { createRoom, joinRoom } from './rooms';
-import { updateGameState, updateGameStateNew } from './games';
+import { updateGameState } from './games';
 
 export const registerListeners = (io: IOServer) => {
   io.on('connection', (socket: Socket) => {
@@ -22,12 +22,8 @@ export const registerListeners = (io: IOServer) => {
       await joinRoom(io, socket, roomName, username);
     });
 
-    socket.on(GameEvent.UpdateState, async (roomName: string, gameState: GameState) => {
-      await updateGameState(io, roomName, gameState);
-    });
-
     socket.on(GameEvent.PlayerAction, async (roomName: string, playerAction: PlayerAction) => {
-      await updateGameStateNew(io, roomName, playerAction);
+      await updateGameState(io, roomName, playerAction);
     });
   });
 };

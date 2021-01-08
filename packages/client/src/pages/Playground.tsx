@@ -8,7 +8,7 @@ import { Player } from 'components/Players/Player';
 import { Board } from 'components/Board';
 import { GameTable } from 'components/GameTable';
 import { useState } from 'react';
-import { flip } from 'utils/animations';
+import { move } from 'lib/animation/elementAnimations';
 
 const SETTEBELLO = {
   value: 7,
@@ -36,7 +36,7 @@ const animateCardOnTable = (activePlayerCard: string, options: Record<string, un
     dropElement?.removeChild(dropElement.firstChild!);
     dropElement?.appendChild(cardWrap!);
   }
-  flip([cardWrap], moveCard, options);
+  move([cardWrap], moveCard, options);
 };
 
 // const animateCapture = (caputeredCards: string[], options: Record<string, unknown> = {}) => {
@@ -46,7 +46,7 @@ const animateCardOnTable = (activePlayerCard: string, options: Record<string, un
 //   function moveCards() {
 //     cardWraps.forEach((el) => dropElement?.appendChild(el!));
 //   }
-//   flip(cardWraps, moveCards, options);
+//   move(cardWraps, moveCards, options);
 // };
 
 export const Playground = () => {

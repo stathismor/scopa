@@ -1,16 +1,16 @@
 import { Dispatch, SetStateAction } from 'react';
-import { cardDrop, cardWrapper, BOARD_MIN_WIDTH } from 'components/Cards/style';
-import { CardWrapper } from 'components/Cards/CardWrapper';
 import { Box, Flex, Grid } from 'theme-ui';
-import { Card } from './Cards/Card';
 import { Deck as DeckType, cardKey } from 'shared';
+import { CardWrapper } from 'components/Cards/CardWrapper';
+import { cardDrop, cardWrapper, BOARD_MIN_WIDTH } from 'components/Cards/style';
+import { Card } from './Cards/Card';
 import { Deck } from './Cards/Deck';
+import { DROP_CONTAINER_ID } from 'utils/dom';
 
 type Props = {
   table: DeckType;
   deck: DeckType;
   activeCardsOnTable: string[];
-  movingCards: string[];
   toggleActiveCardsOnTable: Dispatch<SetStateAction<string[]>>;
   activePlayerCard: string | null;
   playCardOnTable: () => void;
@@ -20,7 +20,6 @@ export const Board = ({
   table,
   deck,
   activeCardsOnTable,
-  movingCards,
   toggleActiveCardsOnTable,
   activePlayerCard,
   playCardOnTable,
@@ -33,11 +32,10 @@ export const Board = ({
         {table.map((c) => {
           const key = cardKey(c);
           const isActive = activeCardsOnTable.includes(key);
-          const needsToMove = movingCards.includes(key);
           return (
             <CardWrapper
               key={key}
-              isMoving={needsToMove}
+              id={key}
               sx={cardWrapper(isActive)}
               onClick={() => {
                 toggleActiveCardsOnTable(
@@ -49,7 +47,11 @@ export const Board = ({
             </CardWrapper>
           );
         })}
-        {activePlayerCard && <Box role="button" sx={cardDrop} onClick={playCardOnTable} />}
+        {activePlayerCard && (
+          <Box role="button" onClick={playCardOnTable} id={DROP_CONTAINER_ID}>
+            <Box sx={cardDrop} />
+          </Box>
+        )}
       </Grid>
     </Flex>
   );

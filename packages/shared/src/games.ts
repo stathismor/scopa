@@ -40,14 +40,18 @@ export type GameState = {
 
 export type PlayerActionUndo = {
   action: typeof PlayerActionType.Undo;
+  description: string;
+  playerName: string;
 };
 export type PlayerActionPlayOnTable = {
   action: typeof PlayerActionType.PlayOnTable;
+  description: string;
   playerName: string;
   card: string;
 };
 export type PlayerActionCaptuerd = {
   action: typeof PlayerActionType.Capture;
+  description: string;
   playerName: string;
   card: string;
   tableCards: string[];

@@ -16,12 +16,12 @@ export const createServer = () => {
   const server: HTTPServer = CreateHTTPServer(app);
 
   // Application routing
-  app.get('/rooms', async (req: Request, res: Response, next: NextFunction) => {
+  app.get('/rooms', async (_req: Request, res: Response, _next: NextFunction) => {
     const rooms = await getRooms();
     res.status(200).send(rooms);
   });
 
-  app.delete('/rooms/:roomName', async (req: Request, res: Response, next: NextFunction) => {
+  app.delete('/rooms/:roomName', async (req: Request, res: Response, _next: NextFunction) => {
     const { roomName } = req.params;
     const { username } = req.body;
 

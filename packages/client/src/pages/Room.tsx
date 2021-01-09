@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Box, Button, Flex } from 'theme-ui';
+import { Box, Button, Grid } from 'theme-ui';
 import { Link } from 'react-router-dom';
 import { FiArrowLeftCircle } from 'react-icons/fi';
 import { RoomState, RoomEvent, GameEvent, GameState, GameStatus, PlayerAction, Score } from 'shared';
@@ -81,10 +81,10 @@ export const Room = () => {
               <FiArrowLeftCircle title="Back to Lobby" size={24} color={theme.colors.text} />
             </Link>
           </Box>
-          <Flex sx={{ justifyContent: 'space-between', height: '100%' }}>
+          <Grid columns={['auto', null, '75% 25%']} sx={{ height: '100%' }}>
             <Game gameState={gameState} gameScore={gameScore} />
             <Log event={actionDescription} />
-          </Flex>
+          </Grid>
         </Layout>
       );
     default:

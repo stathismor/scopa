@@ -82,7 +82,7 @@ export const Room = () => {
             </Link>
           </Box>
           <Flex sx={{ justifyContent: 'space-between', height: '100%' }}>
-            <Game sx={{ flex: '1 1 auto' }} gameState={gameState} gameScore={gameScore} />
+            <Game gameState={gameState} gameScore={gameScore} />
             <Log event={actionDescription} />
           </Flex>
         </Layout>

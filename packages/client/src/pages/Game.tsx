@@ -51,7 +51,7 @@ export const Game = ({ gameState, gameScore }: { gameState: GameState; gameScore
           p,
         ]),
       ),
-    [players, activePlayer, isSpectator],
+    [players, activePlayer, isSpectator, username],
   );
 
   useEffect(() => {

@@ -34,8 +34,8 @@ export const Game = ({
   const { username } = useUserData();
   const { roomName } = useParams<{ roomName: string }>();
   const [prevState, setPrevState] = useState<GameState>(gameState);
-  // const [activeCardsOnTable, toggleActiveCardsOnTable] = useState<string[]>([]);
 
+  const { activePlayer, deck, table, players, activePlayerCard, activeCardsOnTable } = prevState;
   const togglePlayerActiveCard = (cardKey: string | null) => {
     gameIO.emit(GameEvent.PlayerAction, roomName, {
       action: PlayerActionType.SelectFromHand,
@@ -50,16 +50,19 @@ export const Game = ({
       card: cardKey,
     });
   };
-
   // useEffect(() => {
   //   if (!playerAction) {
   //     setPrevState(gameState);
   //   }
-  // }, [gameState, playerAction]);
-
-  const { activePlayer, deck, table, players, activePlayerCard, activeCardsOnTable } = prevState;
+  // }, [playerAction, gameState]);
+  // useEffect(() => {
+  //   togglePlayerActiveCard(null);
+  //   toggleActiveCardsOnTable(null);
+  // }, []);
 
   useEffect(() => {
+    debugger;
+
     switch (playerAction?.action) {
       case PlayerActionType.Capture: {
         const activeCard = getCardElement(playerAction.card);
@@ -67,29 +70,31 @@ export const Game = ({
           animateCapture(activeCard as HTMLDivElement, playerAction.tableCards, playerAction.playerName, {
             onComplete: () => {
               setPrevState(gameState);
-
-              // togglePlayerActiveCard(null);
-              // toggleActiveCardsOnTable(null);
+              togglePlayerActiveCard(null);
+              toggleActiveCardsOnTable(null);
             },
           });
         };
         const options = {
           onComplete: onPlaceComplete,
         };
-        animatePlace(activeCard, options);
+        if (activeCard) {
+          animatePlace(activeCard, options);
+        }
         break;
       }
       case PlayerActionType.PlayOnTable: {
         const activeCard = getCardElement(playerAction.card);
         console.log(activeCard);
-        animatePlace(activeCard, {
-          onComplete: () => {
-            setPrevState(gameState);
-
-            // togglePlayerActiveCard(null);
-            // toggleActiveCardsOnTable(null);
-          },
-        });
+        if (activeCard) {
+          animatePlace(activeCard, {
+            onComplete: () => {
+              setPrevState(gameState);
+              togglePlayerActiveCard(null);
+              toggleActiveCardsOnTable(null);
+            },
+          });
+        }
         break;
       }
       default:
@@ -97,6 +102,7 @@ export const Game = ({
     }
   }, [playerAction, gameState]);
 
+  console.log(playerAction, gameState);
   // TODO figure out what to do when more than 2 players
   const { player, opponent } = useMemo(
     () => Object.fromEntries(players.map((p) => [p.username === username ? 'player' : 'opponent', p])),

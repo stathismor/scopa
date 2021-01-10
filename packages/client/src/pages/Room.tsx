@@ -54,10 +54,10 @@ export const Room = () => {
 
   useEffect(() => {
     const handleCurrentGameState = (state: GameState, playerAction?: PlayerAction) => {
-      setGameState(state);
       if (playerAction) {
         setAction(playerAction);
       }
+      setGameState(state);
     };
     const handleGameEnded = (score: Score[]) => {
       setGameScore(score);

@@ -114,14 +114,7 @@ function calculatePlayerTurn(oldState: GameState) {
 }
 
 export async function updateGameState(io: IOServer, roomName: string, playerAction: PlayerAction) {
-  const oldState = await getRoomState(roomName);
-
-  if (!oldState) {
-    // TODO: Need to think about this, this should not be possible I think,
-    // just put it here for now cause TS complains
-    return;
-  }
-
+  const oldState = (await getRoomState(roomName)) as GameState;
   switch (playerAction.action) {
     case PlayerActionType.Undo: {
       await removeGameState(roomName);
@@ -143,6 +136,7 @@ export async function updateGameState(io: IOServer, roomName: string, playerActi
         newState.activePlayerCard = playerAction.card;
         newPlayerAction.description = `Player ${playerAction.playerName} selected a card`;
       }
+      addGameState(roomName, newState);
       io.in(roomName).emit(GameEvent.CurrentState, newState, newPlayerAction);
       return;
     }
@@ -159,6 +153,7 @@ export async function updateGameState(io: IOServer, roomName: string, playerActi
         newState.activeCardsOnTable.push(playerAction.card);
         newPlayerAction.description = `Player ${playerAction.playerName} selected a card`;
       }
+      addGameState(roomName, newState);
       io.in(roomName).emit(GameEvent.CurrentState, newState, newPlayerAction);
       return;
     }

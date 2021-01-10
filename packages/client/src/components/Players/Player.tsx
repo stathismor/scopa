@@ -10,12 +10,23 @@ import { Box, BoxProps, Grid } from 'theme-ui';
 type Props = {
   player: PlayerState;
   isActive: boolean;
+  isSpectator: boolean;
   togglePlayerActiveCard: React.Dispatch<React.SetStateAction<string | null>>;
   activePlayerCard: string | null;
 };
 
-export const Player = ({ player, isActive, togglePlayerActiveCard, activePlayerCard, ...rest }: Props & BoxProps) => {
+export const Player = ({
+  player,
+  isActive,
+  isSpectator,
+  togglePlayerActiveCard,
+  activePlayerCard,
+  ...rest
+}: Props & BoxProps) => {
   if (!player) {
+    if (isSpectator) {
+      return null;
+    }
     return <InvitePlayer />;
   }
   const { captured, hand } = player;

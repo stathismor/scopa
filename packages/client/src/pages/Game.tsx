@@ -61,22 +61,24 @@ export const Game = () => {
   const [activeCardsOnTable, toggleActiveCardsOnTable] = useState<string[]>([]);
   const [gameState, setGameState] = useState<GameState>(INITIAL_STATE);
   const [gameScore, setGameScore] = useState<Score[]>();
+
+  /**
+   * Need to keep track of the active player card for the opponent animation
+   * we are using a ref to avoid having a dependency on this state in the effect
+   * where we set the socket connection
+   */
   const activePlayerCardRef = useRef<string | null>(null);
-  const playerActionRef = useRef<string | null>(null);
 
   useEffect(() => {
     togglePlayerActiveCard(null);
     toggleActiveCardsOnTable([]);
     activePlayerCardRef.current = null;
-    playerActionRef.current = null;
   }, [gameState, togglePlayerActiveCard]);
 
   const { activePlayer, deck, table, players } = gameState;
 
   useEffect(() => {
     const handleCurrentGameState = (state: GameState, playerAction?: PlayerAction) => {
-      debugger;
-      playerActionRef.current = playerAction?.action ?? null;
       switch (playerAction?.action) {
         case PlayerActionType.Capture: {
           const cb = () => {
@@ -115,8 +117,6 @@ export const Game = () => {
                   setGameState(state);
                 },
               });
-            } else {
-              console.log('Why is this happening');
             }
           };
           if (!activePlayerCardRef.current) {
@@ -183,7 +183,7 @@ export const Game = () => {
 
   return (
     <GameTable>
-      <Opponent player={opponent} />
+      <Opponent player={opponent} activePlayerCard={activePlayerCard} />
       {opponent && <PlayerName playerName={opponent.username} isActive={activePlayer === opponent.username} />}
       <Board
         table={table}

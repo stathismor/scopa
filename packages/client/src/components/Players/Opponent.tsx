@@ -18,7 +18,12 @@ export const Opponent = ({ player, activePlayerCard, ...rest }: Props) => {
   return (
     <Box {...rest}>
       <Grid sx={{ m: 3, marginTop: '-7vw' }} columns="1.5fr 1fr 1fr 1fr">
-        <Deck cardNumber={captured.length} scopa={scopa} id={`${PLAYER_DECK_ID}__${username}`} />
+        <Deck
+          cardNumber={captured.length}
+          scopa={scopa}
+          id={`${PLAYER_DECK_ID}__${username}`}
+          scopaPosition="bottom"
+        />
         {hand?.map((c) => {
           const key = cardKey(c);
           return (

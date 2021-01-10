@@ -18,6 +18,8 @@ export const PlayerActionType = {
   PlayOnTable: 'play-on-table',
   Capture: 'capture',
   Undo: 'undo',
+  SelectFromHand: 'select-hand',
+  SelectFromTable: 'select-table',
 } as const;
 export type PlayerActionType = typeof PlayerActionType[keyof typeof PlayerActionType];
 
@@ -36,8 +38,16 @@ export type GameState = {
   table: Card[];
   players: PlayerState[];
   latestCaptured: string;
+  activePlayerCard: string | null;
+  activeCardsOnTable: string[];
 };
 
+export type PlayerActionSelect = {
+  action: typeof PlayerActionType.SelectFromHand | typeof PlayerActionType.SelectFromTable;
+  description: string;
+  playerName: string;
+  card: string;
+};
 export type PlayerActionUndo = {
   action: typeof PlayerActionType.Undo;
   description: string;
@@ -56,7 +66,7 @@ export type PlayerActionCaptuerd = {
   card: string;
   tableCards: string[];
 };
-export type PlayerAction = PlayerActionUndo | PlayerActionPlayOnTable | PlayerActionCaptuerd;
+export type PlayerAction = PlayerActionUndo | PlayerActionPlayOnTable | PlayerActionCaptuerd | PlayerActionSelect;
 type ScoreDetail = {
   label: string;
   value?: string | number;

@@ -75,7 +75,7 @@ export const Playground = () => {
           table={[SETTEBELLO]}
           deck={[SETTEBELLO]}
           activeCardsOnTable={activeCardsOnTable}
-          toggleActiveCardsOnTable={toggleActiveCardsOnTable}
+          toggleActiveCardsOnTable={() => toggleActiveCardsOnTable([''])}
           activePlayerCard={activePlayerCard}
           playCardOnTable={playCardOnTable}
         />

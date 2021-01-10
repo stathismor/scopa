@@ -6,11 +6,12 @@ import { InvitePlayer } from 'components/InvitePlayer';
 import { noop } from 'lodash';
 import { PlayerState, cardKey } from 'shared';
 import { Box, BoxProps, Grid } from 'theme-ui';
+import { PLAYER_DECK_ID } from 'utils/dom';
 
 type Props = {
   player: PlayerState;
   isActive: boolean;
-  togglePlayerActiveCard: React.Dispatch<React.SetStateAction<string | null>>;
+  togglePlayerActiveCard: (cardKey: string | null) => void;
   activePlayerCard: string | null;
 };
 
@@ -18,11 +19,11 @@ export const Player = ({ player, isActive, togglePlayerActiveCard, activePlayerC
   if (!player) {
     return <InvitePlayer />;
   }
-  const { captured, hand } = player;
+  const { captured, hand, username } = player;
   return (
     <Box {...rest}>
       <Grid sx={{ m: 3 }} columns="1.5fr 1fr 1fr 1fr">
-        <Deck cardNumber={captured.length} scopa={player.scopa} id="player-deck" />
+        <Deck cardNumber={captured.length} scopa={player.scopa} id={`${PLAYER_DECK_ID}__${username}`} />
         {hand?.map((c) => {
           const key = cardKey(c);
           return (
@@ -30,7 +31,7 @@ export const Player = ({ player, isActive, togglePlayerActiveCard, activePlayerC
               key={key}
               id={key}
               sx={playerCardWrapper(activePlayerCard === key)}
-              onClick={isActive ? () => togglePlayerActiveCard((state) => (state === key ? null : key)) : noop}
+              onClick={isActive ? () => togglePlayerActiveCard(activePlayerCard === key ? null : key) : noop}
             >
               <Card card={c} />
             </CardWrapper>

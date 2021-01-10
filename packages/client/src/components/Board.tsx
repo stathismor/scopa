@@ -1,4 +1,3 @@
-import { Dispatch, SetStateAction } from 'react';
 import { Box, Flex, Grid } from 'theme-ui';
 import { Deck as DeckType, cardKey } from 'shared';
 import { CardWrapper } from 'components/Cards/CardWrapper';
@@ -11,7 +10,7 @@ type Props = {
   table: DeckType;
   deck: DeckType;
   activeCardsOnTable: string[];
-  toggleActiveCardsOnTable: Dispatch<SetStateAction<string[]>>;
+  toggleActiveCardsOnTable: (cardKey: string | null) => void;
   activePlayerCard: string | null;
   playCardOnTable: () => void;
 };
@@ -38,9 +37,7 @@ export const Board = ({
               id={key}
               sx={cardWrapper(isActive)}
               onClick={() => {
-                toggleActiveCardsOnTable(
-                  isActive ? activeCardsOnTable.filter((c) => c !== key) : [...activeCardsOnTable, key],
-                );
+                toggleActiveCardsOnTable(key);
               }}
             >
               <Card card={c} />

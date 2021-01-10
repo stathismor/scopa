@@ -1,6 +1,6 @@
 import { Box, Heading, Text } from 'theme-ui';
 
-export const Log = ({ event }: { event: string }) => {
+export const Log = ({ event }: { event?: string }) => {
   return (
     <Box
       sx={{

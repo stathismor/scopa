@@ -10,9 +10,14 @@ export function animatePlace(cardWrap: ChildNode | null | undefined, options: Mo
   move([cardWrap], moveCard, options);
 }
 
-export function animateCapture(animatedCard: HTMLDivElement, capturedCards: string[], options: MoveOptions = {}) {
+export function animateCapture(
+  animatedCard: HTMLDivElement,
+  capturedCards: string[],
+  playerName: string,
+  options: MoveOptions = {},
+) {
   const cardWraps = capturedCards.map((cardKey) => getCardElement(cardKey)).concat([animatedCard]) as HTMLDivElement[];
-  const dropElement = getElement(PLAYER_DECK_ID);
+  const dropElement = getElement(`${PLAYER_DECK_ID}__${playerName}`);
   function moves() {
     cardWraps.forEach((el: HTMLDivElement) => {
       el.style.position = 'absolute';

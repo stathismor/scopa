@@ -18,6 +18,8 @@ const INITIAL_STATE = {
   table: [],
   players: [],
   latestCaptured: '',
+  activePlayerCard: null,
+  activeCardsOnTable: [],
 };
 
 export const Room = () => {
@@ -27,7 +29,7 @@ export const Room = () => {
   const { username } = useUserData();
   const [gameState, setGameState] = useState<GameState>(INITIAL_STATE);
   const [gameScore, setGameScore] = useState<Score[]>();
-  const [actionDescription, setActionDescription] = useState('');
+  const [action, setAction] = useState<PlayerAction>();
 
   useEffect(() => {
     const handleSuccess = () => {
@@ -54,7 +56,7 @@ export const Room = () => {
     const handleCurrentGameState = (state: GameState, playerAction?: PlayerAction) => {
       setGameState(state);
       if (playerAction) {
-        setActionDescription(playerAction.description);
+        setAction(playerAction);
       }
     };
     const handleGameEnded = (score: Score[]) => {
@@ -82,8 +84,8 @@ export const Room = () => {
             </Link>
           </Box>
           <Grid columns={['auto', null, '75% 25%']} sx={{ height: '100%' }}>
-            <Game gameState={gameState} gameScore={gameScore} />
-            <Log event={actionDescription} />
+            <Game gameState={gameState} gameScore={gameScore} playerAction={action} />
+            <Log event={action?.description} />
           </Grid>
         </Layout>
       );

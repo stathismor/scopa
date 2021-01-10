@@ -122,23 +122,56 @@ export async function updateGameState(io: IOServer, roomName: string, playerActi
     return;
   }
 
-  if (playerAction.action === PlayerActionType.Undo) {
-    await removeGameState(roomName);
-    const prevState = await getRoomState(roomName);
+  switch (playerAction.action) {
+    case PlayerActionType.Undo: {
+      await removeGameState(roomName);
+      const prevState = await getRoomState(roomName);
 
-    const newPlayerAction = cloneDeep(playerAction);
-    newPlayerAction.description = `Player ${playerAction.playerName} reverted their last turn`;
+      const newPlayerAction = cloneDeep(playerAction);
+      newPlayerAction.description = `Player ${playerAction.playerName} reverted their last turn`;
 
-    io.in(roomName).emit(GameEvent.CurrentState, prevState, newPlayerAction);
-    return;
-  }
+      io.in(roomName).emit(GameEvent.CurrentState, prevState, newPlayerAction);
+      return;
+    }
+    case PlayerActionType.SelectFromHand: {
+      const newPlayerAction = cloneDeep(playerAction);
+      const newState = cloneDeep(oldState);
+      if (newState.activePlayerCard === playerAction.card) {
+        newState.activePlayerCard = null;
+        newPlayerAction.description = `Player ${playerAction.playerName} deselected`;
+      } else {
+        newState.activePlayerCard = playerAction.card;
+        newPlayerAction.description = `Player ${playerAction.playerName} selected a card`;
+      }
+      io.in(roomName).emit(GameEvent.CurrentState, newState, newPlayerAction);
+      return;
+    }
+    case PlayerActionType.SelectFromTable: {
+      const newPlayerAction = cloneDeep(playerAction);
+      const newState = cloneDeep(oldState);
+      if (newState.activeCardsOnTable?.includes(playerAction.card)) {
+        newState.activeCardsOnTable = newState.activeCardsOnTable.filter((c) => c !== playerAction.card);
+        newPlayerAction.description = `Player ${playerAction.playerName} deselected`;
+      } else if (playerAction.card === null) {
+        newState.activeCardsOnTable = [];
+        newPlayerAction.description = `Player ${playerAction.playerName} Cleaned up`;
+      } else {
+        newState.activeCardsOnTable.push(playerAction.card);
+        newPlayerAction.description = `Player ${playerAction.playerName} selected a card`;
+      }
+      io.in(roomName).emit(GameEvent.CurrentState, newState, newPlayerAction);
+      return;
+    }
+    default: {
+      const [tempState, finalPlayerAction] = calculatePlayerAction(oldState, playerAction);
+      const [finalState, isMatchFinished] = calculatePlayerTurn(tempState);
 
-  const [tempState, finalPlayerAction] = calculatePlayerAction(oldState, playerAction);
-  const [finalState, isMatchFinished] = calculatePlayerTurn(tempState);
-
-  addGameState(roomName, finalState);
-  io.in(roomName).emit(GameEvent.CurrentState, finalState, finalPlayerAction);
-  if (isMatchFinished) {
-    io.in(roomName).emit(GameStatus.Ended, finalScore(finalState.players));
+      addGameState(roomName, finalState);
+      io.in(roomName).emit(GameEvent.CurrentState, finalState, finalPlayerAction);
+      if (isMatchFinished) {
+        io.in(roomName).emit(GameStatus.Ended, finalScore(finalState.players));
+      }
+      return;
+    }
   }
 }

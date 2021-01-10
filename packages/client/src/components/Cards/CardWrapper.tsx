@@ -2,7 +2,7 @@ import { PropsWithChildren, MouseEvent } from 'react';
 import { Box } from 'theme-ui';
 
 type CardWrapperProps = PropsWithChildren<{
-  onClick: (e: MouseEvent<HTMLElement>) => void;
+  onClick?: (e: MouseEvent<HTMLElement>) => void;
   id: string;
 }>;
 

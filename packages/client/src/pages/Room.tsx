@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Box, Button, Grid } from 'theme-ui';
 import { Link } from 'react-router-dom';
 import { FiArrowLeftCircle } from 'react-icons/fi';
-import { RoomState, RoomEvent, GameEvent, GameState, GameStatus, PlayerAction, Score } from 'shared';
+import { RoomState, RoomEvent, GameEvent, GameState, PlayerAction } from 'shared';
 import { gameIO } from 'lib/socket';
 import { Layout } from 'components/Layout';
 import { useUserData } from 'components/UserContext';
@@ -11,26 +11,12 @@ import { Log } from 'components/Log';
 import { Game } from './Game';
 import { theme } from 'theme';
 
-const INITIAL_STATE = {
-  status: GameStatus.Waiting,
-  activePlayer: '',
-  deck: [],
-  table: [],
-  players: [],
-  latestCaptured: '',
-  activePlayerCard: null,
-  activeCardsOnTable: [],
-};
-
 export const Room = () => {
   const [status, setStatus] = useState<RoomState>(RoomState.Pending);
   const [errorMessage, setErrorMessage] = useState('');
   const { roomName } = useParams<{ roomName: string }>();
   const { username } = useUserData();
-  const [{ playerAction, ...gameState }, setGameState] = useState<GameState & { playerAction?: PlayerAction }>(
-    INITIAL_STATE,
-  );
-  const [gameScore, setGameScore] = useState<Score[]>();
+  const [action, setAction] = useState<PlayerAction>();
 
   useEffect(() => {
     const handleSuccess = () => {
@@ -54,22 +40,15 @@ export const Room = () => {
   }, [roomName, username]);
 
   useEffect(() => {
-    const handleCurrentGameState = (state: GameState, action?: PlayerAction) => {
-      setGameState({
-        ...state,
-        playerAction: action,
-      });
+    const handleCurrentGameState = (_: GameState, playerAction?: PlayerAction) => {
+      if (playerAction) {
+        setAction(playerAction);
+      }
     };
-    const handleGameEnded = (score: Score[]) => {
-      setGameScore(score);
-    };
-
     gameIO.on(GameEvent.CurrentState, handleCurrentGameState);
-    gameIO.on(GameStatus.Ended, handleGameEnded);
 
     return () => {
       gameIO.off(GameEvent.CurrentState, handleCurrentGameState);
-      gameIO.off(GameStatus.Ended, handleGameEnded);
     };
   }, []);
 
@@ -85,8 +64,8 @@ export const Room = () => {
             </Link>
           </Box>
           <Grid columns={['auto', null, '75% 25%']} sx={{ height: '100%' }}>
-            <Game gameState={gameState} gameScore={gameScore} playerAction={playerAction} />
-            <Log event={playerAction?.description} />
+            <Game />
+            <Log event={action?.description} />
           </Grid>
         </Layout>
       );

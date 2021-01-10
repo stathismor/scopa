@@ -42,12 +42,6 @@ export type GameState = {
   activeCardsOnTable: string[];
 };
 
-export type PlayerActionSelect = {
-  action: typeof PlayerActionType.SelectFromHand | typeof PlayerActionType.SelectFromTable;
-  description: string;
-  playerName: string;
-  card: string;
-};
 export type PlayerActionUndo = {
   action: typeof PlayerActionType.Undo;
   description: string;
@@ -66,7 +60,7 @@ export type PlayerActionCaptuerd = {
   card: string;
   tableCards: string[];
 };
-export type PlayerAction = PlayerActionUndo | PlayerActionPlayOnTable | PlayerActionCaptuerd | PlayerActionSelect;
+export type PlayerAction = PlayerActionUndo | PlayerActionPlayOnTable | PlayerActionCaptuerd;
 type ScoreDetail = {
   label: string;
   value?: string | number;

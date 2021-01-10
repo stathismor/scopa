@@ -5,12 +5,13 @@ import { cardDrop, cardWrapper, BOARD_MIN_WIDTH } from 'components/Cards/style';
 import { Card } from './Cards/Card';
 import { Deck } from './Cards/Deck';
 import { DROP_CONTAINER_ID } from 'utils/dom';
+import { Dispatch, SetStateAction } from 'react';
 
 type Props = {
   table: DeckType;
   deck: DeckType;
   activeCardsOnTable: string[];
-  toggleActiveCardsOnTable: (cardKey: string | null) => void;
+  toggleActiveCardsOnTable: Dispatch<SetStateAction<string[]>>;
   activePlayerCard: string | null;
   playCardOnTable: () => void;
 };
@@ -37,7 +38,9 @@ export const Board = ({
               id={key}
               sx={cardWrapper(isActive)}
               onClick={() => {
-                toggleActiveCardsOnTable(key);
+                toggleActiveCardsOnTable(
+                  isActive ? activeCardsOnTable.filter((c) => c !== key) : [...activeCardsOnTable, key],
+                );
               }}
             >
               <Card card={c} />

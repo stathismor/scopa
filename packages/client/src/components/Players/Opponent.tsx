@@ -12,7 +12,7 @@ export const Opponent = ({ player, ...rest }: { player: PlayerState } & BoxProps
   const { captured, hand, username, scopa } = player;
   return (
     <Box {...rest}>
-      <Grid sx={{ m: 3, marginBottom: '-7vw' }} columns="1.5fr 1fr 1fr 1fr">
+      <Grid sx={{ m: 3, marginTop: '-7vw' }} columns="1.5fr 1fr 1fr 1fr">
         <Deck cardNumber={captured.length}  scopa={scopa} id={`${PLAYER_DECK_ID}__${username}`} />
         {hand?.map((c) => {
           const key = cardKey(c);

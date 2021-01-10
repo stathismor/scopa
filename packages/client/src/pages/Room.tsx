@@ -27,9 +27,10 @@ export const Room = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const { roomName } = useParams<{ roomName: string }>();
   const { username } = useUserData();
-  const [gameState, setGameState] = useState<GameState>(INITIAL_STATE);
+  const [{ playerAction, ...gameState }, setGameState] = useState<GameState & { playerAction?: PlayerAction }>(
+    INITIAL_STATE,
+  );
   const [gameScore, setGameScore] = useState<Score[]>();
-  const [action, setAction] = useState<PlayerAction>();
 
   useEffect(() => {
     const handleSuccess = () => {
@@ -53,11 +54,11 @@ export const Room = () => {
   }, [roomName, username]);
 
   useEffect(() => {
-    const handleCurrentGameState = (state: GameState, playerAction?: PlayerAction) => {
-      if (playerAction) {
-        setAction(playerAction);
-      }
-      setGameState(state);
+    const handleCurrentGameState = (state: GameState, action?: PlayerAction) => {
+      setGameState({
+        ...state,
+        playerAction: action,
+      });
     };
     const handleGameEnded = (score: Score[]) => {
       setGameScore(score);
@@ -84,8 +85,8 @@ export const Room = () => {
             </Link>
           </Box>
           <Grid columns={['auto', null, '75% 25%']} sx={{ height: '100%' }}>
-            <Game gameState={gameState} gameScore={gameScore} playerAction={action} />
-            <Log event={action?.description} />
+            <Game gameState={gameState} gameScore={gameScore} playerAction={playerAction} />
+            <Log event={playerAction?.description} />
           </Grid>
         </Layout>
       );

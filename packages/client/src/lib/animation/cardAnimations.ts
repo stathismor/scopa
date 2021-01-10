@@ -1,5 +1,5 @@
 import { move, MoveOptions } from './elementAnimations';
-import { getElement, getCardElement, DROP_CONTAINER_ID, PLAYER_DECK_ID } from 'utils/dom';
+import { getElement, DROP_CONTAINER_ID, PLAYER_DECK_ID } from 'utils/dom';
 
 export function animatePlace(cardWrap: ChildNode | null | undefined, options: MoveOptions = {}) {
   const dropElement = getElement(DROP_CONTAINER_ID);
@@ -10,26 +10,21 @@ export function animatePlace(cardWrap: ChildNode | null | undefined, options: Mo
   move([cardWrap], moveCard, options);
 }
 
-export function animateCapture(
-  animatedCard: HTMLDivElement,
-  capturedCards: string[],
-  playerName: string,
-  options: MoveOptions = {},
-) {
-  const cardWraps = capturedCards.map((cardKey) => getCardElement(cardKey)).concat([animatedCard]) as HTMLDivElement[];
+export function animateCapture(capturedCards: HTMLDivElement[], playerName: string, options: MoveOptions = {}) {
+  console.log(capturedCards);
   const dropElement = getElement(`${PLAYER_DECK_ID}__${playerName}`);
   function moves() {
-    cardWraps.forEach((el: HTMLDivElement) => {
+    capturedCards.forEach((el: HTMLDivElement) => {
       el.style.position = 'absolute';
       el.style.top = '0';
       dropElement?.appendChild(el);
     });
   }
-  move(cardWraps, moves, {
+  move(capturedCards, moves, {
     ...options,
     onComplete: () => {
       options?.onComplete?.();
-      cardWraps.forEach((el) => {
+      capturedCards.forEach((el) => {
         dropElement?.removeChild(el);
       });
     },

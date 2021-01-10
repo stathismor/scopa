@@ -11,6 +11,7 @@ import {
   PlayerActionType,
   PlayerActionPlayOnTable,
   PlayerActionCaptuerd,
+  getCardName,
 } from 'shared';
 import { finalScore } from './scores';
 import { getRoomState, addGameState, removeGameState } from './controllers/roomController';
@@ -21,6 +22,7 @@ import { getRoomState, addGameState, removeGameState } from './controllers/roomC
  */
 function calculatePlayerAction(oldState: GameState, playerAction: PlayerActionPlayOnTable | PlayerActionCaptuerd) {
   const newState = cloneDeep(oldState);
+  const newPlayerAction = cloneDeep(playerAction);
   // TODO: Later on we will need to add order of players, built into the model
   const { activePlayer, opponent } = Object.fromEntries(
     oldState?.players?.map((player) => [
@@ -41,6 +43,10 @@ function calculatePlayerAction(oldState: GameState, playerAction: PlayerActionPl
       },
     ];
     newState.table.push(fromCardKey(playerAction.card));
+
+    newPlayerAction.description = `Player ${playerAction.playerName} placed ${getCardName(
+      playerAction.card,
+    )} on the table`;
   } else if (playerAction.action === PlayerActionType.Capture) {
     const { card, tableCards } = playerAction;
     newState.players = [
@@ -53,8 +59,14 @@ function calculatePlayerAction(oldState: GameState, playerAction: PlayerActionPl
     ];
     newState.table = newState.table.filter((c) => !tableCards.includes(cardKey(c)));
     newState.latestCaptured = activePlayer.username;
+    const cardsText = playerAction.tableCards.reduce(
+      (text, value, i, array) => `${text}${i < array.length - 1 ? ', ' : ' and '}${getCardName(value)}`,
+    );
+    newPlayerAction.description = `Player ${playerAction.playerName} captured ${cardsText} with a ${getCardName(
+      playerAction.card,
+    )}`;
   }
-  return newState;
+  return [newState, newPlayerAction] as const;
 }
 
 /**
@@ -113,15 +125,19 @@ export async function updateGameState(io: IOServer, roomName: string, playerActi
   if (playerAction.action === PlayerActionType.Undo) {
     await removeGameState(roomName);
     const prevState = await getRoomState(roomName);
-    io.in(roomName).emit(GameEvent.CurrentState, prevState);
+
+    const newPlayerAction = cloneDeep(playerAction);
+    newPlayerAction.description = `Player ${playerAction.playerName} reverted their last turn`;
+
+    io.in(roomName).emit(GameEvent.CurrentState, prevState, newPlayerAction);
     return;
   }
 
-  const tempState = calculatePlayerAction(oldState, playerAction);
+  const [tempState, finalPlayerAction] = calculatePlayerAction(oldState, playerAction);
   const [finalState, isMatchFinished] = calculatePlayerTurn(tempState);
 
   addGameState(roomName, finalState);
-  io.in(roomName).emit(GameEvent.CurrentState, finalState, playerAction);
+  io.in(roomName).emit(GameEvent.CurrentState, finalState, finalPlayerAction);
   if (isMatchFinished) {
     io.in(roomName).emit(GameStatus.Ended, finalScore(finalState.players));
   }

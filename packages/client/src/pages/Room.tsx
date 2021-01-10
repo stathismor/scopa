@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Box, Button } from 'theme-ui';
+import { Box, Button, Grid } from 'theme-ui';
 import { Link } from 'react-router-dom';
 import { FiArrowLeftCircle } from 'react-icons/fi';
-import { Layout } from 'components/Layout';
+import { RoomState, RoomEvent, GameEvent, GameState, GameStatus, PlayerAction, Score } from 'shared';
 import { gameIO } from 'lib/socket';
-import { RoomState, RoomEvent, GameEvent, GameState, GameStatus, Score } from 'shared';
+import { Layout } from 'components/Layout';
 import { useUserData } from 'components/UserContext';
+import { Log } from 'components/Log';
 import { Game } from './Game';
 import { theme } from 'theme';
 
@@ -26,6 +27,7 @@ export const Room = () => {
   const { username } = useUserData();
   const [gameState, setGameState] = useState<GameState>(INITIAL_STATE);
   const [gameScore, setGameScore] = useState<Score[]>();
+  const [actionDescription, setActionDescription] = useState('');
 
   useEffect(() => {
     const handleSuccess = () => {
@@ -49,8 +51,11 @@ export const Room = () => {
   }, [roomName, username]);
 
   useEffect(() => {
-    const handleCurrentGameState = (state: GameState) => {
+    const handleCurrentGameState = (state: GameState, playerAction?: PlayerAction) => {
       setGameState(state);
+      if (playerAction) {
+        setActionDescription(playerAction.description);
+      }
     };
     const handleGameEnded = (score: Score[]) => {
       setGameScore(score);
@@ -76,7 +81,10 @@ export const Room = () => {
               <FiArrowLeftCircle title="Back to Lobby" size={24} color={theme.colors.text} />
             </Link>
           </Box>
-          <Game gameState={gameState} gameScore={gameScore} />
+          <Grid columns={['auto', null, '75% 25%']} sx={{ height: '100%' }}>
+            <Game gameState={gameState} gameScore={gameScore} />
+            <Log event={actionDescription} />
+          </Grid>
         </Layout>
       );
     default:

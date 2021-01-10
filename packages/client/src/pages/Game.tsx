@@ -107,6 +107,7 @@ export const Game = ({ gameState, gameScore }: { gameState: GameState; gameScore
             onClick={() => {
               gameIO.emit(GameEvent.PlayerAction, roomName, {
                 action: PlayerActionType.Undo,
+                playerName: player.username,
               });
             }}
             sx={{ ml: 2, lineHeight: 0 }}

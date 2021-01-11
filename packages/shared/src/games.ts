@@ -18,8 +18,6 @@ export const PlayerActionType = {
   PlayOnTable: 'play-on-table',
   Capture: 'capture',
   Undo: 'undo',
-  SelectFromHand: 'select-hand',
-  SelectFromTable: 'select-table',
 } as const;
 export type PlayerActionType = typeof PlayerActionType[keyof typeof PlayerActionType];
 
@@ -38,8 +36,6 @@ export type GameState = {
   table: Card[];
   players: PlayerState[];
   latestCaptured: string;
-  activePlayerCard: string | null;
-  activeCardsOnTable: string[];
 };
 
 export type PlayerActionUndo = {

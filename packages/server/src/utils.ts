@@ -41,8 +41,6 @@ export function generateGameState(usernames: string[]): GameState {
     table,
     players,
     latestCaptured: '',
-    activeCardsOnTable: [],
-    activePlayerCard: null,
   };
 }
 

@@ -5,7 +5,18 @@ import { baseCard, CARD_HEIGHT_DESKTOP, CARD_HEIGHT_MOBILE } from './style';
 import { Card as CardType } from 'shared';
 import { Card } from './Card';
 
-export const Deck = ({ cardNumber, scopa, id, ...rest }: { cardNumber: number; scopa?: CardType[] } & BoxProps) => {
+type Props = {
+  cardNumber: number;
+  scopa?: CardType[];
+  scopaPosition?: 'top' | 'bottom';
+} & BoxProps;
+
+const SCOPA_TRANSFORM_PROPERTY = {
+  top: undefined,
+  bottom: 'rotate(180deg)',
+};
+
+export const Deck = ({ cardNumber, scopa, id, scopaPosition = 'top', ...rest }: Props) => {
   const deckElevation = Math.floor(cardNumber / 5);
   return (
     <Box sx={{ position: 'relative' }} id={id}>
@@ -15,11 +26,12 @@ export const Deck = ({ cardNumber, scopa, id, ...rest }: { cardNumber: number; s
           sx={{
             position: 'absolute',
             zIndex: -i - 1,
-            top: [
+            [scopaPosition]: [
               `calc(-${CARD_HEIGHT_MOBILE / 10}vw - ${i * 10}px)`,
               null,
               `calc(-${CARD_HEIGHT_DESKTOP / 10}vw - ${i * 10}px)`,
             ],
+            transform: SCOPA_TRANSFORM_PROPERTY[scopaPosition],
           }}
         >
           <Card card={card} />

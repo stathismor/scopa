@@ -115,31 +115,27 @@ function calculatePlayerTurn(oldState: GameState) {
 }
 
 export async function updateGameState(io: IOServer, roomName: string, playerAction: PlayerAction) {
-  const oldState = await getRoomState(roomName);
+  const oldState = (await getRoomState(roomName)) as GameState;
+  switch (playerAction.action) {
+    case PlayerActionType.Undo: {
+      await removeGameState(roomName);
+      const prevState = await getRoomState(roomName);
+      const newPlayerAction = cloneDeep(playerAction);
+      newPlayerAction.description = `Player <strong>${playerAction.playerName}</strong> reverted their last turn`;
 
-  if (!oldState) {
-    // TODO: Need to think about this, this should not be possible I think,
-    // just put it here for now cause TS complains
-    return;
-  }
+      io.in(roomName).emit(GameEvent.CurrentState, prevState, newPlayerAction);
+      return;
+    }
+    default: {
+      const [tempState, finalPlayerAction] = calculatePlayerAction(oldState, playerAction);
+      const [finalState, isMatchFinished] = calculatePlayerTurn(tempState);
 
-  if (playerAction.action === PlayerActionType.Undo) {
-    await removeGameState(roomName);
-    const prevState = await getRoomState(roomName);
-
-    const newPlayerAction = cloneDeep(playerAction);
-    newPlayerAction.description = `Player <strong>${playerAction.playerName}</strong> reverted their last turn`;
-
-    io.in(roomName).emit(GameEvent.CurrentState, prevState, newPlayerAction);
-    return;
-  }
-
-  const [tempState, finalPlayerAction] = calculatePlayerAction(oldState, playerAction);
-  const [finalState, isMatchFinished] = calculatePlayerTurn(tempState);
-
-  addGameState(roomName, finalState);
-  io.in(roomName).emit(GameEvent.CurrentState, finalState, finalPlayerAction);
-  if (isMatchFinished) {
-    io.in(roomName).emit(GameStatus.Ended, finalScore(finalState.players));
+      addGameState(roomName, finalState);
+      io.in(roomName).emit(GameEvent.CurrentState, finalState, finalPlayerAction);
+      if (isMatchFinished) {
+        io.in(roomName).emit(GameStatus.Ended, finalScore(finalState.players));
+      }
+      return;
+    }
   }
 }

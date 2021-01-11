@@ -1,4 +1,3 @@
-import { Dispatch, SetStateAction } from 'react';
 import { Box, Flex, Grid } from 'theme-ui';
 import { Deck as DeckType, cardKey } from 'shared';
 import { CardWrapper } from 'components/Cards/CardWrapper';
@@ -6,6 +5,7 @@ import { cardDrop, cardWrapper, BOARD_MIN_WIDTH } from 'components/Cards/style';
 import { Card } from './Cards/Card';
 import { Deck } from './Cards/Deck';
 import { DROP_CONTAINER_ID } from 'utils/dom';
+import { Dispatch, SetStateAction } from 'react';
 
 type Props = {
   table: DeckType;

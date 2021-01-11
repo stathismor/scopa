@@ -16,7 +16,7 @@ export const Room = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const { roomName } = useParams<{ roomName: string }>();
   const { username } = useUserData();
-  const [action, setAction] = useState<PlayerAction>();
+  const [playerAction, setPlayerAction] = useState<string>();
 
   useEffect(() => {
     const handleSuccess = () => {
@@ -40,15 +40,13 @@ export const Room = () => {
   }, [roomName, username]);
 
   useEffect(() => {
-    const handleCurrentGameState = (_: GameState, playerAction?: PlayerAction) => {
-      if (playerAction) {
-        setAction(playerAction);
-      }
+    const handleLogs = (_: GameState, action?: PlayerAction) => {
+      setPlayerAction(action?.description);
     };
-    gameIO.on(GameEvent.CurrentState, handleCurrentGameState);
+    gameIO.on(GameEvent.CurrentState, handleLogs);
 
     return () => {
-      gameIO.off(GameEvent.CurrentState, handleCurrentGameState);
+      gameIO.off(GameEvent.CurrentState, handleLogs);
     };
   }, []);
 
@@ -65,7 +63,7 @@ export const Room = () => {
           </Box>
           <Grid columns={['auto', null, '75% 25%']} sx={{ height: '100%' }}>
             <Game />
-            <Log event={action?.description} />
+            <Log event={playerAction} />
           </Grid>
         </Layout>
       );

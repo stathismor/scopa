@@ -13,7 +13,7 @@ export const Log = ({ event }: { event?: string }) => {
       <Heading as="h3" mt={2}>
         Log
       </Heading>
-      <Text sx={{ fontSize: 2, fontWeight: 400 }}>{event}</Text>
+      <Text sx={{ fontSize: 2, fontWeight: 400 }} dangerouslySetInnerHTML={{ __html: event }} />
     </Box>
   );
 };

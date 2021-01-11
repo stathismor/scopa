@@ -13,21 +13,11 @@ type Props = {
   isSpectator: boolean;
   togglePlayerActiveCard: React.Dispatch<React.SetStateAction<string | null>>;
   activePlayerCard: string | null;
-};
+} & BoxProps;
 
-export const Player = ({
-  player,
-  isActive,
-  isSpectator,
-  togglePlayerActiveCard,
-  activePlayerCard,
-  ...rest
-}: Props & BoxProps) => {
+export const Player = ({ player, isActive, isSpectator, togglePlayerActiveCard, activePlayerCard, ...rest }: Props) => {
   if (!player) {
-    if (isSpectator) {
-      return null;
-    }
-    return <InvitePlayer />;
+    return isSpectator ? null : <InvitePlayer />;
   }
   const { captured, hand } = player;
   return (

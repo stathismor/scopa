@@ -34,7 +34,14 @@ export function generateGameState(usernames: string[]): GameState {
   });
   const table = deck.splice(0, 4);
 
-  return { status: GameStatus.Playing, activePlayer, deck, table, players, latestCaptured: '' };
+  return {
+    status: GameStatus.Playing,
+    activePlayer,
+    deck,
+    table,
+    players,
+    latestCaptured: '',
+  };
 }
 
 function generatePlayerState(username: string, hand: Deck): PlayerState {

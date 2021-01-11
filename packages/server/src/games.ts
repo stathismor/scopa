@@ -115,34 +115,29 @@ function calculatePlayerTurn(oldState: GameState) {
 }
 
 export async function updateGameState(io: IOServer, roomName: string, playerAction: PlayerAction) {
-  const oldState = await getRoomState(roomName);
+  const oldState = (await getRoomState(roomName)) as GameState;
 
-  if (!oldState) {
-    // TODO: Need to think about this, this should not be possible I think,
-    // just put it here for now cause TS complains
-    return;
-  }
+  switch (playerAction.action) {
+    case PlayerActionType.Undo: {
+      await removeGameState(roomName);
+      const prevState = await getRoomState(roomName);
 
-  if (playerAction.action === PlayerActionType.Undo) {
-    await removeGameState(roomName);
-    const prevState = await getRoomState(roomName);
+      const newPlayerAction = cloneDeep(playerAction);
+      newPlayerAction.description = `Player <strong>${playerAction.playerName}</strong> reverted their last turn`;
 
-    const newPlayerAction = cloneDeep(playerAction);
-    newPlayerAction.description = `Player <strong>${playerAction.playerName}</strong> reverted their last turn`;
+      io.in(roomName).emit(GameEvent.CurrentState, prevState, newPlayerAction);
+      return;
+    }
+    default: {
+      const [tempState, finalPlayerAction] = calculatePlayerAction(oldState, playerAction);
+      const [finalState, isMatchFinished] = calculatePlayerTurn(tempState);
 
-    io.in(roomName).emit(GameEvent.CurrentState, prevState, newPlayerAction);
-    return;
-  }
-
-  const [tempState, finalPlayerAction] = calculatePlayerAction(oldState, playerAction);
-  const [finalState, isMatchFinished] = calculatePlayerTurn(tempState);
-
-  // TODO: When defined an explicit order in the model (and maybe state) this won't be needed
-  finalState.players.sort((playerA, playerB) => playerA.username.localeCompare(playerB.username));
-
-  addGameState(roomName, finalState);
-  io.in(roomName).emit(GameEvent.CurrentState, finalState, finalPlayerAction);
-  if (isMatchFinished) {
-    io.in(roomName).emit(GameStatus.Ended, finalScore(finalState.players));
+      addGameState(roomName, finalState);
+      io.in(roomName).emit(GameEvent.CurrentState, finalState, finalPlayerAction);
+      if (isMatchFinished) {
+        io.in(roomName).emit(GameStatus.Ended, finalScore(finalState.players));
+      }
+      return;
+    }
   }
 }

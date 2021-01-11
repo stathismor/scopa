@@ -6,7 +6,7 @@ import { InvitePlayer } from 'components/InvitePlayer';
 import { noop } from 'lodash';
 import { PlayerState, cardKey } from 'shared';
 import { Box, BoxProps, Grid } from 'theme-ui';
-import { PLAYER_DECK_ID } from 'utils/dom';
+import { playerDeckId } from 'utils/dom';
 
 type Props = {
   player: PlayerState;
@@ -23,7 +23,7 @@ export const Player = ({ player, isActive, togglePlayerActiveCard, activePlayerC
   return (
     <Box {...rest}>
       <Grid sx={{ m: 3 }} columns="1.5fr 1fr 1fr 1fr">
-        <Deck cardNumber={captured.length} scopa={player.scopa} id={`${PLAYER_DECK_ID}__${username}`} />
+        <Deck cardNumber={captured.length} scopa={player.scopa} id={playerDeckId(username)} />
         {hand?.map((c) => {
           const key = cardKey(c);
           return (

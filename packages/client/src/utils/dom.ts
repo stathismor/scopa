@@ -10,3 +10,5 @@ export function getElement(id: string | null) {
 export function getCardElement(cardKey: string | null) {
   return document.querySelector(`#${CARD_ID_PREFIX}${SEPARATOR}${cardKey}`)?.firstChild;
 }
+
+export const playerDeckId = (username: string) => `${PLAYER_DECK_ID}${SEPARATOR}${username}`;

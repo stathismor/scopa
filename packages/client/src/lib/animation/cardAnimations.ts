@@ -1,5 +1,5 @@
 import { move, MoveOptions } from './elementAnimations';
-import { getElement, DROP_CONTAINER_ID, PLAYER_DECK_ID } from 'utils/dom';
+import { getElement, DROP_CONTAINER_ID, playerDeckId } from 'utils/dom';
 
 export function animatePlace(cardWrap: ChildNode | null | undefined, options: MoveOptions = {}) {
   const dropElement = getElement(DROP_CONTAINER_ID);
@@ -11,8 +11,7 @@ export function animatePlace(cardWrap: ChildNode | null | undefined, options: Mo
 }
 
 export function animateCapture(capturedCards: HTMLDivElement[], playerName: string, options: MoveOptions = {}) {
-  console.log(capturedCards);
-  const dropElement = getElement(`${PLAYER_DECK_ID}__${playerName}`);
+  const dropElement = getElement(playerDeckId(playerName));
   function moves() {
     capturedCards.forEach((el: HTMLDivElement) => {
       el.style.position = 'absolute';

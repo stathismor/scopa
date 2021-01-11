@@ -16,27 +16,7 @@ import { GameScore } from 'components/GameScore';
 import { PlayerName } from 'components/Players/PlayerName';
 import { animatePlace, animateCapture } from 'lib/animation/cardAnimations';
 import { getCardElement } from 'utils/dom';
-import { useCallback } from 'react';
-
-function useStateCallback(initialState: any) {
-  const [state, setState] = useState(initialState);
-  const cbRef = useRef<Function | null>(null); // mutable ref to store current callback
-
-  const setStateCallback = useCallback((state: any, cb: Function) => {
-    cbRef.current = cb; // store passed callback to ref
-    setState(state);
-  }, []);
-
-  useEffect(() => {
-    // cb.current is `null` on initial render, so we only execute cb on state *updates*
-    if (typeof cbRef.current == 'function') {
-      cbRef.current?.(state);
-      cbRef.current = null; // reset callback after execution
-    }
-  }, [state]);
-
-  return [state, setStateCallback];
-}
+import { useStateCallback } from 'hooks/useStateCallback';
 
 const SETTEBELLO = {
   value: 7,
@@ -81,48 +61,42 @@ export const Game = () => {
     const handleCurrentGameState = (state: GameState, playerAction?: PlayerAction) => {
       switch (playerAction?.action) {
         case PlayerActionType.Capture: {
-          const cb = () => {
+          const animateCallback = () => {
             const activeCard = getCardElement(playerAction.card) as HTMLDivElement;
             const capturedCards = playerAction.tableCards.map((cardKey) => getCardElement(cardKey)) as HTMLDivElement[];
-            console.log(activeCard, capturedCards);
-            if (activeCard) {
-              const onPlaceComplete = () => {
-                animateCapture([activeCard, ...capturedCards], playerAction.playerName, {
-                  onComplete: () => {
-                    setGameState(state);
-                  },
-                });
-              };
-              const options = {
-                onComplete: onPlaceComplete,
-              };
-              animatePlace(activeCard, options);
-            }
+            const onPlaceComplete = () => {
+              animateCapture([activeCard, ...capturedCards], playerAction.playerName, {
+                onComplete: () => {
+                  setGameState(state);
+                },
+              });
+            };
+            const options = {
+              onComplete: onPlaceComplete,
+            };
+            animatePlace(activeCard, options);
           };
           if (!activePlayerCardRef.current) {
-            togglePlayerActiveCard(playerAction.card, cb);
+            togglePlayerActiveCard(playerAction.card, animateCallback);
           } else {
-            cb();
+            animateCallback();
           }
 
           break;
         }
         case PlayerActionType.PlayOnTable: {
-          const cb = () => {
+          const animateCallback = () => {
             const activeCard = getCardElement(playerAction.card);
-            if (activeCard) {
-              console.count('PlayOnTable');
-              animatePlace(activeCard, {
-                onComplete: () => {
-                  setGameState(state);
-                },
-              });
-            }
+            animatePlace(activeCard, {
+              onComplete: () => {
+                setGameState(state);
+              },
+            });
           };
           if (!activePlayerCardRef.current) {
-            togglePlayerActiveCard(playerAction.card, cb);
+            togglePlayerActiveCard(playerAction.card, animateCallback);
           } else {
-            cb();
+            animateCallback();
           }
           break;
         }

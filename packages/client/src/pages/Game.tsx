@@ -52,7 +52,7 @@ export const Game = ({ gameState, gameScore }: { gameState: GameState; gameScore
     } else {
       return Object.fromEntries(players.map((p) => [p.username === username ? 'player' : 'opponent', p]));
     }
-  }, [players, activePlayer, isSpectator, username]);
+  }, [players, isSpectator, username]);
 
   useEffect(() => {
     if (activePlayerCard && activeCardsOnTable) {

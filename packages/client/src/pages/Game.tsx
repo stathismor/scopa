@@ -48,16 +48,14 @@ export const Game = () => {
    * where we set the socket connection
    */
   const activePlayerCardRef = useRef<string | null>(null);
-
-  useEffect(() => {
-    togglePlayerActiveCard(null);
-    toggleActiveCardsOnTable([]);
-    activePlayerCardRef.current = null;
-  }, [gameState, togglePlayerActiveCard]);
-
   const { activePlayer, deck, table, players } = gameState;
 
   useEffect(() => {
+    const localStateCleanup = () => {
+      togglePlayerActiveCard(null);
+      toggleActiveCardsOnTable([]);
+      activePlayerCardRef.current = null;
+    };
     const handleCurrentGameState = (state: GameState, playerAction?: PlayerAction) => {
       switch (playerAction?.action) {
         case PlayerActionType.Capture: {
@@ -68,6 +66,7 @@ export const Game = () => {
               animateCapture([activeCard, ...capturedCards], playerAction.playerName, {
                 onComplete: () => {
                   setGameState(state);
+                  localStateCleanup();
                 },
               });
             };
@@ -90,6 +89,7 @@ export const Game = () => {
             animatePlace(activeCard, {
               onComplete: () => {
                 setGameState(state);
+                localStateCleanup();
               },
             });
           };

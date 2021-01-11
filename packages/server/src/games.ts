@@ -44,9 +44,9 @@ function calculatePlayerAction(oldState: GameState, playerAction: PlayerActionPl
     ];
     newState.table.push(fromCardKey(playerAction.card));
 
-    newPlayerAction.description = `Player ${playerAction.playerName} placed ${getCardName(
+    newPlayerAction.description = `Player <strong>${playerAction.playerName}</strong> placed <strong>${getCardName(
       playerAction.card,
-    )} on the table`;
+    )}</strong> on the table`;
   } else if (playerAction.action === PlayerActionType.Capture) {
     const { card, tableCards } = playerAction;
     newState.players = [
@@ -59,12 +59,13 @@ function calculatePlayerAction(oldState: GameState, playerAction: PlayerActionPl
     ];
     newState.table = newState.table.filter((c) => !tableCards.includes(cardKey(c)));
     newState.latestCaptured = activePlayer.username;
-    const cardsText = playerAction.tableCards.reduce(
-      (text, value, i, array) => `${text}${i < array.length - 1 ? ', ' : ' and '}${getCardName(value)}`,
-    );
-    newPlayerAction.description = `Player ${playerAction.playerName} captured ${cardsText} with a ${getCardName(
-      playerAction.card,
-    )}`;
+    const cardsText = playerAction.tableCards.reduce((text, value, index, array) => {
+      const separator = index === 0 ? '' : index < array.length - 1 ? ', ' : ' and ';
+      return `${text}${separator}<strong>${getCardName(value)}</strong>`;
+    }, '');
+    newPlayerAction.description = `Player <strong>${
+      playerAction.playerName
+    }</strong> captured ${cardsText} with a <strong>${getCardName(playerAction.card)}</strong>`;
   }
   return [newState, newPlayerAction] as const;
 }
@@ -127,7 +128,7 @@ export async function updateGameState(io: IOServer, roomName: string, playerActi
     const prevState = await getRoomState(roomName);
 
     const newPlayerAction = cloneDeep(playerAction);
-    newPlayerAction.description = `Player ${playerAction.playerName} reverted their last turn`;
+    newPlayerAction.description = `Player <strong>${playerAction.playerName}</strong> reverted their last turn`;
 
     io.in(roomName).emit(GameEvent.CurrentState, prevState, newPlayerAction);
     return;

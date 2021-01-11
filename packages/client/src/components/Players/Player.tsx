@@ -43,7 +43,7 @@ export const Player = ({
               sx={playerCardWrapper(activePlayerCard === key)}
               onClick={isActive ? () => togglePlayerActiveCard((state) => (state === key ? null : key)) : noop}
             >
-              <Card card={c} />
+              <Card card={c} faceDown={isSpectator} />
             </CardWrapper>
           );
         })}

@@ -43,16 +43,16 @@ export const Game = ({ gameState, gameScore }: { gameState: GameState; gameScore
 
   // TODO figure out what to do when more than 2 players
   const isSpectator = !players.some((player) => player.username === username);
-  const { player, opponent } = useMemo(
-    () =>
-      Object.fromEntries(
-        players.map((p) => [
-          p.username === username || (isSpectator && p.username === activePlayer) ? 'player' : 'opponent',
-          p,
-        ]),
-      ),
-    [players, activePlayer, isSpectator, username],
-  );
+  const { player, opponent } = useMemo(() => {
+    if (isSpectator) {
+      return {
+        player: players[0],
+        opponent: players[1],
+      };
+    } else {
+      return Object.fromEntries(players.map((p) => [p.username === username ? 'player' : 'opponent', p]));
+    }
+  }, [players, activePlayer, isSpectator, username]);
 
   useEffect(() => {
     if (activePlayerCard && activeCardsOnTable) {

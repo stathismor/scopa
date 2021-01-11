@@ -137,6 +137,9 @@ export async function updateGameState(io: IOServer, roomName: string, playerActi
   const [tempState, finalPlayerAction] = calculatePlayerAction(oldState, playerAction);
   const [finalState, isMatchFinished] = calculatePlayerTurn(tempState);
 
+  // TODO: When defined an explicit order in the model (and maybe state) this won't be needed
+  finalState.players.sort((playerA, playerB) => playerA.username.localeCompare(playerB.username));
+
   addGameState(roomName, finalState);
   io.in(roomName).emit(GameEvent.CurrentState, finalState, finalPlayerAction);
   if (isMatchFinished) {

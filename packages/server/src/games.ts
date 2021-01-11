@@ -116,10 +116,12 @@ function calculatePlayerTurn(oldState: GameState) {
 
 export async function updateGameState(io: IOServer, roomName: string, playerAction: PlayerAction) {
   const oldState = (await getRoomState(roomName)) as GameState;
+
   switch (playerAction.action) {
     case PlayerActionType.Undo: {
       await removeGameState(roomName);
       const prevState = await getRoomState(roomName);
+
       const newPlayerAction = cloneDeep(playerAction);
       newPlayerAction.description = `Player <strong>${playerAction.playerName}</strong> reverted their last turn`;
 

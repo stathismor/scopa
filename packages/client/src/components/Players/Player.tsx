@@ -11,13 +11,14 @@ import { playerDeckId } from 'utils/dom';
 type Props = {
   player: PlayerState;
   isActive: boolean;
+  isSpectator: boolean;
   togglePlayerActiveCard: (cardKey: string | null) => void;
   activePlayerCard: string | null;
-};
+} & BoxProps;
 
-export const Player = ({ player, isActive, togglePlayerActiveCard, activePlayerCard, ...rest }: Props & BoxProps) => {
+export const Player = ({ player, isActive, isSpectator, togglePlayerActiveCard, activePlayerCard, ...rest }: Props) => {
   if (!player) {
-    return <InvitePlayer />;
+    return isSpectator ? null : <InvitePlayer />;
   }
   const { captured, hand, username } = player;
   return (
@@ -33,7 +34,7 @@ export const Player = ({ player, isActive, togglePlayerActiveCard, activePlayerC
               sx={playerCardWrapper(activePlayerCard === key)}
               onClick={isActive ? () => togglePlayerActiveCard(activePlayerCard === key ? null : key) : noop}
             >
-              <Card card={c} />
+              <Card card={c} faceDown={isSpectator} />
             </CardWrapper>
           );
         })}

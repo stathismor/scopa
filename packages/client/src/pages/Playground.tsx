@@ -88,6 +88,7 @@ export const Playground = () => {
             username: 'Den',
           }}
           isActive={true}
+          isSpectator={false}
           togglePlayerActiveCard={togglePlayerActiveCard}
           activePlayerCard={activePlayerCard}
         />

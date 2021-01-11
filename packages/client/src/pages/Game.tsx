@@ -122,13 +122,19 @@ export const Game = () => {
     };
   }, []);
 
-  // TODO figure out what to do when more than 2 players
-  const { player, opponent } = useMemo(
-    () => Object.fromEntries(players.map((p) => [p.username === username ? 'player' : 'opponent', p])),
-    [players, username],
-  );
+  const isSpectator = !players.some((player) => player.username === username);
+  const { player, opponent } = useMemo(() => {
+    if (isSpectator) {
+      return {
+        player: players[0],
+        opponent: players[1],
+      };
+    } else {
+      return Object.fromEntries(players.map((p) => [p.username === username ? 'player' : 'opponent', p]));
+    }
+  }, [players, isSpectator, username]);
 
-  const isActivePlayer = activePlayer === player?.username;
+  const isActivePlayer = !isSpectator && activePlayer === player?.username;
 
   useEffect(() => {
     if (isActivePlayer && activePlayerCard && activeCardsOnTable) {
@@ -172,6 +178,7 @@ export const Game = () => {
         <Flex>
           <PlayerName playerName={`You (${player.username})`} isActive={isActivePlayer} />
           <Button
+            disabled={isSpectator}
             onClick={() => {
               gameIO.emit(GameEvent.PlayerAction, roomName, {
                 action: PlayerActionType.Undo,
@@ -188,6 +195,7 @@ export const Game = () => {
       <Player
         player={player}
         isActive={isActivePlayer}
+        isSpectator={isSpectator}
         togglePlayerActiveCard={(activeCard) => {
           activePlayerCardRef.current = activeCard;
           togglePlayerActiveCard(activeCard);

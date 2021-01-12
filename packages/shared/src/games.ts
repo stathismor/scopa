@@ -11,6 +11,7 @@ export const GameEvent = {
   CurrentState: 'current-game-state',
   PlayerAction: 'player-action',
   Scopa: 'scopa-game-state',
+  NewRound: 'new-round',
 } as const;
 export type GameEvent = typeof GameEvent[keyof typeof GameEvent];
 
@@ -64,6 +65,7 @@ type ScoreDetail = {
 };
 
 export type Score = {
+  username: string;
   details: readonly ScoreDetail[];
   total: number;
 };

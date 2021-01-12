@@ -4,6 +4,7 @@ export const Log = ({ event = '' }: { event?: string }) => {
   return (
     <Box
       sx={{
+        height: '100%',
         borderLeft: ['none', null, '2px solid'],
         borderTop: ['2px solid', null, 'none'],
         borderColor: 'text',

@@ -1,7 +1,7 @@
-import { Box, Flex, Grid } from 'theme-ui';
+import { Box, Grid } from 'theme-ui';
 import { Deck as DeckType, cardKey } from 'shared';
 import { CardWrapper } from 'components/Cards/CardWrapper';
-import { cardDrop, cardWrapper, BOARD_MIN_WIDTH } from 'components/Cards/style';
+import { cardDrop, cardWrapper } from 'components/Cards/style';
 import { Card } from './Cards/Card';
 import { Deck } from './Cards/Deck';
 import { DROP_CONTAINER_ID } from 'utils/dom';
@@ -25,7 +25,7 @@ export const Board = ({
   playCardOnTable,
 }: Props) => {
   return (
-    <Flex sx={{ flex: 1, alignItems: 'center', minWidth: BOARD_MIN_WIDTH }}>
+    <>
       <Deck cardNumber={deck.length} title={`${deck.length} cards left`} />
       <Box pl={[4, null, 5]} />
       <Grid sx={{ alignContent: 'center', flex: 1 }} columns="1fr 1fr 1fr 1fr" gap={[2, null, 3]}>
@@ -53,6 +53,6 @@ export const Board = ({
           </Box>
         )}
       </Grid>
-    </Flex>
+    </>
   );
 };

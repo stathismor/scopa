@@ -1,4 +1,4 @@
-import { shuffle, range, sample } from 'lodash';
+import { shuffle, range } from 'lodash';
 import { GameState, PlayerState, Suit, Card, GameStatus, Deck } from 'shared';
 import { uniqueNamesGenerator, Config, adjectives, colors, animals } from 'unique-names-generator';
 import { ROOM_PREFIX } from './database/schema';
@@ -25,8 +25,7 @@ export function generateDeck(): Deck {
     .flat();
 }
 
-export function generateGameState(usernames: string[]): GameState {
-  const activePlayer = sample(usernames) as string;
+export function generateGameState(usernames: string[], activePlayer: string): GameState {
   const deck = shuffle(generateDeck());
   const players = usernames.map((username) => {
     const hand = deck.splice(0, 3);

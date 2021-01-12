@@ -44,18 +44,26 @@ export async function addPlayer(roomName: string, player: Player) {
   await redisClient.setRoom(roomName, room);
 }
 
+export async function addRound(roomName: string) {
+  const room = await getRoom(roomName);
+
+  room.states.push([]);
+
+  await redisClient.setRoom(roomName, room);
+}
+
 export async function addGameState(roomName: string, state: GameState) {
   const room = await getRoom(roomName);
 
-  room.states.push(state);
+  room.states[room.states.length - 1].push(state);
 
   await redisClient.setRoom(roomName, room);
 }
 
 export async function removeGameState(roomName: string) {
   const room = await getRoom(roomName);
-  if (room.states.length > 1) {
-    room.states.pop();
+  if (room.states[room.states.length - 1].length > 1) {
+    room.states[room.states.length - 1].pop();
   }
   await redisClient.setRoom(roomName, room);
 }
@@ -63,9 +71,9 @@ export async function removeGameState(roomName: string) {
 export async function getRoomState(roomName: string): Promise<GameState | undefined> {
   const room = await redisClient.getRoom(roomName);
 
-  if (isEmpty(room.states)) {
+  if (isEmpty(room.states[room.states.length - 1])) {
     return undefined;
   }
 
-  return last(room.states);
+  return last(room.states[room.states.length - 1]);
 }

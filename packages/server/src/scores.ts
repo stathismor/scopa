@@ -49,13 +49,14 @@ export function finalScore(players: readonly PlayerState[]): readonly Score[] {
   });
   const highestPrime = findWinner(primes.map(({ score }) => score));
 
-  return players.map(({ scopa, captured }, playerIndex) => {
+  return players.map(({ scopa, captured, username }, playerIndex) => {
     const settebello = some(captured, SETTEBELLO);
     const goldsCards = captured.filter(({ suit }) => suit === Suit.Golds);
     const scope = scopa.length;
     const settebelloPoint = settebello ? 1 : 0;
     const primePoint = highestPrime === playerIndex ? 1 : 0;
     return {
+      username,
       details: [
         { label: 'Scopa', value: scope, cards: scopa },
         { label: 'Captured', value: captured.length, cards: captured },

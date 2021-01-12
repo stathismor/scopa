@@ -169,7 +169,7 @@ export const Game = () => {
       {opponent && <PlayerName playerName={opponent.username} isActive={activePlayer === opponent.username} />}
       <Flex sx={{ flex: 1, alignItems: 'center', minWidth: BOARD_MIN_WIDTH }}>
         {gameState.status === GameStatus.Ended && gameScore ? (
-          <GameScore gameScore={gameScore} gameState={gameState} />
+          <GameScore gameScore={gameScore} />
         ) : (
           <Board
             table={table}

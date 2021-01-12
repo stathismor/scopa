@@ -65,6 +65,7 @@ type ScoreDetail = {
 };
 
 export type Score = {
+  username: string;
   details: readonly ScoreDetail[];
   total: number;
 };

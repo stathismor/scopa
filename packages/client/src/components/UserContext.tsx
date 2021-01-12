@@ -2,11 +2,14 @@ import { gameIO } from 'lib/socket';
 import { useState, useEffect, useRef, FC, createContext, useContext } from 'react';
 import { getStoredUsername, persistUsername } from 'utils/storage';
 import { UserEvent } from 'shared';
+import { noop } from 'lodash';
 
 export const UserContext = createContext<{
   username: string;
+  setUsername: (username: string) => void;
 }>({
   username: '',
+  setUsername: noop,
 });
 
 const persistedUsername = getStoredUsername();
@@ -40,7 +43,9 @@ export const UserProvider: FC = ({ children }) => {
   }, []);
 
   return (
-    <UserContext.Provider value={{ username: username }}>{username ? children : 'Pending ...'}</UserContext.Provider>
+    <UserContext.Provider value={{ username, setUsername: handleUsernameCreated }}>
+      {username ? children : 'Pending ...'}
+    </UserContext.Provider>
   );
 };
 

@@ -17,6 +17,7 @@ import { PlayerName } from 'components/Players/PlayerName';
 import { animatePlace, animateCapture } from 'lib/animation/cardAnimations';
 import { getCardElement } from 'utils/dom';
 import { useStateCallback } from 'hooks/useStateCallback';
+import { BOARD_MIN_WIDTH } from 'components/Cards/style';
 
 const SETTEBELLO = {
   value: 7,
@@ -64,6 +65,7 @@ export const Game = () => {
             const capturedCards = playerAction.tableCards.map((cardKey) => getCardElement(cardKey)) as HTMLDivElement[];
             const onPlaceComplete = () => {
               animateCapture([activeCard, ...capturedCards], playerAction.playerName, {
+                delay: 0.5,
                 onComplete: () => {
                   setGameState(state);
                   localStateCleanup();
@@ -165,15 +167,20 @@ export const Game = () => {
     <GameTable>
       <Opponent player={opponent} activePlayerCard={activePlayerCard} />
       {opponent && <PlayerName playerName={opponent.username} isActive={activePlayer === opponent.username} />}
-      <Board
-        table={table}
-        deck={gameState.status === GameStatus.Waiting ? [SETTEBELLO] : deck}
-        activeCardsOnTable={activeCardsOnTable}
-        toggleActiveCardsOnTable={toggleActiveCardsOnTable}
-        activePlayerCard={activePlayerCard}
-        playCardOnTable={playCardOnTable}
-      />
-      {gameScore && <GameScore gameScore={gameScore} gameState={gameState} />}
+      <Flex sx={{ flex: 1, alignItems: 'center', minWidth: BOARD_MIN_WIDTH }}>
+        {gameState.status === GameStatus.Ended && gameScore ? (
+          <GameScore gameScore={gameScore} gameState={gameState} />
+        ) : (
+          <Board
+            table={table}
+            deck={gameState.status === GameStatus.Waiting ? [SETTEBELLO] : deck}
+            activeCardsOnTable={activeCardsOnTable}
+            toggleActiveCardsOnTable={toggleActiveCardsOnTable}
+            activePlayerCard={activePlayerCard}
+            playCardOnTable={playCardOnTable}
+          />
+        )}
+      </Flex>
       {player && (
         <Flex>
           <PlayerName playerName={`You (${player.username})`} isActive={isActivePlayer} />

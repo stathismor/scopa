@@ -15,6 +15,7 @@ import {
 } from 'shared';
 import { finalScore } from './scores';
 import { getRoomState, addGameState, removeGameState } from './controllers/roomController';
+import { generateGameState } from './utils';
 
 /**
  * Calculate the immediate new game state, as a result of a player's action. This is not necessarily the final state
@@ -135,9 +136,22 @@ export async function updateGameState(io: IOServer, roomName: string, playerActi
       addGameState(roomName, finalState);
       io.in(roomName).emit(GameEvent.CurrentState, finalState, finalPlayerAction);
       if (isMatchFinished) {
+        // TODO we need to persist the score and make it available for the next round
         io.in(roomName).emit(GameStatus.Ended, finalScore(finalState.players));
       }
       return;
     }
   }
+}
+
+export async function restartGameState(io: IOServer, roomName: string) {
+  const { players, activePlayer } = (await getRoomState(roomName)) as GameState;
+  // TODO in order to prevent users to go back to previous round while undoing
+  // we can add some sort of round count. We will also need to store scoring somewhere
+  const state = generateGameState(
+    players.map((p) => p.username),
+    activePlayer!,
+  );
+  await addGameState(roomName, state);
+  io.in(roomName).emit(GameEvent.CurrentState, state);
 }

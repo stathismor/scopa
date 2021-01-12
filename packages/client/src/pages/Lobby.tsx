@@ -1,4 +1,4 @@
-import { Button, Flex, Heading, Image } from 'theme-ui';
+import { Box, Button, Flex, Heading, Image, Input, Text } from 'theme-ui';
 import { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { FiArrowRightCircle } from 'react-icons/fi';
@@ -24,8 +24,7 @@ export const Lobby = () => {
     };
   }, [history]);
 
-  const { username } = useUserData();
-
+  const { username, setUsername } = useUserData();
   return (
     <Layout>
       <Flex sx={{ alignItems: 'center', gap: 2, mt: 2 }}>
@@ -33,9 +32,12 @@ export const Lobby = () => {
         <Heading as="h1">The Two of Spades</Heading>
       </Flex>
 
-      <p>
-        Welcome <strong>{username}</strong>
-      </p>
+      <Flex sx={{ alignItems: 'center', mt: 2 }}>
+        <Text>Welcome</Text>
+        <Box sx={{ ml: 2 }}>
+          <Input autoFocus value={username} onChange={(e) => setUsername(e.target.value)} />
+        </Box>
+      </Flex>
       <p>Let's Play</p>
       <Heading as="h2" my={2}>
         Available games

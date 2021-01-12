@@ -11,7 +11,18 @@ type Props = {
 const END_OF_GAME_SCORE = 11;
 
 export const GameScore = ({ gameScore, gameState }: Props) => {
-  const isTheGameFinished = gameScore.find((g) => g.total > END_OF_GAME_SCORE);
+  const { players } = gameState;
+  const totals = Object.fromEntries(gameScore.map((g, i) => [players[i].username, g.total]));
+
+  const isGameFinished =
+    totals[players[0].username] !== totals[players[1].username]
+      ? totals[players[0].username] >= END_OF_GAME_SCORE || totals[players[1].username] >= END_OF_GAME_SCORE
+      : false;
+
+  const winner =
+    isGameFinished &&
+    (totals[players[0].username] > totals[players[1].username] ? players[0].username : players[1].username);
+
   const { roomName } = useParams<{ roomName: string }>();
 
   return (
@@ -20,7 +31,7 @@ export const GameScore = ({ gameScore, gameState }: Props) => {
         {gameScore.map(({ details, total }, i) => (
           <Box key={i}>
             <Heading as="h3" mt={2}>
-              {gameState.players[i].username}
+              {players[i].username}
             </Heading>
             {details.map(({ label, value }) => (
               <Flex key={label}>
@@ -32,13 +43,19 @@ export const GameScore = ({ gameScore, gameState }: Props) => {
           </Box>
         ))}
       </Flex>
-      <Flex sx={{ justifyContent: 'center', mt: 3 }}>
+      <Flex sx={{ flexFlow: 'column', alignItems: 'center', mt: 3 }}>
+        {winner && (
+          <Heading as="h2" my={3}>
+            🏆🏆 Winner: {winner} 🏆🏆
+          </Heading>
+        )}
         <Button
           onClick={() => {
-            gameIO.emit(GameEvent.NewRound, roomName, gameState.activePlayer);
+            /* TODO Right now both statuses (restart or next round) do the same thing do we need to differentiate? */
+            gameIO.emit(GameEvent.NewRound, roomName);
           }}
         >
-          {isTheGameFinished ? 'Restart' : 'Next Round'}
+          {isGameFinished ? 'Restart' : 'Next Round'}
         </Button>
       </Flex>
     </Box>

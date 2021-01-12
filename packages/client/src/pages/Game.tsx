@@ -124,7 +124,7 @@ export const Game = () => {
     };
   }, []);
 
-  const isSpectator = !players.some((player) => player.username === username);
+  const isSpectator = players.length > 0 && !players.some((player) => player.username === username);
   const { player, opponent } = useMemo(() => {
     if (isSpectator) {
       return {

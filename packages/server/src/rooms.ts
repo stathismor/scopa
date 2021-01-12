@@ -1,7 +1,7 @@
 import { Server as IOServer, Socket } from 'socket.io';
 import { sample } from 'lodash';
 import { RoomEvent, GameEvent } from 'shared';
-import { getRoom, addRoom, setOwner, getRoomState, addPlayer, addGameState } from './controllers/roomController';
+import { getRoom, addRoom, setOwner, getRoomState, addPlayer, addGameState, addRound } from './controllers/roomController';
 import { Player } from './database/schema';
 import { generateRoomName, generateGameState } from './utils';
 import { emitRoomUpdate } from './emitters/roomEmitter';
@@ -69,6 +69,7 @@ async function doJoinRoom(io: IOServer, socket: Socket, roomName: string, userna
 
       // HACK: Temporary initial state
       state = generateGameState(playerNames, activePlayer!);
+      await addRound(room.name);
       await addGameState(room.name, state);
     }
 

@@ -14,7 +14,7 @@ import {
   getCardName,
 } from 'shared';
 import { finalScore } from './scores';
-import { getRoomState, addGameState, removeGameState } from './controllers/roomController';
+import { getRoomState, addGameState, removeGameState, addRound } from './controllers/roomController';
 import { generateGameState } from './utils';
 
 /**
@@ -133,7 +133,7 @@ export async function updateGameState(io: IOServer, roomName: string, playerActi
       const [tempState, finalPlayerAction] = calculatePlayerAction(oldState, playerAction);
       const [finalState, isMatchFinished] = calculatePlayerTurn(tempState);
 
-      addGameState(roomName, finalState);
+      await addGameState(roomName, finalState);
       io.in(roomName).emit(GameEvent.CurrentState, finalState, finalPlayerAction);
       if (isMatchFinished) {
         // TODO we need to persist the score and make it available for the next round
@@ -146,12 +146,11 @@ export async function updateGameState(io: IOServer, roomName: string, playerActi
 
 export async function restartGameState(io: IOServer, roomName: string) {
   const { players, activePlayer } = (await getRoomState(roomName)) as GameState;
-  // TODO in order to prevent users to go back to previous round while undoing
-  // we can add some sort of round count. We will also need to store scoring somewhere
   const state = generateGameState(
     players.map((p) => p.username),
     activePlayer!,
   );
+  await addRound(roomName);
   await addGameState(roomName, state);
   io.in(roomName).emit(GameEvent.CurrentState, state);
 }

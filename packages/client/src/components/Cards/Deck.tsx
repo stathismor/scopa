@@ -26,11 +26,7 @@ export const Deck = ({ cardNumber, scopa, id, scopaPosition = 'top', ...rest }: 
           sx={{
             position: 'absolute',
             zIndex: -i - 1,
-            [scopaPosition]: [
-              `calc(-${CARD_HEIGHT_MOBILE / 10}vw - ${i * 10}px)`,
-              null,
-              `calc(-${CARD_HEIGHT_DESKTOP / 10}vw - ${i * 10}px)`,
-            ],
+            [scopaPosition]: [`-${CARD_HEIGHT_MOBILE / 5 + i * 2}vw`, null, `-${CARD_HEIGHT_DESKTOP / 5 + i * 2}vw`],
             transform: SCOPA_TRANSFORM_PROPERTY[scopaPosition],
           }}
         >

@@ -65,7 +65,7 @@ export const Game = () => {
             const capturedCards = playerAction.tableCards.map((cardKey) => getCardElement(cardKey)) as HTMLDivElement[];
             const onPlaceComplete = () => {
               animateCapture([activeCard, ...capturedCards], playerAction.playerName, {
-                delay: 0.5,
+                delay: 0.3,
                 onComplete: () => {
                   setGameState(state);
                   localStateCleanup();

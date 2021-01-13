@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Heading, Image, Input, Text } from 'theme-ui';
+import { Box, Button, Flex, Heading, Image, Text } from 'theme-ui';
 import { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { FiArrowRightCircle } from 'react-icons/fi';
@@ -9,9 +9,11 @@ import { Layout } from 'components/Layout';
 import { useUserData } from 'components/UserContext';
 import { RoomTable } from 'components/RoomTable';
 import logo from 'images/logo.svg';
+import { Username } from 'components/Username';
 
 export const Lobby = () => {
   const history = useHistory();
+  const { username } = useUserData();
 
   useEffect(() => {
     const handleCreateRoomSuccess = (roomName: string) => {
@@ -24,7 +26,6 @@ export const Lobby = () => {
     };
   }, [history]);
 
-  const { username, setUsername } = useUserData();
   return (
     <Layout>
       <Flex sx={{ alignItems: 'center', gap: 2, mt: 2 }}>
@@ -34,9 +35,8 @@ export const Lobby = () => {
 
       <Flex sx={{ alignItems: 'center', mt: 2 }}>
         <Text>Welcome</Text>
-        <Box sx={{ ml: 2 }}>
-          <Input autoFocus value={username} onChange={(e) => setUsername(e.target.value)} />
-        </Box>
+        <Box ml={2} />
+        <Username />
       </Flex>
       <p>Let's Play</p>
       <Heading as="h2" my={2}>

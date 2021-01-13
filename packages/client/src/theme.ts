@@ -33,6 +33,9 @@ export const theme = {
     },
   },
   buttons: {
+    darkGrey: {
+      bg: 'darkGrey',
+    },
     outline: {
       border: '2px solid',
       borderColor: 'text',

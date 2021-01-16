@@ -2,7 +2,7 @@ import { Box } from 'theme-ui';
 import { Link } from 'react-router-dom';
 import { FiArrowLeftCircle } from 'react-icons/fi';
 import { Layout } from 'components/Layout';
-import { Suit } from 'shared';
+import { Suit, Score } from 'shared';
 import { theme } from 'theme';
 import { Player } from 'components/Players/Player';
 import { Board } from 'components/Board';
@@ -86,6 +86,7 @@ export const Playground = () => {
             hand: [FIVE, SIX, TWO],
             scopa: [],
             username: 'Den',
+            score: {} as Score,
           }}
           isActive={true}
           isSpectator={false}

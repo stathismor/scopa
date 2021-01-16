@@ -1,5 +1,5 @@
 import { shuffle, range } from 'lodash';
-import { GameState, PlayerState, Suit, Card, GameStatus, Deck } from 'shared';
+import { GameState, PlayerState, Suit, Card, GameStatus, Deck, Score } from 'shared';
 import { uniqueNamesGenerator, Config, adjectives, colors, animals } from 'unique-names-generator';
 import { ROOM_PREFIX } from './database/schema';
 
@@ -25,11 +25,11 @@ export function generateDeck(): Deck {
     .flat();
 }
 
-export function generateGameState(usernames: string[], activePlayer: string): GameState {
+export function generateGameState(usernames: string[], activePlayer: string, totalScores?: number[]): GameState {
   const deck = shuffle(generateDeck());
-  const players = usernames.map((username) => {
+  const players = usernames.map((username, i) => {
     const hand = deck.splice(0, 3);
-    return generatePlayerState(username, hand);
+    return generatePlayerState(username, hand, totalScores?.[i] ?? 0);
   });
   const table = deck.splice(0, 4);
 
@@ -43,11 +43,14 @@ export function generateGameState(usernames: string[], activePlayer: string): Ga
   };
 }
 
-function generatePlayerState(username: string, hand: Deck): PlayerState {
+function generatePlayerState(username: string, hand: Deck, total: number): PlayerState {
   return {
     username,
     hand,
     captured: [],
     scopa: [],
+    score: {
+      total,
+    },
   };
 }

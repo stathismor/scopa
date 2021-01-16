@@ -49,27 +49,25 @@ export function finalScore(players: readonly PlayerState[]): readonly Score[] {
   });
   const highestPrime = findWinner(primes.map(({ score }) => score));
 
-  return players.map(({ scopa, captured, username }, playerIndex) => {
+  return players.map(({ scopa, captured, score }, playerIndex) => {
     const settebello = some(captured, SETTEBELLO);
     const goldsCards = captured.filter(({ suit }) => suit === Suit.Golds);
     const scope = scopa.length;
     const settebelloPoint = settebello ? 1 : 0;
     const primePoint = highestPrime === playerIndex ? 1 : 0;
+    const cardsPoint = mostCards === playerIndex ? 1 : 0;
+    const goldsPoint = mostGolds === playerIndex ? 1 : 0;
+    const totalRound = scope + settebelloPoint + cardsPoint + goldsPoint + primePoint;
     return {
-      username,
       details: [
         { label: 'Scopa', value: scope, cards: scopa },
-        { label: 'Captured', value: captured.length, cards: captured },
-        { label: 'Golds', value: goldsTotal[playerIndex], cards: goldsCards },
+        { label: 'Captured', value: cardsPoint, cards: captured },
+        { label: 'Golds', value: goldsPoint, cards: goldsCards },
         { label: 'Sette Bello', value: settebelloPoint, cards: settebello ? [SETTEBELLO] : [] },
         { label: 'Primiera', value: primePoint, ...primes[playerIndex] },
       ],
-      total:
-        scope +
-        settebelloPoint +
-        (mostCards === playerIndex ? 1 : 0) +
-        (mostGolds === playerIndex ? 1 : 0) +
-        primePoint,
+      totalRound,
+      total: (score?.total ?? 0) + totalRound,
     };
   });
 }

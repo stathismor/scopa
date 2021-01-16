@@ -1,3 +1,5 @@
+import { snakeCase } from 'lodash';
+
 const SEPARATOR = '_';
 export const CARD_ID_PREFIX = 'card';
 export const DROP_CONTAINER_ID = 'drop-container';
@@ -11,4 +13,4 @@ export function getCardElement(cardKey: string | null) {
   return document.querySelector(`#${CARD_ID_PREFIX}${SEPARATOR}${cardKey}`)?.firstChild;
 }
 
-export const playerDeckId = (username: string) => `${PLAYER_DECK_ID}${SEPARATOR}${username}`;
+export const playerDeckId = (username: string) => `${PLAYER_DECK_ID}${SEPARATOR}${snakeCase(username)}`;

@@ -51,6 +51,8 @@ function generatePlayerState(username: string, hand: Deck, total: number): Playe
     scopa: [],
     score: {
       total,
+      totalRound: 0,
+      details: [],
     },
   };
 }

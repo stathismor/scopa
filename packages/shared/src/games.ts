@@ -66,7 +66,7 @@ type ScoreDetail = {
 };
 
 export type Score = {
-  details?: readonly ScoreDetail[];
-  total?: number;
-  totalRound?: number;
+  details: readonly ScoreDetail[];
+  total: number;
+  totalRound: number;
 };

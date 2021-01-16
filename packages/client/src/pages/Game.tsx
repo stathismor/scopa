@@ -41,7 +41,6 @@ export const Game = () => {
   const [activePlayerCard, togglePlayerActiveCard] = useStateCallback(null);
   const [activeCardsOnTable, toggleActiveCardsOnTable] = useState<string[]>([]);
   const [gameState, setGameState] = useState<GameState>(INITIAL_STATE);
-  // const [gameScore, setGameScore] = useState<Score[]>();
 
   /**
    * Need to keep track of the active player card for the opponent animation

@@ -133,22 +133,28 @@ export async function updateGameState(io: IOServer, roomName: string, playerActi
       const [tempState, finalPlayerAction] = calculatePlayerAction(oldState, playerAction);
       const [finalState, isMatchFinished] = calculatePlayerTurn(tempState);
 
+      if (isMatchFinished) {
+        const scores = finalScore(finalState.players);
+        finalState.players.forEach((player, i) => {
+          player.score = scores[i];
+        });
+        finalState.status = GameStatus.Ended;
+      }
       await addGameState(roomName, finalState);
       io.in(roomName).emit(GameEvent.CurrentState, finalState, finalPlayerAction);
-      if (isMatchFinished) {
-        // TODO we need to persist the score and make it available for the next round
-        io.in(roomName).emit(GameStatus.Ended, finalScore(finalState.players));
-      }
       return;
     }
   }
 }
 
-export async function restartGameState(io: IOServer, roomName: string) {
+export async function restartGameState(io: IOServer, roomName: string, isGameFinished: boolean) {
   const { players, activePlayer } = (await getRoomState(roomName)) as GameState;
+  // TODO: Later on we will need to add order of players, built into the model
+  const nextPlayer = players.find((p) => p.username !== activePlayer);
   const state = generateGameState(
     players.map((p) => p.username),
-    activePlayer!,
+    `${nextPlayer?.username}`,
+    players.map((p) => (p.score.total && !isGameFinished ? p.score.total : 0)),
   );
   await addRound(roomName);
   await addGameState(roomName, state);

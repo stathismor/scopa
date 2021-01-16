@@ -8,7 +8,7 @@ import { gameIO } from 'lib/socket';
 import { Button, Flex, jsx } from 'theme-ui';
 import { useUserData } from 'components/UserContext';
 import { GameTable } from 'components/GameTable';
-import { GameEvent, GameState, GameStatus, Score, Suit, fromCardKey, PlayerActionType, PlayerAction } from 'shared';
+import { GameEvent, GameState, GameStatus, Suit, fromCardKey, PlayerActionType, PlayerAction } from 'shared';
 import { Opponent } from '../components/Players/Opponent';
 import { Player } from '../components/Players/Player';
 import { Board } from 'components/Board';
@@ -41,7 +41,6 @@ export const Game = () => {
   const [activePlayerCard, togglePlayerActiveCard] = useStateCallback(null);
   const [activeCardsOnTable, toggleActiveCardsOnTable] = useState<string[]>([]);
   const [gameState, setGameState] = useState<GameState>(INITIAL_STATE);
-  const [gameScore, setGameScore] = useState<Score[]>();
 
   /**
    * Need to keep track of the active player card for the opponent animation
@@ -114,15 +113,7 @@ export const Game = () => {
     };
   }, [togglePlayerActiveCard]);
 
-  useEffect(() => {
-    const handleGameEnded = (score: Score[]) => {
-      setGameScore(score);
-    };
-    gameIO.on(GameStatus.Ended, handleGameEnded);
-    return () => {
-      gameIO.off(GameStatus.Ended, handleGameEnded);
-    };
-  }, []);
+  console.log(gameState);
 
   const isSpectator = players.length > 0 && !players.some((player) => player.username === username);
   const { player, opponent } = useMemo(() => {
@@ -166,10 +157,10 @@ export const Game = () => {
   return (
     <GameTable>
       <Opponent player={opponent} activePlayerCard={activePlayerCard} />
-      {opponent && <PlayerName playerName={opponent.username} isActive={activePlayer === opponent.username} />}
+      {opponent && <PlayerName player={opponent} isActive={activePlayer === opponent.username} />}
       <Flex sx={{ flex: 1, alignItems: 'center', minWidth: BOARD_MIN_WIDTH }}>
-        {gameState.status === GameStatus.Ended && gameScore ? (
-          <GameScore gameScore={gameScore} />
+        {gameState.status === GameStatus.Ended ? (
+          <GameScore players={gameState.players} />
         ) : (
           <Board
             table={table}
@@ -183,7 +174,7 @@ export const Game = () => {
       </Flex>
       {player && (
         <Flex>
-          <PlayerName playerName={`You (${player.username})`} isActive={isActivePlayer} />
+          <PlayerName player={player} isActive={isActivePlayer} />
           <Button
             disabled={isSpectator}
             onClick={() => {

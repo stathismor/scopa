@@ -4,7 +4,7 @@ import { startCase } from 'lodash';
 
 import { Suit, Card as CardType, VALUES } from 'shared';
 import back from 'images/back.jpg';
-import { baseCard } from './style';
+import { baseCard, CARD_HEIGHT_SMALL, CARD_WIDTH_SMALL } from './style';
 
 function name({ value, suit }: CardType) {
   return `${VALUES[value]} of ${Suit[startCase(suit)]}`;
@@ -27,6 +27,33 @@ export const Card = ({ faceDown = false, card }: CardProps) => {
         backgroundImage: `url(${faceDown ? back : imgUrl(card)})`,
       }}
       title={faceDown ? 'card' : name(card)}
+    />
+  );
+};
+
+export const SmallCard = ({ faceDown = false, card }: CardProps) => {
+  return (
+    <Box
+      sx={{
+        ...baseCard,
+        width: `${CARD_WIDTH_SMALL}vw`,
+        height: `${CARD_HEIGHT_SMALL}vw`,
+        backgroundImage: `url(${faceDown ? back : imgUrl(card)})`,
+        flexShrink: 0,
+      }}
+      title={faceDown ? 'card' : name(card)}
+    />
+  );
+};
+export const SmallEmptyCard = () => {
+  return (
+    <Box
+      sx={{
+        ...baseCard,
+        width: `${CARD_WIDTH_SMALL}vw`,
+        height: `${CARD_HEIGHT_SMALL}vw`,
+        boxShadow: 'none',
+      }}
     />
   );
 };

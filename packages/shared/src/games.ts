@@ -5,6 +5,7 @@ export type PlayerState = {
   hand: Card[];
   captured: Card[];
   scopa: Card[];
+  score: Score;
 };
 
 export const GameEvent = {
@@ -65,7 +66,7 @@ type ScoreDetail = {
 };
 
 export type Score = {
-  username: string;
   details: readonly ScoreDetail[];
   total: number;
+  totalRound: number;
 };

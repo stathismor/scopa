@@ -1,30 +1,18 @@
 import { Box, Button, Flex, Heading, Text } from 'theme-ui';
-import { GameEvent, PlayerState } from 'shared';
+import { GameEvent, GameStatus, PlayerState, RoomEvent } from 'shared';
 import { gameIO } from 'lib/socket';
 import { useParams } from 'react-router-dom';
-import { groupBy, mapValues, maxBy } from 'lodash';
 import { SmallCard, SmallEmptyCard } from './Cards/Card';
 
 type Props = {
   players: PlayerState[];
+  gameStatus: GameStatus;
 };
 
-const END_OF_GAME_SCORE = 11;
-
-export const GameScore = ({ players }: Props) => {
-  /**
-   * Grouping scores by totals and check if there is the same total number more than once
-   * */
-  const equalScores = mapValues(groupBy(players, 'score.total'), (scores) => scores.length > 1);
-  const winner = maxBy(players, 'score.total');
-
-  /**
-   * The game finish when the player with most point reach or get over end of game score
-   * and there are not other players with equal score
-   * */
-  const isGameFinished = (winner?.score?.total ?? 0) >= END_OF_GAME_SCORE && !equalScores[`${winner?.score?.total}`];
+export const GameScore = ({ players, gameStatus }: Props) => {
   const { roomName } = useParams<{ roomName: string }>();
-
+  const isGameFinished = gameStatus === GameStatus.Ended;
+  const winner = players.find((p) => p.score.winner);
   return (
     <Box>
       <Flex sx={{ gap: 3 }}>
@@ -68,7 +56,7 @@ export const GameScore = ({ players }: Props) => {
         )}
         <Button
           onClick={() => {
-            gameIO.emit(GameEvent.NewRound, roomName, isGameFinished);
+            isGameFinished ? gameIO.emit(RoomEvent.Create) : gameIO.emit(GameEvent.NewRound, roomName);
           }}
         >
           {isGameFinished ? 'Restart' : 'Next Round'}

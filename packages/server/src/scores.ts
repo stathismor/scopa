@@ -68,6 +68,7 @@ export function finalScore(players: readonly PlayerState[]): readonly Score[] {
       ],
       totalRound,
       total: (score?.total ?? 0) + totalRound,
+      winner: score.winner
     };
   });
 }

@@ -53,6 +53,7 @@ function generatePlayerState(username: string, hand: Deck, total: number): Playe
       total,
       totalRound: 0,
       details: [],
+      winner: false
     },
   };
 }

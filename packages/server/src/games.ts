@@ -1,5 +1,5 @@
 import { Server as IOServer } from 'socket.io';
-import { last, cloneDeep } from 'lodash';
+import { last, cloneDeep, mapValues, groupBy, maxBy } from 'lodash';
 import {
   Card,
   GameEvent,
@@ -79,11 +79,11 @@ function calculatePlayerTurn(oldState: GameState) {
 
   const { players, deck, table, latestCaptured } = newState;
 
-  const isRoundFinshed = oldState.players.every((player) => player.hand.length === 0);
-  const isMatchFinished = isRoundFinshed && oldState.deck.length === 0;
-  // If match is finished (players and deck have no cards left), we add the remaining table
+  const isTurnFinshed = oldState.players.every((player) => player.hand.length === 0);
+  const isRoundFinished = isTurnFinshed && oldState.deck.length === 0;
+  // If round is finished (players and deck have no cards left), we add the remaining table
   // cards to the player captured last and change the status to Ended.
-  if (isMatchFinished) {
+  if (isRoundFinished) {
     if (table.length > 0) {
       players.forEach((player) => {
         if (player.username === latestCaptured) {
@@ -94,7 +94,7 @@ function calculatePlayerTurn(oldState: GameState) {
     }
     newState.status = GameStatus.Ended;
   } else {
-    // If match has not finished but table is empty, this means a Scopa took place.
+    // If round has not finished but table is empty, this means a Scopa took place.
     if (table.length === 0) {
       players.forEach((player) => {
         if (player.username === latestCaptured) {
@@ -103,7 +103,7 @@ function calculatePlayerTurn(oldState: GameState) {
         }
       });
     }
-    if (isRoundFinshed) {
+    if (isTurnFinshed) {
       players.forEach((player) => {
         player.hand = deck.splice(0, 3);
       });
@@ -112,8 +112,10 @@ function calculatePlayerTurn(oldState: GameState) {
   newState.players = players;
   newState.deck = deck;
 
-  return [newState, isMatchFinished] as const;
+  return [newState, isRoundFinished] as const;
 }
+
+const END_OF_GAME_SCORE = 11;
 
 export async function updateGameState(io: IOServer, roomName: string, playerAction: PlayerAction) {
   const oldState = (await getRoomState(roomName)) as GameState;
@@ -131,14 +133,29 @@ export async function updateGameState(io: IOServer, roomName: string, playerActi
     }
     default: {
       const [tempState, finalPlayerAction] = calculatePlayerAction(oldState, playerAction);
-      const [finalState, isMatchFinished] = calculatePlayerTurn(tempState);
+      const [finalState, isRoundFinished] = calculatePlayerTurn(tempState);
 
-      if (isMatchFinished) {
+      if (isRoundFinished) {
         const scores = finalScore(finalState.players);
+
+        /**
+         * Grouping scores by totals and check if there is the same total number more than once
+         * */
+        const equalScores = mapValues(groupBy(finalState.players, 'scores.total'), (scores) => scores.length > 1);
+        const winningPlayer = maxBy(finalState.players, 'score.total');
+
+        /**
+         * The game finish when the player with most point reach or get over end of game score
+         * and there are not other players with equal score
+         * */
+        const isGameFinished =
+          (winningPlayer?.score?.total ?? 0) >= END_OF_GAME_SCORE && !equalScores[`${winningPlayer?.score?.total}`];
+        finalState.status = isGameFinished ? GameStatus.Ended : GameStatus.RoundEnded;
+
         finalState.players.forEach((player, i) => {
           player.score = scores[i];
+          player.score.winner = player.username === winningPlayer?.username;
         });
-        finalState.status = GameStatus.Ended;
       }
       await addGameState(roomName, finalState);
       io.in(roomName).emit(GameEvent.CurrentState, finalState, finalPlayerAction);
@@ -147,14 +164,14 @@ export async function updateGameState(io: IOServer, roomName: string, playerActi
   }
 }
 
-export async function restartGameState(io: IOServer, roomName: string, isGameFinished: boolean) {
+export async function restartGameState(io: IOServer, roomName: string) {
   const { players, activePlayer } = (await getRoomState(roomName)) as GameState;
   // TODO: Later on we will need to add order of players, built into the model
   const nextPlayer = players.find((p) => p.username !== activePlayer);
   const state = generateGameState(
     players.map((p) => p.username),
     `${nextPlayer?.username}`,
-    players.map((p) => (p.score.total && !isGameFinished ? p.score.total : 0)),
+    players.map((p) => p.score.total),
   );
   await addRound(roomName);
   await addGameState(roomName, state);

@@ -1,8 +1,12 @@
 import { Server as HTTPServer } from 'http';
 import { Server as IOServer, Socket } from 'socket.io';
+import * as dotenv from 'dotenv';
+import mongoose from 'mongoose';
 import { createServer } from './Server';
 import { registerListeners } from './Socket';
-import * as dotenv from 'dotenv';
+
+const url = 'mongodb://localhost:27017/scopa';
+mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
 
 dotenv.config();
 

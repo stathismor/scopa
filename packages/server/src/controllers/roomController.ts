@@ -1,9 +1,14 @@
 import { isEmpty, last } from 'lodash';
-import { GameState } from 'shared';
+import { GameState, Room as RoomShared } from 'shared';
 import * as redisClient from '../database/redisClient';
 import { Room, Player, ROOM_PREFIX } from '../database/schema';
+import { Room as RoomMDB, IRoom, IPlayer } from '../database/models';
 
 const ROOM_MATCH_PREFIX = `${ROOM_PREFIX}-*`;
+
+interface IRoomExtended extends IRoom {
+  players: IPlayer[];
+}
 
 export async function getRoom(roomName: string): Promise<Room> {
   const room = await redisClient.getRoom(roomName);
@@ -12,6 +17,43 @@ export async function getRoom(roomName: string): Promise<Room> {
 
 export async function getRooms(prefix: string = ROOM_MATCH_PREFIX) {
   const rooms = await redisClient.getRooms(prefix);
+  return rooms;
+}
+
+export async function getRoomMDB(roomName: string): Promise<IRoomExtended | null> {
+  const rooms = await RoomMDB.aggregate([
+    {
+      $match: { name: roomName },
+    },
+    {
+      $lookup: {
+        from: 'players',
+        localField: 'playerIds',
+        foreignField: '_id',
+        as: 'players',
+      },
+    },
+  ]);
+
+  if (!rooms) {
+    return null;
+  }
+
+  return rooms[0];
+}
+
+export async function getRoomsMDB() {
+  const rooms = await RoomMDB.aggregate([
+    {
+      $lookup: {
+        from: 'players',
+        localField: 'playerIds',
+        foreignField: '_id',
+        as: 'players',
+      },
+    },
+  ]);
+
   return rooms;
 }
 

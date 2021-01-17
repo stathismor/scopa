@@ -39,6 +39,8 @@ export function generateGameState(usernames: string[], activePlayer: string, tot
     deck,
     table,
     players,
+    round: 0,
+    turn: 0,
     latestCaptured: '',
   };
 }

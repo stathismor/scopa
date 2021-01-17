@@ -30,6 +30,8 @@ const INITIAL_STATE = {
   deck: [],
   table: [],
   players: [],
+  round: 0,
+  turn: 0,
   latestCaptured: '',
   activePlayerCard: null,
   activeCardsOnTable: [],

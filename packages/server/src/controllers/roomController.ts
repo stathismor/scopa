@@ -6,7 +6,7 @@ import { Room as RoomMDB, IRoom, IPlayer } from '../database/models';
 
 const ROOM_MATCH_PREFIX = `${ROOM_PREFIX}-*`;
 
-interface IRoomExtended extends IRoom {
+export interface IRoomExtended extends IRoom {
   players: IPlayer[];
 }
 

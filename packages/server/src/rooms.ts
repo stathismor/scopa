@@ -56,7 +56,7 @@ export async function joinRoom(io: IOServer, socket: Socket, roomName: string, u
 
   const player = room.players.find((player: Player) => player.name === username);
   if (player) {
-    await doJoinRoom(io, socket, room, username);
+    await doJoinRoom(io, socket, roomName, username);
   } else if (room.players.length < MAX_PLAYERS) {
     // TODO: Check why this can return null according to TS
     // const newPlayerMDB = await PlayerMDB.findOneAndUpdate({ name: username }, new PlayerMDB({ name: username }), {upsert: true})
@@ -74,7 +74,7 @@ export async function joinRoom(io: IOServer, socket: Socket, roomName: string, u
       { playerIds: [...room.playerIds, mongoose.Types.ObjectId(newPlayerMDB.id)] },
     );
 
-    await doJoinRoom(io, socket, room, username);
+    await doJoinRoom(io, socket, roomName, username);
   } else {
     // Spectator
     await joinSocketRoom(socket, roomName);
@@ -88,17 +88,21 @@ export async function joinRoom(io: IOServer, socket: Socket, roomName: string, u
   }
 }
 
-async function doJoinRoom(io: IOServer, socket: Socket, room: IRoomExtended, username: string) {
-  await joinSocketRoom(socket, room.name);
+async function doJoinRoom(io: IOServer, socket: Socket, roomName: string, username: string) {
+  await joinSocketRoom(socket, roomName);
+
+  const room = (await getRoomMDB(roomName)) as IRoomExtended;
 
   if (room.players.length === 1 && !room.owner) {
     await RoomMDB.updateOne({ _id: room._id }, { owner: username });
   }
-  console.log('room2', room);
+  // console.log('room2', room);
 
   // If room is full, emit current state
   if (room.players.length === MAX_PLAYERS) {
-    let state = room.getCurrentState();
+    // let state = room.getCurrentState();
+    let state = last(room.states);
+    console.log('LAST STATE', state);
 
     if (!state) {
       const playerNames = room.players.map((player: Player) => player.name);
@@ -106,11 +110,12 @@ async function doJoinRoom(io: IOServer, socket: Socket, room: IRoomExtended, use
 
       // HACK: Temporary initial state
       state = generateGameState(playerNames, activePlayer!);
+
+      console.log('NEW STATES', [...room.states, state]);
       await RoomMDB.updateOne({ _id: room._id }, { states: [...room.states, state] });
     }
 
-    console.log('CURRENT STATE');
-    io.in(room.name).emit(GameEvent.CurrentState, state);
+    io.in(roomName).emit(GameEvent.CurrentState, state);
   }
   await emitRoomUpdate(io);
 }

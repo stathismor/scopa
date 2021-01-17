@@ -14,8 +14,10 @@ import {
   getCardName,
 } from 'shared';
 import { finalScore } from './scores';
-import { getRoomState, addGameState, removeGameState, addRound } from './controllers/roomController';
+import { getRoomState, addGameState, removeGameState, addRound, getRoomMDB } from './controllers/roomController';
 import { generateGameState } from './utils';
+import mongoose from 'mongoose';
+import { Player as PlayerMDB, Room as RoomMDB } from './database/models';
 
 /**
  * Calculate the immediate new game state, as a result of a player's action. This is not necessarily the final state
@@ -116,17 +118,29 @@ function calculatePlayerTurn(oldState: GameState) {
 }
 
 export async function updateGameState(io: IOServer, roomName: string, playerAction: PlayerAction) {
-  const oldState = (await getRoomState(roomName)) as GameState;
+  // const oldState = (await getRoomState(roomName)) as GameState;
+  const room = await getRoomMDB(roomName);
+
+  if (!room) {
+    // TODO: Handle this
+    return;
+  }
+  const oldState = last(room.states) as GameState;
 
   switch (playerAction.action) {
     case PlayerActionType.Undo: {
-      await removeGameState(roomName);
-      const prevState = await getRoomState(roomName);
+      const states = room.states;
+      states.pop();
+
+      await RoomMDB.updateOne({ _id: room._id }, { states });
+
+      const updateRoom = await getRoomMDB(roomName);
+      const newState = last(room.states);
 
       const newPlayerAction = cloneDeep(playerAction);
       newPlayerAction.description = `Player <strong>${playerAction.playerName}</strong> reverted their last turn`;
 
-      io.in(roomName).emit(GameEvent.CurrentState, prevState, newPlayerAction);
+      io.in(roomName).emit(GameEvent.CurrentState, newState, newPlayerAction);
       return;
     }
     default: {

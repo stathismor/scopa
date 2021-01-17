@@ -1,7 +1,8 @@
 import { shuffle, range } from 'lodash';
-import { GameState, PlayerState, Suit, Card, GameStatus, Deck, Score } from 'shared';
+import { PlayerState, GameState, Suit, Card, GameStatus, Deck, Score } from 'shared';
 import { uniqueNamesGenerator, Config, adjectives, colors, animals } from 'unique-names-generator';
 import { ROOM_PREFIX } from './database/schema';
+// import { State } from './database/models';
 
 const customConfig: Config = {
   dictionaries: [adjectives, colors, animals],

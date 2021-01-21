@@ -23,7 +23,7 @@ const RoomSwitch = ({ status, action, error }: Props) => {
       return <Box>Pending</Box>;
     case RoomState.Joined:
       return (
-        <Layout>
+        <>
           <Box sx={{ position: 'absolute', left: 1, top: 1 }}>
             <Link to="/" aria-label="Back to Lobby">
               <FiArrowLeftCircle title="Back to Lobby" size={24} color={theme.colors.text} />
@@ -37,7 +37,7 @@ const RoomSwitch = ({ status, action, error }: Props) => {
               <Log event={action} />
             </Box>
           </Flex>
-        </Layout>
+        </>
       );
     default:
     case RoomState.Failed:
@@ -94,8 +94,8 @@ export const Room = () => {
   }, []);
 
   return (
-    <Box key={roomName}>
+    <Layout key={roomName}>
       <RoomSwitch status={status} error={errorMessage} action={playerAction} />
-    </Box>
+    </Layout>
   );
 };

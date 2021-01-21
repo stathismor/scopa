@@ -1,21 +1,15 @@
 import { theme } from 'theme';
 import { SxStyleProp } from 'theme-ui';
 
-export const CARD_HEIGHT_MOBILE = 26;
-export const CARD_HEIGHT_DESKTOP = 13;
-export const CARD_WIDTH_MOBILE = 15;
-export const CARD_WIDTH_DESKTOP = 7.5;
+export const CARD_HEIGHT_DESKTOP = 104;
+export const CARD_WIDTH_DESKTOP = 60;
 export const CARD_HEIGHT_SMALL = 36;
 export const CARD_WIDTH_SMALL = 22;
 const NUM_CARD_ON_ROW = 5;
 
-export const CARD_HEIGHT = [`${CARD_HEIGHT_MOBILE}vw`, null, `${CARD_HEIGHT_DESKTOP}vw`];
-export const CARD_WIDTH = [`${CARD_WIDTH_MOBILE}vw`, null, `${CARD_WIDTH_DESKTOP}vw`];
-export const BOARD_MIN_WIDTH = [
-  `calc(${CARD_WIDTH_MOBILE * NUM_CARD_ON_ROW}vw + ${theme.space[4]}px)`,
-  null,
-  `calc(${CARD_WIDTH_DESKTOP * NUM_CARD_ON_ROW}vw + ${theme.space[5]}px)`,
-];
+export const CARD_HEIGHT = `${CARD_HEIGHT_DESKTOP}px`;
+export const CARD_WIDTH = `${CARD_WIDTH_DESKTOP}px`;
+export const BOARD_MIN_WIDTH = `${CARD_WIDTH_DESKTOP * NUM_CARD_ON_ROW + theme.space[5]}px`;
 
 export const baseCard = {
   height: CARD_HEIGHT,
@@ -45,11 +39,6 @@ export const cardWrapper = (isActive: boolean): SxStyleProp => ({
 
 export const playerCardWrapper = (isActive: boolean): SxStyleProp => ({
   ...cardWrapper(isActive),
-  // transition: 'transform 0.3s ease-in-out',
-  // transform: isActive ? 'translateY(-3.5vw)' : undefined,
-  // '&:hover': {
-  //   transform: 'translateY(-3.5vw)',
-  // },
 });
 
 export const cardDrop = {

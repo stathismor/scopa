@@ -27,7 +27,7 @@ export const GameScore = ({ players, gameStatus }: Props) => {
     };
   }, [history]);
   return (
-    <Box>
+    <Box sx={{ maxWidth: '100vw', px: 3 }}>
       <Flex sx={{ gap: 3 }}>
         {players.map(({ username, score: { details, total, totalRound } }, i) => (
           <Box key={i} sx={{ flex: '1 0 50%' }}>
@@ -39,7 +39,7 @@ export const GameScore = ({ players, gameStatus }: Props) => {
                 <Box sx={{ alignItems: 'center' }}>
                   <Flex>
                     <Text mr={1}>{label}:</Text>
-                    <Text mr={1}>{value ? 1 : '-'}</Text>
+                    <Text mr={1}>{value || '-'}</Text>
                   </Flex>
                   <Box sx={{ overflowX: 'auto', p: 1 }}>
                     {cards?.length ? (

@@ -5,7 +5,7 @@ import { playerCardWrapper } from 'components/Cards/style';
 import { InvitePlayer } from 'components/InvitePlayer';
 import { noop } from 'lodash';
 import { PlayerState, cardKey } from 'shared';
-import { Box, BoxProps, Grid } from 'theme-ui';
+import { Box, BoxProps, Flex, Grid } from 'theme-ui';
 import { playerDeckId } from 'utils/dom';
 
 type Props = {
@@ -22,9 +22,10 @@ export const Player = ({ player, isActive, isSpectator, togglePlayerActiveCard, 
   }
   const { captured, hand, username } = player;
   return (
-    <Box {...rest}>
-      <Grid sx={{ m: 3 }} columns="1.5fr 1fr 1fr 1fr">
-        <Deck cardNumber={captured.length} scopa={player.scopa} id={playerDeckId(username)} />
+    <Flex {...rest} my={2}>
+      <Deck cardNumber={captured.length} scopa={player.scopa} id={playerDeckId(username)} />
+      <Box pl={3} />
+      <Grid sx={{ alignContent: 'center', flex: 1 }} columns="1fr 1fr 1fr" gap={[2, null, 3]}>
         {hand?.map((c) => {
           const key = cardKey(c);
           return (
@@ -39,6 +40,6 @@ export const Player = ({ player, isActive, isSpectator, togglePlayerActiveCard, 
           );
         })}
       </Grid>
-    </Box>
+    </Flex>
   );
 };

@@ -24,7 +24,7 @@ export const Player = ({ player, isActive, isSpectator, togglePlayerActiveCard, 
   return (
     <Flex {...rest} my={2}>
       <Deck cardNumber={captured.length} scopa={player.scopa} id={playerDeckId(username)} />
-      <Box pl={3} />
+      <Box pl={4} />
       <Grid sx={{ alignContent: 'center', flex: 1 }} columns="1fr 1fr 1fr" gap={[2, null, 3]}>
         {hand?.map((c) => {
           const key = cardKey(c);

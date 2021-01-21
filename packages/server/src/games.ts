@@ -117,7 +117,6 @@ function calculatePlayerTurn(oldState: GameState) {
 }
 
 export async function updateGameState(io: IOServer, roomName: string, playerAction: PlayerAction) {
-  // const oldState = (await getCurrentState(roomName)) as GameState;
   const room = await getRoom(roomName);
 
   if (!room) {

@@ -50,7 +50,7 @@ export async function addRoom(name: string) {
 }
 
 export async function addState(roomName: string, state: GameState) {
-  await Room.update({ name: roomName }, { $push: { states: state } });
+  await Room.updateOne({ name: roomName }, { $push: { states: state } });
 }
 
 export async function getCurrentState(roomName: string): Promise<GameState | undefined> {

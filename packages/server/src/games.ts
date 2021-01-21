@@ -14,9 +14,9 @@ import {
   getCardName,
 } from 'shared';
 import { finalScore } from './scores';
-import { getCurrentState, addState, getRoom } from './controllers/roomControllerMDB';
+import { getCurrentState, addState, getRoom } from './controllers/roomController';
 import { generateGameState } from './utils';
-import { Room as RoomMDB } from './database/models';
+import { Room } from './database/models';
 
 /**
  * Calculate the immediate new game state, as a result of a player's action. This is not necessarily the final state
@@ -131,7 +131,7 @@ export async function updateGameState(io: IOServer, roomName: string, playerActi
       const states = room.states;
       states.pop();
 
-      await RoomMDB.updateOne({ _id: room._id }, { states });
+      await Room.updateOne({ _id: room._id }, { states });
 
       const newState = last(room.states);
 

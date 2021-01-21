@@ -2,7 +2,7 @@ import express, { Application, Request, Response, NextFunction } from 'express';
 import { createServer as CreateHTTPServer } from 'http';
 import cors from 'cors';
 import { io } from './app';
-import { getRooms, deleteRoom } from './controllers/roomControllerMDB';
+import { getRooms, deleteRoom } from './controllers/roomController';
 import { emitRoomUpdate } from './emitters/roomEmitter';
 
 export const createServer = () => {

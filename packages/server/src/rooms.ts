@@ -1,7 +1,7 @@
 import { Server as IOServer, Socket } from 'socket.io';
 import { sample, last } from 'lodash';
 import { RoomEvent, GameEvent } from 'shared';
-import { getRoom, addRoom, setOwner, getCurrentState, addState, IRoomExtended } from './controllers/roomControllerMDB';
+import { getRoom, addRoom, setOwner, getCurrentState, addState, IRoomExtended } from './controllers/roomController';
 import { Player } from './database/schema';
 import { getPlayer, addPlayer } from './controllers/playerController';
 import { generateRoomName, generateGameState } from './utils';

@@ -5,8 +5,8 @@ export async function getPlayer(name: string): Promise<IPlayer | null> {
   return player;
 }
 
-export async function addPlayer(name: string): Promise<IPlayer> {
+export async function createPlayer(name: string): Promise<IPlayer> {
   const player = new Player({ name });
-  player.save();
+  await player.save();
   return player;
 }

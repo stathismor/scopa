@@ -43,7 +43,7 @@ export async function getRooms() {
   return rooms;
 }
 
-export async function addRoom(name: string) {
+export async function createRoom(name: string) {
   const room = new Room({ name });
   await room.save();
   return room;
@@ -74,9 +74,13 @@ export async function deleteRoom(roomName: string, username: string) {
     throw new Error('Room can only be deleted by room owner');
   }
 
-  await Room.deleteOne({ size: 'large' });
+  await Room.deleteOne({ name: roomName });
 }
 
 export async function setOwner(id: mongoose.Types.ObjectId, username: string) {
   await Room.updateOne({ _id: id }, { owner: username });
+}
+
+export async function addPlayer(roomId: mongoose.Types.ObjectId, playerId: mongoose.Types.ObjectId) {
+  await Room.updateOne({ _id: roomId }, { $push: { playerIds: playerId } });
 }

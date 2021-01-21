@@ -1,9 +1,17 @@
 import { Server as IOServer, Socket } from 'socket.io';
 import { sample, last } from 'lodash';
 import { RoomEvent, GameEvent } from 'shared';
-import { getRoom, addRoom, setOwner, getCurrentState, addState, IRoomExtended } from './controllers/roomController';
+import {
+  getRoom,
+  createRoom as createDbRoom,
+  addPlayer,
+  setOwner,
+  getCurrentState,
+  addState,
+  IRoomExtended,
+} from './controllers/roomController';
 import { Player } from './database/schema';
-import { getPlayer, addPlayer } from './controllers/playerController';
+import { getPlayer, createPlayer } from './controllers/playerController';
 import { generateRoomName, generateGameState } from './utils';
 import { emitRoomUpdate } from './emitters/roomEmitter';
 
@@ -20,7 +28,7 @@ export async function createRoom(io: IOServer, socket: Socket) {
     return;
   }
 
-  await addRoom(name);
+  await createDbRoom(name);
 
   console.info(`[CREATE] Created room ${name}`);
   socket.emit(RoomEvent.CreateSuccess, name);
@@ -44,8 +52,9 @@ export async function joinRoom(io: IOServer, socket: Socket, roomName: string, u
     let newPlayer = await getPlayer(username);
 
     if (!newPlayer) {
-      newPlayer = await addPlayer(username);
+      newPlayer = await createPlayer(username);
     }
+    await addPlayer(room._id, newPlayer._id);
 
     await doJoinRoom(io, socket, roomName, username);
   } else {
@@ -63,7 +72,7 @@ async function doJoinRoom(io: IOServer, socket: Socket, roomName: string, userna
   const room = (await getRoom(roomName)) as IRoomExtended;
 
   if (room.players.length === 1 && !room.owner) {
-    await setOwner(room.id, username);
+    await setOwner(room._id, username);
   }
 
   // If room is full, emit current state
@@ -77,7 +86,7 @@ async function doJoinRoom(io: IOServer, socket: Socket, roomName: string, userna
       // HACK: Temporary initial state
       state = generateGameState(playerNames, activePlayer!);
 
-      await addState(room.id, state);
+      await addState(room.name, state);
     }
 
     io.in(roomName).emit(GameEvent.CurrentState, state);

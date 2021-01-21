@@ -115,8 +115,6 @@ export const Game = () => {
     };
   }, [togglePlayerActiveCard]);
 
-  console.log(gameState);
-
   const isSpectator = players.length > 0 && !players.some((player) => player.username === username);
   const { player, opponent } = useMemo(() => {
     if (isSpectator) {

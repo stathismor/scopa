@@ -11,6 +11,49 @@ import { Log } from 'components/Log';
 import { Game } from './Game';
 import { theme } from 'theme';
 
+type Props = {
+  status: RoomState;
+  action?: string;
+  error: string;
+};
+
+const RoomSwitch = ({ status, action, error }: Props) => {
+  switch (status) {
+    case RoomState.Pending:
+      return <Box>Pending</Box>;
+    case RoomState.Joined:
+      return (
+        <>
+          <Box sx={{ position: 'absolute', left: 1, top: 1 }}>
+            <Link to="/" aria-label="Back to Lobby">
+              <FiArrowLeftCircle title="Back to Lobby" size={24} color={theme.colors.text} />
+            </Link>
+          </Box>
+          <Flex sx={{ height: '100%', flexDirection: ['column', null, 'row'] }}>
+            <Box sx={{ flex: 1 }}>
+              <Game />
+            </Box>
+            <Box sx={{ flex: [0, null, '0 0 25%'], height: '100%' }}>
+              <Log event={action} />
+            </Box>
+          </Flex>
+        </>
+      );
+    default:
+    case RoomState.Failed:
+      return (
+        <Box>
+          Error: {error}
+          <Box mt={3}>
+            <Link to="/">
+              <Button>Back to Lobby</Button>
+            </Link>
+          </Box>
+        </Box>
+      );
+  }
+};
+
 export const Room = () => {
   const [status, setStatus] = useState<RoomState>(RoomState.Pending);
   const [errorMessage, setErrorMessage] = useState('');
@@ -50,38 +93,9 @@ export const Room = () => {
     };
   }, []);
 
-  switch (status) {
-    case RoomState.Pending:
-      return <Box>Pending</Box>;
-    case RoomState.Joined:
-      return (
-        <Layout>
-          <Box sx={{ position: 'absolute', left: 1, top: 1 }}>
-            <Link to="/" aria-label="Back to Lobby">
-              <FiArrowLeftCircle title="Back to Lobby" size={24} color={theme.colors.text} />
-            </Link>
-          </Box>
-          <Flex sx={{ height: '100%', flexDirection: ['column', null, 'row'] }}>
-            <Box sx={{ flex: 1 }}>
-              <Game />
-            </Box>
-            <Box sx={{ flex: [0, null, '0 0 25%'], height: '100%' }}>
-              <Log event={playerAction} />
-            </Box>
-          </Flex>
-        </Layout>
-      );
-    default:
-    case RoomState.Failed:
-      return (
-        <Box>
-          Error: {errorMessage}
-          <Box mt={3}>
-            <Link to="/">
-              <Button>Back to Lobby</Button>
-            </Link>
-          </Box>
-        </Box>
-      );
-  }
+  return (
+    <Layout key={roomName}>
+      <RoomSwitch status={status} error={errorMessage} action={playerAction} />
+    </Layout>
+  );
 };

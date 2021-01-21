@@ -27,6 +27,7 @@ export const GameStatus = {
   Waiting: 'waiting',
   Started: 'started',
   Playing: 'playing',
+  RoundEnded: 'round-ended',
   Ended: 'ended',
 } as const;
 export type GameStatus = typeof GameStatus[keyof typeof GameStatus];
@@ -71,4 +72,5 @@ export type Score = {
   details: readonly ScoreDetail[];
   total: number;
   totalRound: number;
+  isWinning: boolean;
 };

@@ -1,7 +1,7 @@
 import { theme } from 'theme';
 import { Box, BoxProps } from 'theme-ui';
 import back from 'images/back.jpg';
-import { baseCard, CARD_HEIGHT_DESKTOP, CARD_HEIGHT_MOBILE } from './style';
+import { baseCard } from './style';
 import { Card as CardType } from 'shared';
 import { Card } from './Card';
 
@@ -26,7 +26,7 @@ export const Deck = ({ cardNumber, scopa, id, scopaPosition = 'top', ...rest }: 
           sx={{
             position: 'absolute',
             zIndex: -i - 1,
-            [scopaPosition]: [`-${CARD_HEIGHT_MOBILE / 5 + i * 2}vw`, null, `-${CARD_HEIGHT_DESKTOP / 5 + i * 2}vw`],
+            [scopaPosition]: `-${i + 1}rem`,
             transform: SCOPA_TRANSFORM_PROPERTY[scopaPosition],
           }}
         >
@@ -38,7 +38,7 @@ export const Deck = ({ cardNumber, scopa, id, scopaPosition = 'top', ...rest }: 
           ...baseCard,
           bg: 'muted',
           backgroundImage: cardNumber === 0 ? undefined : `url(${back})`,
-          boxShadow: `0.${deckElevation}vw 0.${deckElevation}vw 0 ${theme.colors.darkGrey}`,
+          boxShadow: `${deckElevation}px ${deckElevation}px 0 ${theme.colors.darkGrey}`,
         }}
         {...rest}
       />

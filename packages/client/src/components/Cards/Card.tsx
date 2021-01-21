@@ -36,8 +36,9 @@ export const SmallCard = ({ faceDown = false, card }: CardProps) => {
     <Box
       sx={{
         ...baseCard,
-        width: `${CARD_WIDTH_SMALL}vw`,
-        height: `${CARD_HEIGHT_SMALL}vw`,
+        width: CARD_WIDTH_SMALL,
+        height: CARD_HEIGHT_SMALL,
+        borderRadius: 4,
         backgroundImage: `url(${faceDown ? back : imgUrl(card)})`,
         flexShrink: 0,
       }}
@@ -50,8 +51,9 @@ export const SmallEmptyCard = () => {
     <Box
       sx={{
         ...baseCard,
-        width: `${CARD_WIDTH_SMALL}vw`,
-        height: `${CARD_HEIGHT_SMALL}vw`,
+        width: CARD_WIDTH_SMALL,
+        height: CARD_HEIGHT_SMALL,
+        borderRadius: 4,
         boxShadow: 'none',
       }}
     />

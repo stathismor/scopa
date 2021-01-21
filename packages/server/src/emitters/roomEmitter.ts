@@ -1,10 +1,8 @@
 import { Server as IOServer } from 'socket.io';
-import { RoomEvent, GameEvent } from 'shared';
-import { getRoomsMDB } from '../controllers/roomController';
-import { Room } from '../database/models';
+import { RoomEvent } from 'shared';
+import { getRooms } from '../controllers/roomControllerMDB';
 
 export async function emitRoomUpdate(io: IOServer) {
-  // const rooms = await getRooms();
-  const rooms = await getRoomsMDB();
+  const rooms = await getRooms();
   io.sockets.emit(RoomEvent.Update, rooms);
 }

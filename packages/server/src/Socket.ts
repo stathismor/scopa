@@ -1,5 +1,5 @@
 import { Server as IOServer, Socket } from 'socket.io';
-import { UserEvent, RoomEvent, GameEvent, GameState, PlayerAction } from 'shared';
+import { UserEvent, RoomEvent, GameEvent, PlayerAction } from 'shared';
 import { createUsername } from './users';
 import { createRoom, joinRoom } from './rooms';
 import { restartGameState, updateGameState } from './games';

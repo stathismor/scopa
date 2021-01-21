@@ -1,14 +1,9 @@
 import { isEmpty, last } from 'lodash';
-import { GameState, Room as RoomShared } from 'shared';
+import { GameState } from 'shared';
 import * as redisClient from '../database/redisClient';
 import { Room, Player, ROOM_PREFIX } from '../database/schema';
-import { Room as RoomMDB, IRoom, IPlayer } from '../database/models';
 
 const ROOM_MATCH_PREFIX = `${ROOM_PREFIX}-*`;
-
-export interface IRoomExtended extends IRoom {
-  players: IPlayer[];
-}
 
 export async function getRoom(roomName: string): Promise<Room> {
   const room = await redisClient.getRoom(roomName);
@@ -17,43 +12,6 @@ export async function getRoom(roomName: string): Promise<Room> {
 
 export async function getRooms(prefix: string = ROOM_MATCH_PREFIX) {
   const rooms = await redisClient.getRooms(prefix);
-  return rooms;
-}
-
-export async function getRoomMDB(roomName: string): Promise<IRoomExtended | null> {
-  const rooms = await RoomMDB.aggregate([
-    {
-      $match: { name: roomName },
-    },
-    {
-      $lookup: {
-        from: 'players',
-        localField: 'playerIds',
-        foreignField: '_id',
-        as: 'players',
-      },
-    },
-  ]);
-
-  if (!rooms) {
-    return null;
-  }
-
-  return rooms[0];
-}
-
-export async function getRoomsMDB() {
-  const rooms = await RoomMDB.aggregate([
-    {
-      $lookup: {
-        from: 'players',
-        localField: 'playerIds',
-        foreignField: '_id',
-        as: 'players',
-      },
-    },
-  ]);
-
   return rooms;
 }
 
@@ -94,7 +52,7 @@ export async function addRound(roomName: string) {
   await redisClient.setRoom(roomName, room);
 }
 
-export async function addGameState(roomName: string, state: GameState) {
+export async function addState(roomName: string, state: GameState) {
   const room = await getRoom(roomName);
 
   room.states[room.states.length - 1].push(state);
@@ -110,7 +68,7 @@ export async function removeGameState(roomName: string) {
   await redisClient.setRoom(roomName, room);
 }
 
-export async function getRoomState(roomName: string): Promise<GameState | undefined> {
+export async function getCurrentState(roomName: string): Promise<GameState | undefined> {
   const room = await redisClient.getRoom(roomName);
 
   if (isEmpty(room.states[room.states.length - 1])) {

@@ -1,42 +1,26 @@
 import { Server as IOServer, Socket } from 'socket.io';
 import { sample, last } from 'lodash';
 import { RoomEvent, GameEvent } from 'shared';
-import {
-  getRoom,
-  addRoom,
-  setOwner,
-  getRoomState,
-  addPlayer,
-  addGameState,
-  addRound,
-  getRoomMDB,
-  IRoomExtended,
-} from './controllers/roomController';
+import { getRoom, addRoom, setOwner, getCurrentState, addState, IRoomExtended } from './controllers/roomControllerMDB';
 import { Player } from './database/schema';
+import { getPlayer, addPlayer } from './controllers/playerController';
 import { generateRoomName, generateGameState } from './utils';
 import { emitRoomUpdate } from './emitters/roomEmitter';
-import { Player as PlayerMDB, Room as RoomMDB } from './database/models';
-import mongoose from 'mongoose';
 
 const MAX_PLAYERS = 2;
 
 export async function createRoom(io: IOServer, socket: Socket) {
   const name = generateRoomName();
 
-  // const room = await getRoom(name);
-  const roomMDB = await RoomMDB.findOne({ name });
+  const room = await getRoom(name);
 
-  if (roomMDB) {
+  if (room) {
     console.warn(`[CREATE FAILED] Room ${name} already exists`);
     socket.emit(RoomEvent.CreateError, 'Room already exists');
     return;
   }
 
-  // const newRoom = { name: roomName, owner: '', players: [], states: [] };
-  // await addRoom(newRoom);
-
-  const newRoomMDB = new RoomMDB({ name });
-  await newRoomMDB.save();
+  await addRoom(name);
 
   console.info(`[CREATE] Created room ${name}`);
   socket.emit(RoomEvent.CreateSuccess, name);
@@ -45,8 +29,7 @@ export async function createRoom(io: IOServer, socket: Socket) {
 }
 
 export async function joinRoom(io: IOServer, socket: Socket, roomName: string, username: string) {
-  // const room = await getRoom(roomName);
-  const room = await getRoomMDB(roomName);
+  const room = await getRoom(roomName);
 
   if (!room) {
     console.warn(`[JOIN FAILED] Room ${roomName} does not exist`);
@@ -58,31 +41,17 @@ export async function joinRoom(io: IOServer, socket: Socket, roomName: string, u
   if (player) {
     await doJoinRoom(io, socket, roomName, username);
   } else if (room.players.length < MAX_PLAYERS) {
-    // TODO: Check why this can return null according to TS
-    // const newPlayerMDB = await PlayerMDB.findOneAndUpdate({ name: username }, new PlayerMDB({ name: username }), {upsert: true})
-    let newPlayerMDB = await PlayerMDB.findOne({ name: username });
-    if (!newPlayerMDB) {
-      newPlayerMDB = new PlayerMDB({ name: username });
-      newPlayerMDB.save();
+    let newPlayer = await getPlayer(username);
+
+    if (!newPlayer) {
+      newPlayer = await addPlayer(username);
     }
-
-    // const newPlayer = { name: username };
-    // await addPlayer(roomName, newPlayer);
-
-    await RoomMDB.updateOne(
-      { _id: room._id },
-      { playerIds: [...room.playerIds, mongoose.Types.ObjectId(newPlayerMDB.id)] },
-    );
 
     await doJoinRoom(io, socket, roomName, username);
   } else {
     // Spectator
     await joinSocketRoom(socket, roomName);
-    const state = await getRoomState(roomName);
-
-    if (room) {
-      const stateMDB = room.states[room.states.length - 1];
-    }
+    const state = await getCurrentState(roomName);
 
     socket.emit(GameEvent.CurrentState, state);
   }
@@ -91,18 +60,15 @@ export async function joinRoom(io: IOServer, socket: Socket, roomName: string, u
 async function doJoinRoom(io: IOServer, socket: Socket, roomName: string, username: string) {
   await joinSocketRoom(socket, roomName);
 
-  const room = (await getRoomMDB(roomName)) as IRoomExtended;
+  const room = (await getRoom(roomName)) as IRoomExtended;
 
   if (room.players.length === 1 && !room.owner) {
-    await RoomMDB.updateOne({ _id: room._id }, { owner: username });
+    await setOwner(room.id, username);
   }
-  // console.log('room2', room);
 
   // If room is full, emit current state
   if (room.players.length === MAX_PLAYERS) {
-    // let state = room.getCurrentState();
     let state = last(room.states);
-    console.log('LAST STATE', state);
 
     if (!state) {
       const playerNames = room.players.map((player: Player) => player.name);
@@ -111,8 +77,7 @@ async function doJoinRoom(io: IOServer, socket: Socket, roomName: string, userna
       // HACK: Temporary initial state
       state = generateGameState(playerNames, activePlayer!);
 
-      console.log('NEW STATES', [...room.states, state]);
-      await RoomMDB.updateOne({ _id: room._id }, { states: [...room.states, state] });
+      await addState(room.id, state);
     }
 
     io.in(roomName).emit(GameEvent.CurrentState, state);

@@ -1,5 +1,5 @@
 import { Server as HTTPServer } from 'http';
-import { Server as IOServer, Socket } from 'socket.io';
+import { Server as IOServer } from 'socket.io';
 import * as dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import { createServer } from './Server';

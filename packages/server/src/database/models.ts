@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { last } from 'lodash';
-import { GameState, Suit, Card, GameStatus, Deck, Score, PlayerState } from 'shared';
+import { GameState } from 'shared';
 
 export interface IPlayer extends mongoose.Document {
   name: string;

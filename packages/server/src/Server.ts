@@ -1,10 +1,9 @@
 import express, { Application, Request, Response, NextFunction } from 'express';
-import { createServer as CreateHTTPServer, Server as HTTPServer } from 'http';
+import { createServer as CreateHTTPServer } from 'http';
 import cors from 'cors';
 import { io } from './app';
-import { getRooms, getRoomsMDB, deleteRoom } from './controllers/roomController';
+import { getRooms, deleteRoom } from './controllers/roomControllerMDB';
 import { emitRoomUpdate } from './emitters/roomEmitter';
-import { Room } from './database/models';
 
 export const createServer = () => {
   const app: Application = express();
@@ -14,11 +13,11 @@ export const createServer = () => {
   // Allow same origin requests. for local development
   app.use(cors({ origin: process.env.HTTP_ORIGIN }));
 
-  const server: HTTPServer = CreateHTTPServer(app);
+  CreateHTTPServer(app);
 
   // Application routing
   app.get('/rooms', async (_req: Request, res: Response, _next: NextFunction) => {
-    const rooms = await getRoomsMDB();
+    const rooms = await getRooms();
     res.status(200).send(rooms);
   });
 

@@ -26,8 +26,8 @@ export const registerListeners = (io: IOServer) => {
       await updateGameState(io, roomName, playerAction);
     });
 
-    socket.on(GameEvent.NewRound, async (roomName: string, isGameFinished: boolean) => {
-      await restartGameState(io, roomName, isGameFinished);
+    socket.on(GameEvent.NewRound, async (roomName: string) => {
+      await restartGameState(io, roomName);
     });
   });
 };

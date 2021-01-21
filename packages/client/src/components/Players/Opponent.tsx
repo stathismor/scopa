@@ -2,7 +2,7 @@ import { Card } from 'components/Cards/Card';
 import { CardWrapper } from 'components/Cards/CardWrapper';
 import { Deck } from 'components/Cards/Deck';
 import { PlayerState, cardKey } from 'shared';
-import { Box, BoxProps, Grid, Text } from 'theme-ui';
+import { Box, BoxProps, Flex, Grid, Text } from 'theme-ui';
 import { playerDeckId } from 'utils/dom';
 
 type Props = {
@@ -15,11 +15,12 @@ export const Opponent = ({ player, activePlayerCard, ...rest }: Props) => {
     return <Text>Waiting for a player to join</Text>;
   }
   const { captured, hand, username, scopa } = player;
-  
+
   return (
-    <Box {...rest}>
-      <Grid sx={{ m: 3, marginTop: '-7vw' }} columns="1.5fr 1fr 1fr 1fr">
-        <Deck cardNumber={captured.length} scopa={scopa} id={playerDeckId(username)} scopaPosition="bottom" />
+    <Flex {...rest} sx={{ m: 2, marginTop: '-7vw' }}>
+      <Deck cardNumber={captured.length} scopa={scopa} id={playerDeckId(username)} scopaPosition="bottom" />
+      <Box pl={3} />
+      <Grid sx={{ alignContent: 'center', flex: 1 }} columns="1fr 1fr 1fr" gap={[2, null, 3]}>
         {hand?.map((c) => {
           const key = cardKey(c);
           return (
@@ -29,6 +30,6 @@ export const Opponent = ({ player, activePlayerCard, ...rest }: Props) => {
           );
         })}
       </Grid>
-    </Box>
+    </Flex>
   );
 };

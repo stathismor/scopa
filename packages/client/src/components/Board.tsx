@@ -27,24 +27,25 @@ export const Board = ({
   return (
     <>
       <Deck cardNumber={deck.length} title={`${deck.length} cards left`} />
-      <Box pl={[4, null, 5]} />
+      <Box pl={4} />
       <Grid sx={{ alignContent: 'center', flex: 1 }} columns="1fr 1fr 1fr 1fr" gap={[2, null, 3]}>
         {table.map((c) => {
           const key = cardKey(c);
           const isActive = activeCardsOnTable.includes(key);
           return (
-            <CardWrapper
-              key={key}
-              id={key}
-              sx={cardWrapper(isActive)}
-              onClick={() => {
-                toggleActiveCardsOnTable(
-                  isActive ? activeCardsOnTable.filter((c) => c !== key) : [...activeCardsOnTable, key],
-                );
-              }}
-            >
-              <Card card={c} />
-            </CardWrapper>
+            <Box key={key}>
+              <CardWrapper
+                id={key}
+                sx={cardWrapper(isActive)}
+                onClick={() => {
+                  toggleActiveCardsOnTable(
+                    isActive ? activeCardsOnTable.filter((c) => c !== key) : [...activeCardsOnTable, key],
+                  );
+                }}
+              >
+                <Card card={c} />
+              </CardWrapper>
+            </Box>
           );
         })}
         {activePlayerCard && (

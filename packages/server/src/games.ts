@@ -153,6 +153,7 @@ export async function updateGameState(io: IOServer, roomName: string, playerActi
       }
 
       await addState(roomName, finalState);
+
       io.in(roomName).emit(GameEvent.CurrentState, finalState, finalPlayerAction);
       return;
     }

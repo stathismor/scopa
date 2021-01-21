@@ -154,7 +154,7 @@ export async function updateGameState(io: IOServer, roomName: string, playerActi
 
         finalState.players.forEach((player, i) => {
           player.score = scores[i];
-          player.score.winner = player.username === winningPlayer?.username;
+          player.score.isWinning = player.username === winningPlayer?.username;
         });
       }
       await addGameState(roomName, finalState);

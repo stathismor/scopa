@@ -70,5 +70,5 @@ export type Score = {
   details: readonly ScoreDetail[];
   total: number;
   totalRound: number;
-  winner: boolean;
+  isWinning: boolean;
 };

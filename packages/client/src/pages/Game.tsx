@@ -158,7 +158,7 @@ export const Game = () => {
     <GameTable>
       <Opponent player={opponent} activePlayerCard={activePlayerCard} />
       {opponent && <PlayerName player={opponent} isActive={activePlayer === opponent.username} />}
-      <Flex sx={{ flex: 1, alignItems: 'center', minWidth: BOARD_MIN_WIDTH }}>
+      <Flex sx={{ flex: 1, alignItems: 'center', width: BOARD_MIN_WIDTH, maxWidth: '100%' }}>
         {gameState.status === GameStatus.Ended || gameState.status === GameStatus.RoundEnded ? (
           <GameScore players={gameState.players} gameStatus={gameState.status} />
         ) : (

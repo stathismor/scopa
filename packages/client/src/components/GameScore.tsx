@@ -1,8 +1,9 @@
 import { Box, Button, Flex, Heading, Text } from 'theme-ui';
 import { GameEvent, GameStatus, PlayerState, RoomEvent } from 'shared';
 import { gameIO } from 'lib/socket';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { SmallCard, SmallEmptyCard } from './Cards/Card';
+import { useEffect } from 'react';
 
 type Props = {
   players: PlayerState[];
@@ -12,7 +13,19 @@ type Props = {
 export const GameScore = ({ players, gameStatus }: Props) => {
   const { roomName } = useParams<{ roomName: string }>();
   const isGameFinished = gameStatus === GameStatus.Ended;
-  const winner = players.find((p) => p.score.winner);
+  const winner = players.find((p) => p.score.isWinning);
+  const history = useHistory();
+
+  useEffect(() => {
+    const handleCreateRoomSuccess = (roomName: string) => {
+      history.push(`/game/${roomName}`);
+    };
+    gameIO.on(RoomEvent.CreateSuccess, handleCreateRoomSuccess);
+
+    return () => {
+      gameIO.off(RoomEvent.CreateSuccess, handleCreateRoomSuccess);
+    };
+  }, [history]);
   return (
     <Box>
       <Flex sx={{ gap: 3 }}>

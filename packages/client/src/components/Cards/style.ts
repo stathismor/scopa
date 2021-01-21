@@ -5,8 +5,8 @@ export const CARD_HEIGHT_MOBILE = 26;
 export const CARD_HEIGHT_DESKTOP = 13;
 export const CARD_WIDTH_MOBILE = 15;
 export const CARD_WIDTH_DESKTOP = 7.5;
-export const CARD_HEIGHT_SMALL = CARD_HEIGHT_MOBILE / 3;
-export const CARD_WIDTH_SMALL = CARD_WIDTH_MOBILE / 3;
+export const CARD_HEIGHT_SMALL = 36;
+export const CARD_WIDTH_SMALL = 22;
 const NUM_CARD_ON_ROW = 5;
 
 export const CARD_HEIGHT = [`${CARD_HEIGHT_MOBILE}vw`, null, `${CARD_HEIGHT_DESKTOP}vw`];

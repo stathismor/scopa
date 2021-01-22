@@ -17,7 +17,6 @@ import { PlayerName } from 'components/Players/PlayerName';
 import { animatePlace, animateCapture } from 'lib/animation/cardAnimations';
 import { getCardElement } from 'utils/dom';
 import { useStateCallback } from 'hooks/useStateCallback';
-import { BOARD_MIN_WIDTH } from 'components/Cards/style';
 
 const SETTEBELLO = {
   value: 7,
@@ -157,7 +156,7 @@ export const Game = () => {
     <GameTable>
       <Opponent player={opponent} activePlayerCard={activePlayerCard} />
       {opponent && <PlayerName player={opponent} isActive={activePlayer === opponent.username} />}
-      <Flex sx={{ flex: 1, alignItems: 'center', minWidth: BOARD_MIN_WIDTH }}>
+      <Flex sx={{ flex: 1, alignItems: 'center', width: '100%' }}>
         {gameState.status === GameStatus.Ended || gameState.status === GameStatus.RoundEnded ? (
           <GameScore players={gameState.players} gameStatus={gameState.status} />
         ) : (

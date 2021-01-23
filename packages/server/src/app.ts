@@ -1,10 +1,13 @@
 import { Server as HTTPServer } from 'http';
-import { Server as IOServer, Socket } from 'socket.io';
+import { Server as IOServer } from 'socket.io';
+import * as dotenv from 'dotenv';
+import mongoose from 'mongoose';
 import { createServer } from './Server';
 import { registerListeners } from './Socket';
-import * as dotenv from 'dotenv';
 
 dotenv.config();
+
+mongoose.connect(process.env.MONGODB_URL as string, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const server: HTTPServer = createServer();
 

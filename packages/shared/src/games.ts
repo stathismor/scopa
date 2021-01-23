@@ -38,6 +38,8 @@ export type GameState = {
   deck: Card[];
   table: Card[];
   players: PlayerState[];
+  round: number;
+  turn: number;
   latestCaptured: string;
 };
 

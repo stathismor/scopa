@@ -1,5 +1,5 @@
 import { shuffle, range } from 'lodash';
-import { GameState, PlayerState, Suit, Card, GameStatus, Deck, Score } from 'shared';
+import { PlayerState, GameState, Suit, Card, GameStatus, Deck } from 'shared';
 import { uniqueNamesGenerator, Config, adjectives, colors, animals } from 'unique-names-generator';
 import { ROOM_PREFIX } from './database/schema';
 
@@ -39,6 +39,8 @@ export function generateGameState(usernames: string[], activePlayer: string, tot
     deck,
     table,
     players,
+    round: 0,
+    turn: 0,
     latestCaptured: '',
   };
 }

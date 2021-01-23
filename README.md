@@ -5,7 +5,7 @@ Scopa
 # Setup
 
 1. Install [Node.js](https://nodejs.org/en/download/package-manager/)
-2. Install and start [Redis](https://redis.io/topics/quickstart)
+2. Install and run [MongoDB](https://docs.mongodb.com/manual/installation/)
 
 # Run
 

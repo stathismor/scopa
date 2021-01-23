@@ -9,6 +9,7 @@
     "strict": true,
     "noImplicitAny": true,
     "noUnusedParameters": true,
+    "noUnusedLocals": true,
     "moduleResolution": "node",
     "baseUrl": "./src",
     "esModuleInterop": true,

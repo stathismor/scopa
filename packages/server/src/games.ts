@@ -14,8 +14,9 @@ import {
   getCardName,
 } from 'shared';
 import { finalScore } from './scores';
-import { getRoomState, addGameState, removeGameState, addRound } from './controllers/roomController';
+import { getCurrentState, addState, getRoom } from './controllers/roomController';
 import { generateGameState } from './utils';
+import { Room } from './database/models';
 
 /**
  * Calculate the immediate new game state, as a result of a player's action. This is not necessarily the final state
@@ -118,17 +119,27 @@ function calculatePlayerTurn(oldState: GameState) {
 const END_OF_GAME_SCORE = 11;
 
 export async function updateGameState(io: IOServer, roomName: string, playerAction: PlayerAction) {
-  const oldState = (await getRoomState(roomName)) as GameState;
+  const room = await getRoom(roomName);
+
+  if (!room) {
+    // TODO: Handle this
+    return;
+  }
+  const oldState = last(room.states) as GameState;
 
   switch (playerAction.action) {
     case PlayerActionType.Undo: {
-      await removeGameState(roomName);
-      const prevState = await getRoomState(roomName);
+      const states = room.states;
+      states.pop();
+
+      await Room.updateOne({ _id: room._id }, { states });
+
+      const newState = last(room.states);
 
       const newPlayerAction = cloneDeep(playerAction);
       newPlayerAction.description = `Player <strong>${playerAction.playerName}</strong> reverted their last turn`;
 
-      io.in(roomName).emit(GameEvent.CurrentState, prevState, newPlayerAction);
+      io.in(roomName).emit(GameEvent.CurrentState, newState, newPlayerAction);
       return;
     }
     default: {
@@ -157,7 +168,9 @@ export async function updateGameState(io: IOServer, roomName: string, playerActi
           player.score.isWinning = player.username === winningPlayer?.username;
         });
       }
-      await addGameState(roomName, finalState);
+
+      await addState(roomName, finalState);
+
       io.in(roomName).emit(GameEvent.CurrentState, finalState, finalPlayerAction);
       return;
     }
@@ -165,7 +178,7 @@ export async function updateGameState(io: IOServer, roomName: string, playerActi
 }
 
 export async function restartGameState(io: IOServer, roomName: string) {
-  const { players, activePlayer } = (await getRoomState(roomName)) as GameState;
+    const { players, activePlayer } = (await getCurrentState(roomName)) as GameState;
   // TODO: Later on we will need to add order of players, built into the model
   const nextPlayer = players.find((p) => p.username !== activePlayer);
   const state = generateGameState(
@@ -173,7 +186,8 @@ export async function restartGameState(io: IOServer, roomName: string) {
     `${nextPlayer?.username}`,
     players.map((p) => p.score.total),
   );
-  await addRound(roomName);
-  await addGameState(roomName, state);
+
+  // FIXME: Handle round increment here
+  await addState(roomName, state);
   io.in(roomName).emit(GameEvent.CurrentState, state);
 }

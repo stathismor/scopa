@@ -30,6 +30,8 @@ const INITIAL_STATE = {
   deck: [],
   table: [],
   players: [],
+  round: 0,
+  turn: 0,
   latestCaptured: '',
   activePlayerCard: null,
   activeCardsOnTable: [],
@@ -112,8 +114,6 @@ export const Game = () => {
       gameIO.off(GameEvent.CurrentState, handleCurrentGameState);
     };
   }, [togglePlayerActiveCard]);
-
-  console.log(gameState);
 
   const isSpectator = players.length > 0 && !players.some((player) => player.username === username);
   const { player, opponent } = useMemo(() => {

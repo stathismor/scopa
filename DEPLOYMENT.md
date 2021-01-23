@@ -44,7 +44,7 @@ $ heroku buildpacks:add -a scopa-server heroku-community/multi-procfile
 $ heroku config:set -a scopa-server PROCFILE=packages/server/Procfile
 $ heroku config:set -a scopa-server HTTP_ORIGIN=https://scopa-client.herokuapp.com
 $ heroku config:set -a scopa-server SOCKET_ORIGIN=https://scopa-client.herokuapp.com
-$ heroku config:set -a scopa-server MONGODB_URL=mongodb+srv://<user>:<password>@two-of-spades.gbquq.mongodb.net/scopa?retryWrites=true&w=majority
+$ heroku config:set -a scopa-server MONGODB_URL="mongodb+srv://<user>:<password>@two-of-spades.gbquq.mongodb.net/scopa?retryWrites=true&w=majority"
 ```
 
 ### Client

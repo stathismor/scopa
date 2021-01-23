@@ -5,10 +5,9 @@ import mongoose from 'mongoose';
 import { createServer } from './Server';
 import { registerListeners } from './Socket';
 
-const url = 'mongodb://localhost:27017/scopa';
-mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
-
 dotenv.config();
+
+mongoose.connect(process.env.MONGODB_URL as string, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const server: HTTPServer = createServer();
 

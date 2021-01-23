@@ -36,8 +36,8 @@ const RoomSchema: mongoose.Schema = new mongoose.Schema({
     },
   ],
 });
-RoomSchema.methods.getCurrentState = function (this: any) {
-  return last(this.states);
+RoomSchema.methods.getCurrentState = function (self: any) {
+  return last(self.states);
 };
 
 export const Player = mongoose.model<IPlayer>('Player', PlayerSchema);

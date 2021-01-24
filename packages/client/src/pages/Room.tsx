@@ -57,7 +57,7 @@ const RoomSwitch = ({ status, action, error }: Props) => {
 export const Room = () => {
   const [status, setStatus] = useState<RoomState>(RoomState.Pending);
   const [errorMessage, setErrorMessage] = useState('');
-  const { roomName } = useParams<{ roomName: string }>();
+  const { roomId } = useParams<{ roomId: string }>();
   const { username } = useUserData();
   const [playerAction, setPlayerAction] = useState<string>();
 
@@ -71,7 +71,7 @@ export const Room = () => {
       setErrorMessage(errorMessage);
     };
 
-    gameIO.emit(RoomEvent.Join, roomName, username);
+    gameIO.emit(RoomEvent.Join, roomId, username);
 
     gameIO.on(RoomEvent.JoinSuccess, handleSuccess);
     gameIO.on(RoomEvent.JoinError, handleError);
@@ -80,7 +80,7 @@ export const Room = () => {
       gameIO.off(RoomEvent.JoinSuccess, handleSuccess);
       gameIO.off(RoomEvent.JoinError, handleError);
     };
-  }, [roomName, username]);
+  }, [roomId, username]);
 
   useEffect(() => {
     const handleLogs = (_: GameState, action?: PlayerAction) => {
@@ -94,7 +94,7 @@ export const Room = () => {
   }, []);
 
   return (
-    <Layout key={roomName}>
+    <Layout key={roomId}>
       <RoomSwitch status={status} error={errorMessage} action={playerAction} />
     </Layout>
   );

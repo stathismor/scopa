@@ -12,42 +12,33 @@ import {
 } from './controllers/roomController';
 import { Player } from './database/schema';
 import { getPlayer, createPlayer } from './controllers/playerController';
-import { generateRoomName, generateGameState } from './utils';
+import { generateUniqueName, generateGameState } from './utils';
 import { emitRoomUpdate } from './emitters/roomEmitter';
 
 const MAX_PLAYERS = 2;
 
 export async function createRoom(io: IOServer, socket: Socket) {
-  const name = generateRoomName();
+  const name = generateUniqueName();
+  const room = await createDbRoom(name);
 
-  const room = await getRoom(name);
-
-  if (room) {
-    console.warn(`[CREATE FAILED] Room ${name} already exists`);
-    socket.emit(RoomEvent.CreateError, 'Room already exists');
-    return;
-  }
-
-  await createDbRoom(name);
-
-  console.info(`[CREATE] Created room ${name}`);
-  socket.emit(RoomEvent.CreateSuccess, name);
+  console.info(`[CREATE] Created room ${room.id}`);
+  socket.emit(RoomEvent.CreateSuccess, room.id);
 
   await emitRoomUpdate(io);
 }
 
-export async function joinRoom(io: IOServer, socket: Socket, roomName: string, username: string) {
-  const room = await getRoom(roomName);
+export async function joinRoom(io: IOServer, socket: Socket, roomId: string, username: string) {
+  const room = await getRoom(roomId);
 
   if (!room) {
-    console.warn(`[JOIN FAILED] Room ${roomName} does not exist`);
+    console.warn(`[JOIN FAILED] Room with id ${roomId} does not exist`);
     socket.emit(RoomEvent.JoinError, 'Room does not exist');
     return;
   }
 
   const player = room.players.find((player: Player) => player.name === username);
   if (player) {
-    await doJoinRoom(io, socket, roomName, username);
+    await doJoinRoom(io, socket, roomId, username);
   } else if (room.players.length < MAX_PLAYERS) {
     let newPlayer = await getPlayer(username);
 
@@ -56,20 +47,20 @@ export async function joinRoom(io: IOServer, socket: Socket, roomName: string, u
     }
     await addPlayer(room._id, newPlayer._id);
 
-    await doJoinRoom(io, socket, roomName, username);
+    await doJoinRoom(io, socket, roomId, username);
   } else {
     // Spectator
-    await joinSocketRoom(socket, roomName);
-    const state = await getCurrentState(roomName);
+    await joinSocketRoom(socket, roomId);
+    const state = await getCurrentState(roomId);
 
     socket.emit(GameEvent.CurrentState, state);
   }
 }
 
-async function doJoinRoom(io: IOServer, socket: Socket, roomName: string, username: string) {
-  await joinSocketRoom(socket, roomName);
+async function doJoinRoom(io: IOServer, socket: Socket, roomId: string, username: string) {
+  await joinSocketRoom(socket, roomId);
 
-  const room = (await getRoom(roomName)) as IRoomExtended;
+  const room = (await getRoom(roomId)) as IRoomExtended;
 
   if (room.players.length === 1 && !room.owner) {
     await setOwner(room._id, username);
@@ -86,17 +77,17 @@ async function doJoinRoom(io: IOServer, socket: Socket, roomName: string, userna
       // HACK: Temporary initial state
       state = generateGameState(playerNames, activePlayer!);
 
-      await addState(room.name, state);
+      await addState(room._id, state);
     }
 
-    io.in(roomName).emit(GameEvent.CurrentState, state);
+    io.in(roomId).emit(GameEvent.CurrentState, state);
   }
   await emitRoomUpdate(io);
 }
 
-async function joinSocketRoom(socket: Socket, roomName: string) {
-  await socket.join(roomName);
+async function joinSocketRoom(socket: Socket, roomId: string) {
+  await socket.join(roomId);
 
-  console.info(`[JOIN] Client joined room ${roomName}`);
+  console.info(`[JOIN] Client joined room ${roomId}`);
   socket.emit(RoomEvent.JoinSuccess);
 }

@@ -38,7 +38,7 @@ const INITIAL_STATE = {
 
 export const Game = () => {
   const { username } = useUserData();
-  const { roomName } = useParams<{ roomName: string }>();
+  const { roomId } = useParams<{ roomId: string }>();
   const [activePlayerCard, togglePlayerActiveCard] = useStateCallback(null);
   const [activeCardsOnTable, toggleActiveCardsOnTable] = useState<string[]>([]);
   const [gameState, setGameState] = useState<GameState>(INITIAL_STATE);
@@ -133,7 +133,7 @@ export const Game = () => {
       const { value: playerCardNumber } = fromCardKey(activePlayerCard);
       const tableCardsSum = sum(activeCardsOnTable.map((c) => fromCardKey(c).value));
       if (playerCardNumber === tableCardsSum) {
-        gameIO.emit(GameEvent.PlayerAction, roomName, {
+        gameIO.emit(GameEvent.PlayerAction, roomId, {
           action: PlayerActionType.Capture,
           playerName: player.username,
           card: activePlayerCard,
@@ -141,11 +141,11 @@ export const Game = () => {
         });
       }
     }
-  }, [activeCardsOnTable, activePlayerCard, player, roomName, isActivePlayer]);
+  }, [activeCardsOnTable, activePlayerCard, player, roomId, isActivePlayer]);
 
   const playCardOnTable = () => {
     if (isActivePlayer && activePlayerCard) {
-      gameIO.emit(GameEvent.PlayerAction, roomName, {
+      gameIO.emit(GameEvent.PlayerAction, roomId, {
         action: PlayerActionType.PlayOnTable,
         playerName: player.username,
         card: activePlayerCard,
@@ -176,7 +176,7 @@ export const Game = () => {
           <Button
             disabled={isSpectator}
             onClick={() => {
-              gameIO.emit(GameEvent.PlayerAction, roomName, {
+              gameIO.emit(GameEvent.PlayerAction, roomId, {
                 action: PlayerActionType.Undo,
                 playerName: player.username,
               });

@@ -16,8 +16,8 @@ export const Lobby = () => {
   const { username } = useUserData();
 
   useEffect(() => {
-    const handleCreateRoomSuccess = (roomName: string) => {
-      history.push(`/game/${roomName}`);
+    const handleCreateRoomSuccess = (roomId: string) => {
+      history.push(`/game/${roomId}`);
     };
     gameIO.on(RoomEvent.CreateSuccess, handleCreateRoomSuccess);
 

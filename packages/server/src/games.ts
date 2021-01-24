@@ -118,8 +118,8 @@ function calculatePlayerTurn(oldState: GameState) {
 
 const END_OF_GAME_SCORE = 11;
 
-export async function updateGameState(io: IOServer, roomName: string, playerAction: PlayerAction) {
-  const room = await getRoom(roomName);
+export async function updateGameState(io: IOServer, roomId: string, playerAction: PlayerAction) {
+  const room = await getRoom(roomId);
 
   if (!room) {
     // TODO: Handle this
@@ -139,7 +139,7 @@ export async function updateGameState(io: IOServer, roomName: string, playerActi
       const newPlayerAction = cloneDeep(playerAction);
       newPlayerAction.description = `Player <strong>${playerAction.playerName}</strong> reverted their last turn`;
 
-      io.in(roomName).emit(GameEvent.CurrentState, newState, newPlayerAction);
+      io.in(roomId).emit(GameEvent.CurrentState, newState, newPlayerAction);
       return;
     }
     default: {
@@ -169,16 +169,16 @@ export async function updateGameState(io: IOServer, roomName: string, playerActi
         });
       }
 
-      await addState(roomName, finalState);
+      await addState(roomId, finalState);
 
-      io.in(roomName).emit(GameEvent.CurrentState, finalState, finalPlayerAction);
+      io.in(roomId).emit(GameEvent.CurrentState, finalState, finalPlayerAction);
       return;
     }
   }
 }
 
-export async function restartGameState(io: IOServer, roomName: string) {
-    const { players, activePlayer } = (await getCurrentState(roomName)) as GameState;
+export async function restartGameState(io: IOServer, roomId: string) {
+  const { players, activePlayer } = (await getCurrentState(roomId)) as GameState;
   // TODO: Later on we will need to add order of players, built into the model
   const nextPlayer = players.find((p) => p.username !== activePlayer);
   const state = generateGameState(
@@ -188,6 +188,6 @@ export async function restartGameState(io: IOServer, roomName: string) {
   );
 
   // FIXME: Handle round increment here
-  await addState(roomName, state);
-  io.in(roomName).emit(GameEvent.CurrentState, state);
+  await addState(roomId, state);
+  io.in(roomId).emit(GameEvent.CurrentState, state);
 }

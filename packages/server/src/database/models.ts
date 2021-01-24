@@ -4,12 +4,12 @@ import { GameState } from 'shared';
 
 export interface IPlayer extends mongoose.Document {
   name: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 const PlayerSchema = new mongoose.Schema(
   {
     name: String,
-    createdAt: Date,
-    updatedAt: Date,
   },
   {
     timestamps: true,
@@ -20,6 +20,7 @@ export interface IRoom extends mongoose.Document {
   name: string;
   owner: string;
   createdAt: Date;
+  updatedAt: Date;
   playerIds: mongoose.Schema.Types.ObjectId[];
   states: GameState[];
 
@@ -29,8 +30,6 @@ const RoomSchema: mongoose.Schema = new mongoose.Schema(
   {
     name: String,
     owner: String,
-    createdAt: Date,
-    updatedAt: Date,
     playerIds: [mongoose.Schema.Types.ObjectId],
     states: [
       {

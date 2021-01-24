@@ -5,9 +5,7 @@ export const Layout = (props: BoxProps) => (
     sx={{
       width: '100%',
       height: '100%',
-      maxWidth: 1200,
       m: '0 auto',
-      px: 2,
       position: 'relative',
     }}
     {...props}

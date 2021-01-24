@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Heading, Text } from 'theme-ui';
+import { Box, Button, Flex, Heading, Text, Grid } from 'theme-ui';
 import { GameEvent, GameStatus, PlayerState, RoomEvent } from 'shared';
 import { gameIO } from 'lib/socket';
 import { useHistory, useParams } from 'react-router-dom';
@@ -27,10 +27,10 @@ export const GameScore = ({ players, gameStatus }: Props) => {
     };
   }, [history]);
   return (
-    <Box sx={{ maxWidth: '100vw', px: 3 }}>
-      <Flex sx={{ gap: 3 }}>
+    <Box sx={{ maxWidth: '100%', px: 3 }}>
+      <Grid gap={3} columns="1fr 1fr">
         {players.map(({ username, score: { details, total, totalRound } }, i) => (
-          <Box key={i} sx={{ flex: '1 0 50%' }}>
+          <Box key={i}>
             <Heading as="h3" mt={2}>
               {username}
             </Heading>
@@ -60,7 +60,7 @@ export const GameScore = ({ players, gameStatus }: Props) => {
             <Text sx={{ fontWeight: 700 }}>Total: {total}</Text>
           </Box>
         ))}
-      </Flex>
+      </Grid>
       <Flex sx={{ flexFlow: 'column', alignItems: 'center', mt: 3 }}>
         {isGameFinished && (
           <Heading as="h2" my={3}>

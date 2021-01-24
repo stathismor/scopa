@@ -1,7 +1,7 @@
 import { Box, Grid } from 'theme-ui';
 import { Deck as DeckType, cardKey } from 'shared';
 import { CardWrapper } from 'components/Cards/CardWrapper';
-import { cardDrop, cardWrapper } from 'components/Cards/style';
+import { cardDrop, cardWrapper, CARD_WIDTH_DESKTOP } from 'components/Cards/style';
 import { Card } from './Cards/Card';
 import { Deck } from './Cards/Deck';
 import { DROP_CONTAINER_ID } from 'utils/dom';
@@ -28,7 +28,11 @@ export const Board = ({
     <>
       <Deck cardNumber={deck.length} title={`${deck.length} cards left`} />
       <Box pl={4} />
-      <Grid sx={{ alignContent: 'center', flex: 1 }} columns="1fr 1fr 1fr 1fr" gap={[2, null, 3]}>
+      <Grid
+        sx={{ justifyContent: 'center', alignContent: 'center', flex: 1 }}
+        columns={`${CARD_WIDTH_DESKTOP}px ${CARD_WIDTH_DESKTOP}px ${CARD_WIDTH_DESKTOP}px ${CARD_WIDTH_DESKTOP}px`}
+        gap={[2, null, 3]}
+      >
         {table.map((c) => {
           const key = cardKey(c);
           const isActive = activeCardsOnTable.includes(key);

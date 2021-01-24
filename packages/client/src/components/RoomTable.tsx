@@ -29,7 +29,6 @@ export const RoomTable = ({ username }: { username: string }) => {
   const canDelete = (room: Room) => {
     return room.owner === username;
   };
-
   return (
     <Box>
       <Heading as="h2">Rooms</Heading>

@@ -29,7 +29,7 @@ export async function getRoom(_id: string): Promise<IRoomExtended | null> {
 }
 
 export async function getRooms() {
-  const rooms = await Room.aggregate([
+  return Room.aggregate([
     {
       $lookup: {
         from: 'players',
@@ -38,15 +38,13 @@ export async function getRooms() {
         as: 'players',
       },
     },
+    { $sort: { updatedAt: -1 } },
   ]);
-
-  return rooms;
 }
 
 export async function createRoom(name: string) {
   const room = new Room({ name });
-  await room.save();
-  return room;
+  return room.save();
 }
 
 export async function addState(roomId: string, state: GameState) {

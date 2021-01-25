@@ -10,7 +10,7 @@ function App() {
       <Route path="/" exact>
         <Lobby />
       </Route>
-      <Route path="/game/:roomName">
+      <Route path="/game/:roomId">
         <Room />
       </Route>
       <Route path="/docs">

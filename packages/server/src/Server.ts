@@ -21,12 +21,12 @@ export const createServer = () => {
     res.status(200).send(rooms);
   });
 
-  app.delete('/rooms/:roomName', async (req: Request, res: Response, _next: NextFunction) => {
-    const { roomName } = req.params;
+  app.delete('/rooms/:roomId', async (req: Request, res: Response, _next: NextFunction) => {
+    const { roomId } = req.params;
     const { username } = req.body;
 
     try {
-      await deleteRoom(roomName, username);
+      await deleteRoom(roomId, username);
       res.status(200).send({});
     } catch (e) {
       console.error(e.name + ': ' + e.message);

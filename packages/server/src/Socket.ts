@@ -18,16 +18,16 @@ export const registerListeners = (io: IOServer) => {
       await createRoom(io, socket);
     });
 
-    socket.on(RoomEvent.Join, async (roomName: string, username: string) => {
-      await joinRoom(io, socket, roomName, username);
+    socket.on(RoomEvent.Join, async (roomId: string, username: string) => {
+      await joinRoom(io, socket, roomId, username);
     });
 
-    socket.on(GameEvent.PlayerAction, async (roomName: string, playerAction: PlayerAction) => {
-      await updateGameState(io, roomName, playerAction);
+    socket.on(GameEvent.PlayerAction, async (roomId: string, playerAction: PlayerAction) => {
+      await updateGameState(io, roomId, playerAction);
     });
 
-    socket.on(GameEvent.NewRound, async (roomName: string) => {
-      await restartGameState(io, roomName);
+    socket.on(GameEvent.NewRound, async (roomId: string) => {
+      await restartGameState(io, roomId);
     });
   });
 };

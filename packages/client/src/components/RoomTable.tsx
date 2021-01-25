@@ -35,7 +35,7 @@ export const RoomTable = ({ username }: { username: string }) => {
       {isLoading && 'Loading ...'}
       <Grid columns={['auto', null, '1fr 1fr 1fr']}>
         {data?.map((room) => (
-          <Card key={room.name} mt={1}>
+          <Card key={room._id} mt={1}>
             <Flex sx={{ flexFlow: 'column', justifyContent: 'space-between' }}>
               <Flex sx={{ flexDirection: 'column' }}>
                 <Box>
@@ -46,14 +46,14 @@ export const RoomTable = ({ username }: { username: string }) => {
                 </Box>
               </Flex>
               <Flex sx={{ alignItems: 'center', mt: 1 }}>
-                <Link href={`/game/${room.name}`}>
+                <Link href={`/game/${room._id}`}>
                   <Button>Join</Button>
                 </Link>
                 <Box sx={{ mx: 1 }} />
                 <Button
                   variant="outline"
                   disabled={!canDelete(room)}
-                  onClick={() => mutate({ roomName: room.name, username })}
+                  onClick={() => mutate({ roomId: room._id, username })}
                 >
                   Delete
                 </Button>

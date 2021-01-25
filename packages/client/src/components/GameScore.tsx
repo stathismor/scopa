@@ -11,14 +11,14 @@ type Props = {
 };
 
 export const GameScore = ({ players, gameStatus }: Props) => {
-  const { roomName } = useParams<{ roomName: string }>();
+  const { roomId } = useParams<{ roomId: string }>();
   const isGameFinished = gameStatus === GameStatus.Ended;
   const winner = players.find((p) => p.score.isWinning);
   const history = useHistory();
 
   useEffect(() => {
-    const handleCreateRoomSuccess = (roomName: string) => {
-      history.push(`/game/${roomName}`);
+    const handleCreateRoomSuccess = (roomId: string) => {
+      history.push(`/game/${roomId}`);
     };
     gameIO.on(RoomEvent.CreateSuccess, handleCreateRoomSuccess);
 
@@ -69,7 +69,7 @@ export const GameScore = ({ players, gameStatus }: Props) => {
         )}
         <Button
           onClick={() => {
-            isGameFinished ? gameIO.emit(RoomEvent.Create) : gameIO.emit(GameEvent.NewRound, roomName);
+            isGameFinished ? gameIO.emit(RoomEvent.Create) : gameIO.emit(GameEvent.NewRound, roomId);
           }}
         >
           {isGameFinished ? 'Restart' : 'Next Round'}

@@ -1,8 +1,8 @@
 import { Socket } from 'socket.io';
 import { UserEvent } from 'shared';
-import { generateUsername } from './utils';
+import { generateUniqueName } from './utils';
 
 export function createUsername(socket: Socket) {
-  const username = generateUsername();
+  const username = generateUniqueName();
   socket.emit(UserEvent.UsernameCreated, username);
 }
